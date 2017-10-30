@@ -1,0 +1,21 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.dll
+*.pdb
+/Blogical.Shared.Adapters.Common/obj
+/Blogical.Shared.Adapters.Sftp/obj
+/Blogical.Shared.Adapters.Sftp.Management/bin
+/Blogical.Shared.Adapters.Sftp.Management/obj
+/Blogical.Shared.Adapters.Sftp.Schemas/bin
+/Blogical.Shared.Adapters.Sftp.Schemas/obj
+*.msi
+*.exe
+/SharpSSH-1.1.1.13.src/obj
+*.user
+*.xsd.cs
+*.tmp
+/.vs/Blogical.Adapters.Sftp/v14/.suo
+/packages/DiffieHellman.1.0.0/DiffieHellman.1.0.0.nupkg
+*.nupkg
