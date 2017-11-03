@@ -40,7 +40,7 @@ namespace Blogical.Shared.Adapters.Common
         {
 			this.control = control;
 
-            this.comTxn = TransactionInterop.GetDtcTransaction(transaction);
+            comTxn = TransactionInterop.GetDtcTransaction(transaction);
 
             //  the System.Transactions transaction - must be the original transaction - only that can be used to commit
             this.transaction = transaction;
@@ -56,68 +56,68 @@ namespace Blogical.Shared.Adapters.Common
         }
         public override void Done ()
 		{
-            this.CommitConfirm = base.Done(this.comTxn);
+            CommitConfirm = base.Done(comTxn);
 		}
 		protected override void EndBatchComplete ()
 		{
-			if (this.pendingWork)
+			if (pendingWork)
 			{
 				return;
 			}
 			try
 			{
-				if (this.needToAbort)
+				if (needToAbort)
 				{
-                    this.transaction.Rollback();
+                    transaction.Rollback();
 
-                    this.CommitConfirm.DTCCommitConfirm(this.comTxn, false); 
+                    CommitConfirm.DTCCommitConfirm(comTxn, false); 
 				}
 				else
 				{
-                    this.transaction.Commit();
+                    transaction.Commit();
 
-                    this.CommitConfirm.DTCCommitConfirm(this.comTxn, true); 
+                    CommitConfirm.DTCCommitConfirm(comTxn, true); 
 				}
 			}
 			catch
 			{
 				try
 				{
-					this.CommitConfirm.DTCCommitConfirm(this.comTxn, false); 
+					CommitConfirm.DTCCommitConfirm(comTxn, false); 
 				}
 				catch
 				{
 				}
 			}
 			//  note the pending work check at the top of this function removes the need to check a needToLeave flag
-			this.control.Leave();
+			control.Leave();
 
-			if (this.orderedEvent != null)
-				this.orderedEvent.Set();
+			if (orderedEvent != null)
+				orderedEvent.Set();
 		}
         protected void SetAbort()
         {
-            this.needToAbort = true;
+            needToAbort = true;
         }
         protected void SetComplete()
         {
-            this.needToAbort = false;
+            needToAbort = false;
         }
         protected void SetPendingWork()
 		{
-			this.pendingWork = true;
+			pendingWork = true;
 		}
 		protected IBTDTCCommitConfirm CommitConfirm
 		{
 			set
 			{
-				this.commitConfirm = value;
-				this.commitConfirmEvent.Set();
+				commitConfirm = value;
+				commitConfirmEvent.Set();
 			}
 			get
 			{
-				this.commitConfirmEvent.WaitOne();
-				return this.commitConfirm;
+				commitConfirmEvent.WaitOne();
+				return commitConfirm;
 			}
 		}
         protected IDtcTransaction comTxn;

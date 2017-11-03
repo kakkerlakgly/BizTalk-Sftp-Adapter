@@ -39,7 +39,7 @@ namespace Blogical.Shared.Adapters.Common
 
 		protected string GetSchemaFromResource (string name)
 		{
-			Assembly assem = this.GetType().Assembly;
+			Assembly assem = GetType().Assembly;
             using (Stream stream = assem.GetManifestResourceStream(name))
             {
                 using (StreamReader reader = new StreamReader(stream))

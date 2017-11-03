@@ -40,7 +40,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// Prepopulates the SftpConnectionPool with servers defined in config file.
         /// </summary>
         /// <param name="section"></param>
-        public static void Load(System.Xml.XmlNode section)
+        public static void Load(XmlNode section)
         {
             try
             {
@@ -137,9 +137,9 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <param name="maxNumberOfConnections"></param>
         public SftpHost(string hostName, int maxNumberOfConnections, bool trace)
         {
-            this.ConnectionLimit = maxNumberOfConnections;
-            this.HostName = hostName;
-            this._trace = trace;
+            ConnectionLimit = maxNumberOfConnections;
+            HostName = hostName;
+            _trace = trace;
         }
         #endregion
         #region Public Members
@@ -169,7 +169,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         {
             while (!shutdownRequested)
             {
-                if (this.ConnectionLimit == 0)
+                if (ConnectionLimit == 0)
                 {
                     TraceMessage(
                         "[SftpConnectionPool] GetConnectionFromPool creating a new connection (not from pool)");
@@ -211,7 +211,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                     TraceMessage("[SftpConnectionPool] GetConnectionFromPool found a free connection in the pool");
                     return connection;
                 }
-                if (this._currentCount < this.ConnectionLimit)
+                if (_currentCount < ConnectionLimit)
                 {
                     TraceMessage("[SftpConnectionPool] GetConnectionFromPool creating a new connection for pool");
                     //ISftp sftp = new SharpSsh.Sftp(this.HostName, username, password, identityFile, port, passphrase, this._trace);
@@ -245,7 +245,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                             properties.ProxyPassword);
                     }
 
-                    this._currentCount++;
+                    _currentCount++;
                     return sftp;
                 }
                 continue;
@@ -261,7 +261,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         {
             if (conn != null)
             {
-                if (this.ConnectionLimit == 0)
+                if (ConnectionLimit == 0)
                 {
                     TraceMessage("[SftpConnectionPool] Disposing connection object (no connection pool is used)");
                     conn.Disconnect();
@@ -269,18 +269,18 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                     return;
                 }
 
-                if (this._currentCount > this.ConnectionLimit)
+                if (_currentCount > ConnectionLimit)
                 {
                     TraceMessage("[SftpConnectionPool] ReleaseConnectionToPool disposing connection object");
                     conn.Disconnect();
                     conn.Dispose();
-                    this._currentCount--;
+                    _currentCount--;
                 }
                 else
                 {
                     TraceMessage("[SftpConnectionPool] ReleaseConnectionToPool releasing connection to pool");
                     //conn.Disconnect();
-                    this.Connections.Push(conn);
+                    Connections.Push(conn);
                 }
             }
 

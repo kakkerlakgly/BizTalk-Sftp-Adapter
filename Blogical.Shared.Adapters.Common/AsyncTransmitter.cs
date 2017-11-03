@@ -49,7 +49,7 @@ namespace Blogical.Shared.Adapters.Common
     /// </summary>
     public class AsyncTransmitter :
         Adapter,
-        System.IDisposable,
+        IDisposable,
         IBTBatchTransmitter
     {
         //  default magic number
@@ -81,20 +81,20 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.endpointType = endpointType;
             this.maxBatchSize = maxBatchSize;
-            this.control = new ControlledTermination();
+            control = new ControlledTermination();
         }
 
         protected virtual int MaxBatchSize
         {
-            get { return this.maxBatchSize; }
+            get { return maxBatchSize; }
         }
 
         protected Type EndpointType
         {
-            get { return this.endpointType; }
+            get { return endpointType; }
         }
 
-        protected ControlledTermination ControlledTermination { get { return this.control; } }
+        protected ControlledTermination ControlledTermination { get { return control; } }
 
         public void Dispose()
         {
@@ -112,11 +112,11 @@ namespace Blogical.Shared.Adapters.Common
         protected virtual IBTTransmitterBatch CreateAsyncTransmitterBatch ()
         {
             return new AsyncTransmitterBatch(
-                this.MaxBatchSize,
-                this.EndpointType,
-                this.PropertyNamespace,
-                this.HandlerPropertyBag,
-                this.TransportProxy,
+                MaxBatchSize,
+                EndpointType,
+                PropertyNamespace,
+                HandlerPropertyBag,
+                TransportProxy,
                 this);
         }
 
@@ -138,12 +138,12 @@ namespace Blogical.Shared.Adapters.Common
                 if (null == endpoint)
                 {
                     //  we haven't seen this location so far this batch so make a new endpoint
-                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(this.endpointType, new object[] { this });
+                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(endpointType, new object[] { this });
 
                     if (null == endpoint)
-                        throw new CreateEndpointFailed(this.endpointType.FullName, endpointParameters.OutboundLocation);
+                        throw new CreateEndpointFailed(endpointType.FullName, endpointParameters.OutboundLocation);
 
-                    endpoint.Open(endpointParameters, this.HandlerPropertyBag, this.PropertyNamespace);
+                    endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
 
                     if (endpoint.ReuseEndpoint)
                     {
@@ -161,7 +161,7 @@ namespace Blogical.Shared.Adapters.Common
                 System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Terminate");
                 //  Block until we are done...
                 // Let all endpoints finish the work they are doing before disposing them
-                this.control.Terminate();
+                control.Terminate();
 
                 foreach (AsyncTransmitterEndpoint endpoint in endpoints.Values)
                 {
@@ -172,7 +172,7 @@ namespace Blogical.Shared.Adapters.Common
                     }
                     catch (Exception e)
                     {
-                        this.TransportProxy.SetErrorInfo(e);
+                        TransportProxy.SetErrorInfo(e);
                     }
                 }
 
@@ -180,20 +180,20 @@ namespace Blogical.Shared.Adapters.Common
             }
             finally
             {
-                this.Dispose();
+                Dispose();
             }
         }
 
         public bool Enter ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Enter");
-            return this.control.Enter();
+            return control.Enter();
         }
 
         public void Leave ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Leave");
-            this.control.Leave();
+            control.Leave();
         }
     }
 }

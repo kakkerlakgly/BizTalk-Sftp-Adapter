@@ -74,9 +74,9 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             string proxyUserName,
             string proxyPassword)
         {
-            this._applicationStorage = ApplicationStorageHelper.Load();
+            _applicationStorage = ApplicationStorageHelper.Load();
 
-            var connectionInfo = !string.IsNullOrEmpty(this._proxyHost)
+            var connectionInfo = !string.IsNullOrEmpty(_proxyHost)
                 ? new ConnectionInfo(host, port, user, ProxyTypes.Socks5, proxyHost, proxyPort, proxyUserName,
                     proxyPassword)
                 : new ConnectionInfo(host, port, user);
@@ -96,20 +96,20 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 //_sftp.AddIdentityCert(this._identityThumbprint); 
             }
 
-            this._sftp = new SftpClient(connectionInfo);
-            this._sftp.HostKeyReceived += CheckHostKey;
-            this._identityFile = identityFile;
-            this._identityThumbprint = identityThumbprint;
-            this._host = host;
-            this._user = user;
-            this._password = password;
-            this._port = port;
-            this._passphrase = passphrase;
-            this.DebugTrace = debugTrace;
-            this._proxyHost = proxyHost;
-            this._proxyPort = proxyPort;
-            this._proxyUserName = proxyUserName;
-            this._proxyPassword = proxyPassword;
+            _sftp = new SftpClient(connectionInfo);
+            _sftp.HostKeyReceived += CheckHostKey;
+            _identityFile = identityFile;
+            _identityThumbprint = identityThumbprint;
+            _host = host;
+            _user = user;
+            _password = password;
+            _port = port;
+            _passphrase = passphrase;
+            DebugTrace = debugTrace;
+            _proxyHost = proxyHost;
+            _proxyPort = proxyPort;
+            _proxyUserName = proxyUserName;
+            _proxyPassword = proxyPassword;
         }
 
 
@@ -151,7 +151,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// </summary>
         /// <param name="memStream"></param>
         /// <param name="destination"></param>
-        public void Put(System.IO.Stream memStream, string destination)
+        public void Put(Stream memStream, string destination)
         {
             try
             {
@@ -323,21 +323,21 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// </summary>
         public void Connect()
         {
-            this.connect();
+            connect();
         }
         /// <summary>
         /// Disconnects from sever
         /// </summary>
         public void Disconnect()
         {
-            if (this.DebugTrace)
+            if (DebugTrace)
                 Trace.WriteLine("[SftpConnectionPool] Disconnecting from " + _host);
             try
             {
-                if (this._sftp.IsConnected)
+                if (_sftp.IsConnected)
                 {
-                    this._sftp.Disconnect();
-                    this._sftp = new SftpClient(this._host, this._user, this._password);
+                    _sftp.Disconnect();
+                    _sftp = new SftpClient(_host, _user, _password);
                 }
             }
             catch (Exception ex)
@@ -411,29 +411,29 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         {
             try
             {
-                if (!this._sftp.IsConnected || force)
+                if (!_sftp.IsConnected || force)
                 {
-                    if (this.DebugTrace)
+                    if (DebugTrace)
                         Trace.WriteLine("[SftpConnectionPool] Connecting to " + _host);
 
 
 
 
-                    this._sftp.Connect();
+                    _sftp.Connect();
 
                     //Make sure HostKey match previously retrieved HostKey.
-                    this._connectedSince = DateTime.Now;
+                    _connectedSince = DateTime.Now;
                 }
             }
             catch (Exception ex)
             {
-                if (this._sftp.IsConnected)
-                    this.Disconnect();
+                if (_sftp.IsConnected)
+                    Disconnect();
 
                 throw ExceptionHandling.HandleComponentException(
                     EventLogEventIDs.UnableToConnectToHost,
                     System.Reflection.MethodBase.GetCurrentMethod(),
-                        new Exception("Unable to connect to Sftp host [" + this._host + "]", ex));
+                        new Exception("Unable to connect to Sftp host [" + _host + "]", ex));
             }
         }
         private void reConnect()
@@ -444,11 +444,11 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         }
         void RaiseOnDisconnect()
         {
-            TimeSpan ts = DateTime.Now.Subtract(this._connectedSince);
+            TimeSpan ts = DateTime.Now.Subtract(_connectedSince);
             if (ts.TotalSeconds > TOTALLIFETIME)
             {
-                if (this._sftp.IsConnected)
-                    this.Disconnect();
+                if (_sftp.IsConnected)
+                    Disconnect();
 
                 //this.connect();
 
@@ -463,13 +463,13 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
         void CheckHostKey(object sender, HostKeyEventArgs hostKeyEventArgs)
         {
-            object hostKey = ApplicationStorageHelper.GetHostKey(this._applicationStorage, this._host);
+            object hostKey = ApplicationStorageHelper.GetHostKey(_applicationStorage, _host);
 
             if (hostKey == null)
             {
-                this._applicationStorage.TryAdd(new ApplicationStorage(this._host,
+                _applicationStorage.TryAdd(new ApplicationStorage(_host,
                     Convert.ToBase64String(hostKeyEventArgs.HostKey, 0, hostKeyEventArgs.HostKey.Length)));
-                ApplicationStorageHelper.Save(this._applicationStorage);
+                ApplicationStorageHelper.Save(_applicationStorage);
             }
             else if (hostKey.ToString() != Convert.ToBase64String(hostKeyEventArgs.HostKey, 0, hostKeyEventArgs.HostKey.Length))
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
@@ -509,7 +509,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                             !filesInProcess.Contains(CommonFunctions.CombinePath(remotePath, fileName)))
                         {
                             // "Check out" file if UseLoadBalancing == true 
-                            if (uri != null && !DataBaseHelper.CheckOutFile(uri, System.Environment.MachineName, fileName, trace))
+                            if (uri != null && !DataBaseHelper.CheckOutFile(uri, Environment.MachineName, fileName, trace))
                                 continue; // loadbalancing==on, checked out failed
                             else if (uri != null)// loadbalancing==on, checked out succeeded
                             {
@@ -578,7 +578,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 var entries = _sftp.ListDirectory(fileMask).ToList();
 
-                System.Random autoRand = new System.Random();
+                Random autoRand = new Random();
 
                 while (entries.Count > 0 && (fileEntries.Count < maxNumberOfFiles || maxNumberOfFiles == 0))
                 {
@@ -609,7 +609,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                             !filesInProcess.Contains(CommonFunctions.CombinePath(remotePath, fileName)))
                         {
                             // "Check out" file if UseLoadBalancing == true 
-                            if (uri != null && !DataBaseHelper.CheckOutFile(uri, System.Environment.MachineName, fileName, trace))
+                            if (uri != null && !DataBaseHelper.CheckOutFile(uri, Environment.MachineName, fileName, trace))
                             {
                                 entries.RemoveAt(index);
                                 continue;

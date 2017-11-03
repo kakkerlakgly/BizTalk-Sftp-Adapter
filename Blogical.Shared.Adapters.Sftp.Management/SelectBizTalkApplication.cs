@@ -17,18 +17,18 @@ namespace Blogical.Shared.Adapters.Sftp.Management
 
         private void btnYes_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Yes;
-            this.Close();
+            DialogResult = DialogResult.Yes;
+            Close();
         }
 
         private void btnNo_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void SelectBizTalkApplication_Load(object sender, EventArgs e)
         {
-            this.TopMost = true;
+            TopMost = true;
         }
     }
 }

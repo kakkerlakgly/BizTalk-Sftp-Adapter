@@ -29,8 +29,8 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="hostKey"></param>
         public ApplicationStorage(string host, string hostKey)
         {
-            this.Host = host;
-            this.HostKey = hostKey;
+            Host = host;
+            HostKey = hostKey;
         }
         /// <summary>
         /// Name of the application host or server

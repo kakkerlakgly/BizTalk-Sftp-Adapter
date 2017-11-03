@@ -34,7 +34,7 @@ namespace Blogical.Shared.Adapters.Common
     public abstract class EndpointParameters
     {
         public abstract string SessionKey { get; }
-        public string OutboundLocation { get { return this.outboundLocation; } }
+        public string OutboundLocation { get { return outboundLocation; } }
         public EndpointParameters (string outboundLocation)
         {
             this.outboundLocation = outboundLocation;
@@ -47,14 +47,14 @@ namespace Blogical.Shared.Adapters.Common
         public override string SessionKey 
         {
             //  the SessionKey is the outboundLocation in the default case
-            get { return this.outboundLocation; }
+            get { return outboundLocation; }
         }
         public DefaultEndpointParameters (string outboundLocation) : base(outboundLocation)
         {
         }
     }
 
-    public abstract class AsyncTransmitterEndpoint : System.IDisposable
+    public abstract class AsyncTransmitterEndpoint : IDisposable
     {
         public AsyncTransmitterEndpoint(AsyncTransmitter transmitter) { }
 

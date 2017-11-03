@@ -53,17 +53,17 @@ namespace Blogical.Shared.Adapters.Common
         }
         protected override void StartBatchComplete (int hrBatchComplete)
         {
-            if (this.HRStatus >= 0)
+            if (HRStatus >= 0)
             {
-                this.SetComplete();
+                SetComplete();
             }
         }
         protected override void StartProcessFailures ()
 		{
-			this.SetAbort();
-			if (this.txnAborted != null)
+			SetAbort();
+			if (txnAborted != null)
 			{
-				this.txnAborted();
+				txnAborted();
 			}
 		}
 	}
@@ -81,17 +81,17 @@ namespace Blogical.Shared.Adapters.Common
 		}
 		protected override void StartBatchComplete (int hrBatchComplete)
 		{
-            if (this.HRStatus != 0)
+            if (HRStatus != 0)
             {
-                this.SetAbort();
-                if (this.stopProcessing != null)
+                SetAbort();
+                if (stopProcessing != null)
                 {
-                    this.stopProcessing();
+                    stopProcessing();
                 }
             }
             else
             {
-                this.SetComplete();
+                SetComplete();
             }
 		}
 	}
@@ -103,48 +103,48 @@ namespace Blogical.Shared.Adapters.Common
         { }
 		protected override void StartProcessFailures ()
 		{
-			if (!this.OverallSuccess)
+			if (!OverallSuccess)
 			{
-				this.innerBatch = new AbortOnFailureReceiveTxnBatch(this.TransportProxy, this.control, this.comTxn, this.transaction, this.orderedEvent, null);
-				this.innerBatchCount = 0;
+				innerBatch = new AbortOnFailureReceiveTxnBatch(TransportProxy, control, comTxn, transaction, orderedEvent, null);
+				innerBatchCount = 0;
 			}
 		}
 		protected override void SubmitFailure (IBaseMessage message, Int32 hrStatus, object userData)
 		{
-			if (this.innerBatch != null)
+			if (innerBatch != null)
 			{
                 try
                 {
                     Stream originalStream = message.BodyPart.GetOriginalDataStream();
 				    originalStream.Seek(0, SeekOrigin.Begin);
 				    message.BodyPart.Data = originalStream;
-                    this.innerBatch.MoveToSuspendQ(message);
-					this.innerBatchCount++;
+                    innerBatch.MoveToSuspendQ(message);
+					innerBatchCount++;
 				}
 				catch (Exception e)
 				{
                     Trace.WriteLine("SingleMessageReceiveTxnBatch.SubmitFailure Exception: {0}", e.Message);
-					this.innerBatch = null;
-					this.SetAbort();
+					innerBatch = null;
+					SetAbort();
 				}
 			}
 		}
         protected override void SubmitSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            this.SetComplete();
+            SetComplete();
         }
 		protected override void EndProcessFailures ()
 		{
-			if (this.innerBatch != null && this.innerBatchCount > 0)
+			if (innerBatch != null && innerBatchCount > 0)
 			{
 				try
 				{
-					this.innerBatch.Done();
-					this.SetPendingWork();
+					innerBatch.Done();
+					SetPendingWork();
 				}
 				catch (Exception)
 				{
-					this.SetAbort();
+					SetAbort();
 				}
 			}
 		}

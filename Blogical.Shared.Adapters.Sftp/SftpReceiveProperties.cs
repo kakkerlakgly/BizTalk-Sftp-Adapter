@@ -58,56 +58,56 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public string SSHHost
         {
-            get { return this._sshHost; }
+            get { return _sshHost; }
         }
         /// <summary>
         /// The password for SSH password-based authentication
         /// </summary>
         public string SSHPasswordProperty
         {
-            get { return this._sshPasswordProperty; }
+            get { return _sshPasswordProperty; }
         }
         /// <summary>
         /// The port in the SSH server where the SSH service is running; by default 22.
         /// </summary>
         public int SSHPort
         {
-            get { return this._sshPort; }
+            get { return _sshPort; }
         }
         /// <summary>
         /// The username for SSH authentication.
         /// </summary>
         public string SSHUser
         {
-            get { return this._sshUser; }
+            get { return _sshUser; }
         }
         /// <summary>
         /// The certificate to use for client authentication during the SSH handshake.
         /// </summary>
         public string SSHIdentityFile
         {
-            get { return this._sshIdentityFile; }
+            get { return _sshIdentityFile; }
         }
         /// <summary>
         /// The certificate to use for client authentication during the SSH handshake.
         /// </summary>
         public string SSHIdentityThumbprint
         {
-            get { return this._sshIdentityThumbprint; }
+            get { return _sshIdentityThumbprint; }
         }
         /// <summary>
         /// The Single Sign On (SSO) Affiliate Application
         /// </summary>
         public string SSOApplication
         {
-            get { return this._ssoApplication; }
+            get { return _ssoApplication; }
         }
         /// <summary>
         /// Indicates the type of files to download from the server
         /// </summary>
         public string FileMask
         {
-            get { return this._sshFileMask; }
+            get { return _sshFileMask; }
         }
         /// <summary>
         /// The current path to the SFTP server
@@ -116,14 +116,14 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             get 
             {
-               if(this._sshRemotePath.EndsWith("/"))
-                   return this._sshRemotePath; 
+               if(_sshRemotePath.EndsWith("/"))
+                   return _sshRemotePath; 
                 else
-                   return this._sshRemotePath+"/"; 
+                   return _sshRemotePath+"/"; 
             }
             set
             {
-                this._sshRemotePath = value;
+                _sshRemotePath = value;
             }
         }
         /// <summary>
@@ -131,53 +131,53 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public bool DebugTrace
         {
-            get { return this._sshtrace; }
+            get { return _sshtrace; }
         }
         /// <summary>
         /// Causes the adapter to send a notification message if the batch is empty.
         /// </summary>
         public bool NotifyOnEmptyBatch
         {
-            get { return this._notifyOnEmptyBatch; }
+            get { return _notifyOnEmptyBatch; }
         }
         /// <summary>
         /// The number of errors before the adapter shuts down  
         /// </summary>
         public int ErrorThreshold
         {
-            get { return this._sshErrorThreshold; }
+            get { return _sshErrorThreshold; }
         }
         /// <summary>
         /// Enter the maximum number of files to be submitted in a single BizTalk batch (0 indicates no limit).
         /// </summary>
         public int MaximumNumberOfFiles
         {
-            get {return this._maximumnumberoffiles; }
+            get {return _maximumnumberoffiles; }
         }
         /// <summary>
         /// Enter the maximum number of bytes to be submitted in a single BizTalk batch (0 indicates no limit).
         /// </summary>
         public int MaximumBatchSize
         {
-            get { return this._maximumbatchsize; }
+            get { return _maximumbatchsize; }
         }
         /// <summary>
         /// Complete path and filemask. sftp://[host]:[port]/[remotepath]/[filemsk]
         /// </summary>
         public string Uri
         {
-            get { return CommonFunctions.CombinePath("SFTP://" + this.SSHHost + ":" + this.SSHPort, this.RemotePath, this.FileMask); }
+            get { return CommonFunctions.CombinePath("SFTP://" + SSHHost + ":" + SSHPort, RemotePath, FileMask); }
         }
         /// <summary>
         /// 
         /// </summary>
-        public Schedule Schedule { get { return this._schedule; } }
+        public Schedule Schedule { get { return _schedule; } }
         /// <summary>
         /// Indicates the Receive location is executed on more then one server node. 
         /// </summary>
         public bool UseLoadBalancing
         {
-            get { return this._useLoadBalancing; }
+            get { return _useLoadBalancing; }
         }
 
         // Proxy Settings
@@ -186,28 +186,28 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public string ProxyHost
         {
-            get { return this._proxyHost; }
+            get { return _proxyHost; }
         }
         /// <summary>
         /// The port on which the HTTP proxy is running on; by default 80.
         /// </summary>
         public int ProxyPort
         {
-            get { return this._proxyPort; }
+            get { return _proxyPort; }
         }
         /// <summary>
         /// The username used for proxy authentication.
         /// </summary>
         public string ProxyUserName
         {
-            get { return this._proxyUsername; }
+            get { return _proxyUsername; }
         }
         /// <summary>
         /// The password used for proxy authentication.
         /// </summary>
         public string ProxyPassword
         {
-            get { return this._proxyPassword; }
+            get { return _proxyPassword; }
         }
 
         // Greg Killins 2010/06/07 - added the third valid option of "DoNothing" 
@@ -260,16 +260,16 @@ namespace Blogical.Shared.Adapters.Sftp
             
             XmlDocument endpointConfig = ExtractConfigDomImpl(config, true);
 
-            this._ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
+            _ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
 
-            if (!String.IsNullOrEmpty(this._ssoApplication))
+            if (!String.IsNullOrEmpty(_ssoApplication))
             {
                 TraceMessage("[SftpReceiverEndpoint] SSO Authentication");
                 try
                 {
-                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(this._ssoApplication);
-                    this._sshUser = credentials.Username;
-                    this._sshPasswordProperty = credentials.Password;
+                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(_ssoApplication);
+                    _sshUser = credentials.Username;
+                    _sshPasswordProperty = credentials.Password;
                 }
                 catch (Exception e)
                 {
@@ -278,24 +278,24 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             else
             {
-                this._sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
-                this._sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
+                _sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
+                _sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
             }
 
-            this._sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
-            this._sshPort = ExtractInt(endpointConfig, "/Config/port");
-            this._sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
-            this._sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
+            _sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
+            _sshPort = ExtractInt(endpointConfig, "/Config/port");
+            _sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
+            _sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
 
-            this._sshFileMask = Extract(endpointConfig, "/Config/filemask", String.Empty);
-            this._sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
-            this._sshtrace = ExtractBool(endpointConfig, "/Config/trace");
-            this._notifyOnEmptyBatch = ExtractBool(endpointConfig, "/Config/notifyOnEmptyBatch");
-            this._sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
-            this._useLoadBalancing = ExtractBool(endpointConfig, "/Config/useLoadBalancing");
+            _sshFileMask = Extract(endpointConfig, "/Config/filemask", String.Empty);
+            _sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
+            _sshtrace = ExtractBool(endpointConfig, "/Config/trace");
+            _notifyOnEmptyBatch = ExtractBool(endpointConfig, "/Config/notifyOnEmptyBatch");
+            _sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
+            _useLoadBalancing = ExtractBool(endpointConfig, "/Config/useLoadBalancing");
 
-            this._maximumnumberoffiles = ExtractInt(endpointConfig, "/Config/maximumnumberoffiles");
-            this._maximumbatchsize = ExtractInt(endpointConfig, "/Config/maximumbatchsize");
+            _maximumnumberoffiles = ExtractInt(endpointConfig, "/Config/maximumnumberoffiles");
+            _maximumbatchsize = ExtractInt(endpointConfig, "/Config/maximumbatchsize");
 
             // create the schedule
             XmlDocument scheduleXml = new XmlDocument();
@@ -304,16 +304,16 @@ namespace Blogical.Shared.Adapters.Sftp
             switch (type)
             {
                 case ScheduleType.Daily:
-                    this._schedule = new DaySchedule(scheduleXml.OuterXml);
+                    _schedule = new DaySchedule(scheduleXml.OuterXml);
                     break;
                 case ScheduleType.Weekly:
-                    this._schedule = new WeekSchedule(scheduleXml.OuterXml);
+                    _schedule = new WeekSchedule(scheduleXml.OuterXml);
                     break;
                 case ScheduleType.Monthly:
-                    this._schedule = new MonthSchedule(scheduleXml.OuterXml);
+                    _schedule = new MonthSchedule(scheduleXml.OuterXml);
                     break;
                 default:
-                    this._schedule = new TimeSchedule(scheduleXml.OuterXml);
+                    _schedule = new TimeSchedule(scheduleXml.OuterXml);
                     break;
             }
 
@@ -325,28 +325,28 @@ namespace Blogical.Shared.Adapters.Sftp
             string afterget = IfExistsExtract(endpointConfig, "/Config/aftergetaction", string.Empty);
             if (afterget.Trim() == String.Empty)
             {
-                this._afterGet = AfterGetActions.DoNothing;
+                _afterGet = AfterGetActions.DoNothing;
             }
             else
             {
                 try
                 {
-                    this._afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
+                    _afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
                 }
                 catch (ArgumentException)
                 {
                     throw new Exception("You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
                 }
             }
-            this._afterGetFilename = IfExistsExtract(endpointConfig, "/Config/aftergetfilename", string.Empty);
+            _afterGetFilename = IfExistsExtract(endpointConfig, "/Config/aftergetfilename", string.Empty);
 
-            this._sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", string.Empty);
+            _sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", string.Empty);
 
             // Proxy Settings
-            this._proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
-            this._proxyPort = ExtractInt(endpointConfig, "/Config/proxyport"); 
-            this._proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
-            this._proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
+            _proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
+            _proxyPort = ExtractInt(endpointConfig, "/Config/proxyport"); 
+            _proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
+            _proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
 
         }
         /// <summary>
@@ -358,16 +358,16 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             TraceMessage("[SftpReceiverEndpoint] ReadLocationConfiguration called");
 
-            this._ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
+            _ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
 
-            if (!String.IsNullOrEmpty(this._ssoApplication))
+            if (!String.IsNullOrEmpty(_ssoApplication))
             {
                 TraceMessage("[SftpReceiverEndpoint] SSO Authentication");
                 try
                 {
-                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(this._ssoApplication);
-                    this._sshUser = credentials.Username;
-                    this._sshPasswordProperty = credentials.Password;
+                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(_ssoApplication);
+                    _sshUser = credentials.Username;
+                    _sshPasswordProperty = credentials.Password;
                 }
                 catch (Exception e)
                 {
@@ -377,24 +377,24 @@ namespace Blogical.Shared.Adapters.Sftp
             else
             {
                 TraceMessage("[SftpReceiverEndpoint] Username/Password Authentication");
-                this._sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
-                this._sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
+                _sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
+                _sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
             }
 
-            this._sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
-            this._sshPort = ExtractInt(endpointConfig, "/Config/port");
-            this._sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
-            this._sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
+            _sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
+            _sshPort = ExtractInt(endpointConfig, "/Config/port");
+            _sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
+            _sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
    
-            this._sshFileMask = Extract(endpointConfig, "/Config/filemask", String.Empty);
-            this._sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
-            this._sshtrace = ExtractBool(endpointConfig, "/Config/trace");
-            this._notifyOnEmptyBatch = ExtractBool(endpointConfig, "/Config/notifyOnEmptyBatch");
-            this._sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
+            _sshFileMask = Extract(endpointConfig, "/Config/filemask", String.Empty);
+            _sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
+            _sshtrace = ExtractBool(endpointConfig, "/Config/trace");
+            _notifyOnEmptyBatch = ExtractBool(endpointConfig, "/Config/notifyOnEmptyBatch");
+            _sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
 
-            this._maximumnumberoffiles = ExtractInt(endpointConfig, "/Config/maximumnumberoffiles");
-            this._maximumbatchsize = ExtractInt(endpointConfig, "/Config/maximumbatchsize");
-            this._useLoadBalancing = ExtractBool(endpointConfig, "/Config/useLoadBalancing");
+            _maximumnumberoffiles = ExtractInt(endpointConfig, "/Config/maximumnumberoffiles");
+            _maximumbatchsize = ExtractInt(endpointConfig, "/Config/maximumbatchsize");
+            _useLoadBalancing = ExtractBool(endpointConfig, "/Config/useLoadBalancing");
            
             // create the schedule
             XmlDocument scheduleXml = new XmlDocument();
@@ -403,16 +403,16 @@ namespace Blogical.Shared.Adapters.Sftp
             switch (type)
             {
                 case ScheduleType.Daily:
-                    this._schedule = new DaySchedule(scheduleXml.OuterXml);
+                    _schedule = new DaySchedule(scheduleXml.OuterXml);
                     break;
                 case ScheduleType.Weekly:
-                    this._schedule = new WeekSchedule(scheduleXml.OuterXml);
+                    _schedule = new WeekSchedule(scheduleXml.OuterXml);
                     break;
                 case ScheduleType.Monthly:
-                    this._schedule = new MonthSchedule(scheduleXml.OuterXml);
+                    _schedule = new MonthSchedule(scheduleXml.OuterXml);
                     break;
                 default:
-                    this._schedule = new TimeSchedule(scheduleXml.OuterXml);
+                    _schedule = new TimeSchedule(scheduleXml.OuterXml);
                     break;
             }
 
@@ -424,28 +424,28 @@ namespace Blogical.Shared.Adapters.Sftp
             string afterget = IfExistsExtract(endpointConfig, "/Config/aftergetaction", string.Empty);
             if (afterget.Trim() == String.Empty)
             {
-                this._afterGet = AfterGetActions.DoNothing;
+                _afterGet = AfterGetActions.DoNothing;
             }
             else
             {
                 try
                 {
-                    this._afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
+                    _afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
                 }
                 catch (ArgumentException)
                 {
                     throw new Exception("You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
                 }
             }
-            this._afterGetFilename = IfExistsExtract(endpointConfig, "/Config/aftergetfilename", string.Empty);
+            _afterGetFilename = IfExistsExtract(endpointConfig, "/Config/aftergetfilename", string.Empty);
 
-            this._sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", string.Empty);
+            _sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", string.Empty);
 
             // Proxy Settings
-            this._proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
-            this._proxyPort = ExtractInt(endpointConfig, "/Config/proxyport");
-            this._proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
-            this._proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
+            _proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
+            _proxyPort = ExtractInt(endpointConfig, "/Config/proxyport");
+            _proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
+            _proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
         }
 
         /// <summary>
@@ -463,7 +463,7 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Private Members
         private void TraceMessage(string message)
         {
-            if (this.DebugTrace)
+            if (DebugTrace)
                 Trace.WriteLine(message);
         }
         #endregion

@@ -42,12 +42,12 @@ namespace Blogical.Shared.Adapters.Common
         {
             lock (this)
             {
-                if (true == this.terminate)
+                if (true == terminate)
                 {
                     return false;
                 }
 
-                this.activityCount++;
+                activityCount++;
             }
             return true;
         }
@@ -57,11 +57,11 @@ namespace Blogical.Shared.Adapters.Common
         {
             lock (this)
             {
-                this.activityCount--;
+                activityCount--;
 
                 // Set the event only if Terminate() is called
-                if (this.activityCount == 0 && this.terminate)
-                    this.e.Set();
+                if (activityCount == 0 && terminate)
+                    e.Set();
             }
         }
 
@@ -72,14 +72,14 @@ namespace Blogical.Shared.Adapters.Common
 
             lock (this)
             {
-                this.terminate = true;
-                result = (this.activityCount == 0);
+                terminate = true;
+                result = (activityCount == 0);
             }
 
             // If activity count was not zero, wait for pending activities
             if (!result)
             {
-                this.e.WaitOne();
+                e.WaitOne();
             }
         }
 
@@ -89,14 +89,14 @@ namespace Blogical.Shared.Adapters.Common
             { 
                 lock (this)
                 {
-                    return this.terminate;
+                    return terminate;
                 }
             }
         }
 
         public void Dispose()
         {
-            ((IDisposable)this.e).Dispose();
+            ((IDisposable)e).Dispose();
         }
     }
 }

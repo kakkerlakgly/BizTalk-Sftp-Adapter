@@ -42,15 +42,15 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		{
 			if (null != context && null != context.Instance && null != provider) 
 			{
-				this.service = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
-				if (null != this.service) 
+				service = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
+				if (null != service) 
 				{
-					this.dialog = new ScheduleDialog();
+					dialog = new ScheduleDialog();
 					if (value != null)
-						this.dialog.ConfigXml.LoadXml((string)value);
-					if (this.service.ShowDialog(this.dialog) == DialogResult.OK)
+						dialog.ConfigXml.LoadXml((string)value);
+					if (service.ShowDialog(dialog) == DialogResult.OK)
 					{
-						value = this.dialog.ConfigXml.OuterXml;
+						value = dialog.ConfigXml.OuterXml;
 					}
 				}
 			}
@@ -58,16 +58,16 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void Exit(object sender, EventArgs e) 
 		{
-			if (null != this.service) 
+			if (null != service) 
 			{
-				this.service.CloseDropDown();
+				service.CloseDropDown();
 			}
 		}
 	}
     /// <summary>
     /// ...
     /// </summary>
-	public class ScheduleConverter : System.ComponentModel.StringConverter 
+	public class ScheduleConverter : StringConverter 
 	{
         /// <summary>
         /// Return false

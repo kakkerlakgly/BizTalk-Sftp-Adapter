@@ -79,35 +79,35 @@ namespace Blogical.Shared.Adapters.Common
             this.transportProxy = transportProxy;
             this.asyncTransmitter = asyncTransmitter;
             
-            this.messages = new List<IBaseMessage>();
+            messages = new List<IBaseMessage>();
 
             // this.worker = new WorkerDelegate(Worker);
         }
 
-        public string PropertyNamespace { get { return this.propertyNamespace; } }
+        public string PropertyNamespace { get { return propertyNamespace; } }
 
         // IBTTransmitterBatch
         public object BeginBatch (out int nMaxBatchSize)
         {
-            nMaxBatchSize = this.maxBatchSize;
+            nMaxBatchSize = maxBatchSize;
             return null;
         }
         // Just build a list of messages for this batch - return false means we are asynchronous
         public bool TransmitMessage (IBaseMessage message)
         {
-            this.messages.Add(message);
+            messages.Add(message);
             return false;
         }
         public void Clear ()
         {
-            this.messages.Clear();
+            messages.Clear();
         }
         public void Done (IBTDTCCommitConfirm commitConfirm)
         {
-            if (this.messages.Count == 0)
+            if (messages.Count == 0)
             {
                 Exception ex = new InvalidOperationException("Send adapter received an emtpy batch for transmission from BizTalk");
-                this.transportProxy.SetErrorInfo(ex);
+                transportProxy.SetErrorInfo(ex);
 
                 return;
             }
@@ -115,10 +115,10 @@ namespace Blogical.Shared.Adapters.Common
             //  The Enter/Leave is used to implement the Terminate call from BizTalk.
 
             //  Do an "Enter" for every message
-            int MessageCount = this.messages.Count;
+            int MessageCount = messages.Count;
             for (int i = 0; i < MessageCount; i++)
             {
-                if (!this.asyncTransmitter.Enter())
+                if (!asyncTransmitter.Enter())
                     throw new InvalidOperationException("Send adapter Enter call was false within Done. This is illegal and should never happen."); ;
             }
 
@@ -130,7 +130,7 @@ namespace Blogical.Shared.Adapters.Common
             {
                 //  If there was an error we had better do the "Leave" here
                 for (int i = 0; i < MessageCount; i++)
-                    this.asyncTransmitter.Leave();
+                    asyncTransmitter.Leave();
             }
         }
 
@@ -142,20 +142,20 @@ namespace Blogical.Shared.Adapters.Common
             //  If we sort into subbatches we will need a "Leave" for each otherwise do all the "Leaves" here
             //  In this code we have only one batch. If a sort into subbatches was added this number might change.
             int BatchCount = 1;
-            int MessageCount = this.messages.Count;
+            int MessageCount = messages.Count;
             int LeaveCount = MessageCount - BatchCount;
 
             for (int i = 0; i < LeaveCount; i++)
-                this.asyncTransmitter.Leave();
+                asyncTransmitter.Leave();
 
             bool needToLeave = true;
 
             try
             {
-                using (Batch batch = new TransmitResponseBatch(this.transportProxy, new TransmitResponseBatch.AllWorkDoneDelegate(AllWorkDone)))
+                using (Batch batch = new TransmitResponseBatch(transportProxy, new TransmitResponseBatch.AllWorkDoneDelegate(AllWorkDone)))
                 {
 
-                    foreach (IBaseMessage message in this.messages)
+                    foreach (IBaseMessage message in messages)
                     {
                         AsyncTransmitterEndpoint endpoint = null;
 
@@ -202,7 +202,7 @@ namespace Blogical.Shared.Adapters.Common
             {
                 //  We need to Leave from this thread because the Done call failed and so there won't be any callback happening
                 if (needToLeave)
-                    this.asyncTransmitter.Leave();
+                    asyncTransmitter.Leave();
             }
         }
 
@@ -228,7 +228,7 @@ namespace Blogical.Shared.Adapters.Common
 
         private void AllWorkDone ()
         {
-            this.asyncTransmitter.Leave();
+            asyncTransmitter.Leave();
         }
     }
 }

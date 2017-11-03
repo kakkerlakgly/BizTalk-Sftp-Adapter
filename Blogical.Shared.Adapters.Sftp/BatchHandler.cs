@@ -39,12 +39,12 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Constructor
         internal BatchHandler(ISftp sftp, string propertyNamespace, string transportType, IBTTransportProxy transportProxy, bool traceFlag, bool useLoadBalancing)
         {
-            this._sftp = sftp;
-            this._propertyNamespace = propertyNamespace;
-            this._transportType = transportType;
-            this._transportProxy = transportProxy;
-            this._traceFlag = traceFlag;
-            this._useLoadBalancing = useLoadBalancing;
+            _sftp = sftp;
+            _propertyNamespace = propertyNamespace;
+            _transportType = transportType;
+            _transportProxy = transportProxy;
+            _traceFlag = traceFlag;
+            _useLoadBalancing = useLoadBalancing;
         }
         #endregion
         #region Public Members
@@ -56,11 +56,11 @@ namespace Blogical.Shared.Adapters.Sftp
             if (Files == null || Files.Count == 0)
                 return;
 
-            this._filesInProcess = filesInProcess;
+            _filesInProcess = filesInProcess;
 
             try
             {
-                using (SyncReceiveSubmitBatch batch = new SyncReceiveSubmitBatch(this._transportProxy, control, Files.Count))
+                using (SyncReceiveSubmitBatch batch = new SyncReceiveSubmitBatch(_transportProxy, control, Files.Count))
                 {
                     foreach (BatchMessage file in Files)
                     {
@@ -96,13 +96,13 @@ namespace Blogical.Shared.Adapters.Sftp
                 if (Files == null || Files.Count == 0)
                     return;
 
-                this._filesInProcess = filesInProcess;
+                _filesInProcess = filesInProcess;
 
                 TraceMessage(string.Format("[SftpReceiverEndpoint] SubmitFiles called. Submitting a batch of {0} files to BizTalk.", Files.Count));
 
                 // This class is used to track the files associated with this ReceiveBatch. The
                 // OnBatchComplete will be raised when BizTalk has consumed the message.
-                using (ReceiveBatch batch = new ReceiveBatch(this._transportProxy, control, this.OnBatchComplete, Files.Count))
+                using (ReceiveBatch batch = new ReceiveBatch(_transportProxy, control, OnBatchComplete, Files.Count))
                 {
                     foreach (BatchMessage file in Files)
                     {
@@ -139,12 +139,12 @@ namespace Blogical.Shared.Adapters.Sftp
                 TraceMessage("[SftpReceiverEndpoint] Reading file to stream " + fileName);
 
                 // Retrieves the message from sftp server.
-                stream = this._sftp.Get(fileName);
+                stream = _sftp.Get(fileName);
                 stream.Position = 0;
 
 
                 // Creates new message
-                IBaseMessageFactory messageFactory = this._transportProxy.GetMessageFactory();
+                IBaseMessageFactory messageFactory = _transportProxy.GetMessageFactory();
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = stream;
                 message = messageFactory.CreateMessage();
@@ -153,20 +153,20 @@ namespace Blogical.Shared.Adapters.Sftp
                 // Setting metadata
                 SystemMessageContext context = new SystemMessageContext(message.Context);
                 context.InboundTransportLocation = uri;
-                context.InboundTransportType = this._transportType;
+                context.InboundTransportType = _transportType;
 
                 // Write/Promote any adapter specific properties on the message context
-                message.Context.Write(REMOTEFILENAME, this._propertyNamespace, (object)fileName);
+                message.Context.Write(REMOTEFILENAME, _propertyNamespace, (object)fileName);
 
                 SetReceivedFileName(message, fileName);
 
                 message.Context.Write("ReceivedFileName", "http://schemas.microsoft.com/BizTalk/2003/" +
-                    this._transportType.ToLower() + "-properties", fileName);
+                    _transportType.ToLower() + "-properties", fileName);
 
                 message.Context.Write("ReceivedFileName", "http://schemas.microsoft.com/BizTalk/2003/file-properties", fileName);
 
                 // Add the file to the batch
-                this.Files.Add(new BatchMessage(message, fileName, BatchOperationType.Submit, afterGetAction, afterGetFilename));
+                Files.Add(new BatchMessage(message, fileName, BatchOperationType.Submit, afterGetAction, afterGetFilename));
 
                 // Greg Sharp: Let the caller set this as the file size may be stale
                 // Add the size of the file to the stream
@@ -179,8 +179,8 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 TraceMessage("[SftpReceiverEndpoint] Error Adding file [" + fileName + "]to batch. Error: " + ex.Message);
 
-                if (this._useLoadBalancing)
-                    DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), this._traceFlag);
+                if (_useLoadBalancing)
+                    DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), _traceFlag);
 
                 return null;
             }
@@ -211,7 +211,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
                 ReadOnlySeekableStream ross = new ReadOnlySeekableStream(ms);
 
-                IBaseMessageFactory messageFactory = this._transportProxy.GetMessageFactory();
+                IBaseMessageFactory messageFactory = _transportProxy.GetMessageFactory();
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = ross;
                 message = messageFactory.CreateMessage();
@@ -219,13 +219,13 @@ namespace Blogical.Shared.Adapters.Sftp
 
                 SystemMessageContext context = new SystemMessageContext(message.Context);
                 context.InboundTransportLocation = uri;
-                context.InboundTransportType = this._transportType;
+                context.InboundTransportType = _transportType;
 
                 //Write/Promote any adapter specific properties on the message context
-                message.Context.Write(REMOTEFILENAME, this._propertyNamespace, EMPTYBATCHFILENAME);
+                message.Context.Write(REMOTEFILENAME, _propertyNamespace, EMPTYBATCHFILENAME);
 
                 // Add the file to the batch
-                this.Files.Add(new BatchMessage(message, EMPTYBATCHFILENAME, BatchOperationType.Submit));
+                Files.Add(new BatchMessage(message, EMPTYBATCHFILENAME, BatchOperationType.Submit));
 
                 // Add the size of the file to the stream
                 message.BodyPart.Data.SetLength(ms.Length);
@@ -257,7 +257,7 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         private void TraceMessage(string message)
         {
-            if (this._traceFlag)
+            if (_traceFlag)
                 Trace.WriteLine(message);
         }
         #endregion
@@ -274,7 +274,7 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 if (overallStatus == true) //Batch completed
                 {
-                    lock (this._filesInProcess)
+                    lock (_filesInProcess)
                     {
 
                         //Delete the files
@@ -290,7 +290,7 @@ namespace Blogical.Shared.Adapters.Sftp
                                 if (fileName != EMPTYBATCHFILENAME)
                                 {
                                     if (batchMessage.AfterGetAction == SftpReceiveProperties.AfterGetActions.Delete)
-                                        this._sftp.Delete(fileName);
+                                        _sftp.Delete(fileName);
                                     // Greg Killins 2010/06/07 - originally the following line was simply an "else" and
                                     // and assumed the AfterGetAction would be "Rename".
                                     // I added the explicit check to see if it is "Rename" because now there is the
@@ -321,17 +321,17 @@ namespace Blogical.Shared.Adapters.Sftp
                                             renameFileName = renameFileName.Replace("%datetime%", dateTime);
                                         }
 
-                                        this._sftp.Rename(fileName, renameFileName);
+                                        _sftp.Rename(fileName, renameFileName);
                                     }
                                 }
 
                                 // Remove filename from _filesInProcess
-                                this._filesInProcess.Remove(fileName);
+                                _filesInProcess.Remove(fileName);
 
-                                if (this._useLoadBalancing)
+                                if (_useLoadBalancing)
                                 {
                                     string uri = batchMessage.Message.Context.Read(Constants.BizTalkSystemPropertyNames.INBOUNDTRANSPORTLOCATION, Constants.BIZTALK_SYSTEM_PROPERTIES_NAMESPACE).ToString();
-                                    DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), this._traceFlag);
+                                    DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), _traceFlag);
                                 }
                             }
                             catch (Exception ex)
@@ -341,7 +341,7 @@ namespace Blogical.Shared.Adapters.Sftp
                         }
                     }
                     if (BatchComplete != null)
-                        BatchComplete(this._sftp);
+                        BatchComplete(_sftp);
 
 
                     TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", overallStatus));
@@ -350,7 +350,7 @@ namespace Blogical.Shared.Adapters.Sftp
             catch (Exception e)
             {
                 Trace.WriteLine(string.Format("[SftpReceiverEndpoint] OnBatchComplete EXCEPTION!"));
-                this._filesInProcess.Remove(fileName);
+                _filesInProcess.Remove(fileName);
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(), e);
             }
             finally

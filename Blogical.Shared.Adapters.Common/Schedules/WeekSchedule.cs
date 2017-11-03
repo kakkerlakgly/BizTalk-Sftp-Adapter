@@ -21,7 +21,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public int Interval
         {
-            get { return this.interval; }
+            get { return interval; }
 
             set
             {
@@ -29,9 +29,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 {
                     throw (new ArgumentOutOfRangeException("interval", "Week interval must be between 1 and 52"));
                 }
-                if (value != Interlocked.Exchange(ref this.interval, value))
+                if (value != Interlocked.Exchange(ref interval, value))
                 {
-                    this.FireChangedEvent();
+                    FireChangedEvent();
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public ScheduleDay ScheduledDays
         {
-            get { return (ScheduleDay)this.days; }
+            get { return (ScheduleDay)days; }
 
             set
             {
@@ -49,9 +49,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 {
                     throw (new ArgumentOutOfRangeException("days", "Must specify the scheduled days"));
                 }
-                if (value != (ScheduleDay)Interlocked.Exchange(ref this.days, value))
+                if (value != (ScheduleDay)Interlocked.Exchange(ref days, value))
                 {
-                    this.FireChangedEvent();
+                    FireChangedEvent();
                 }
             }
         }
@@ -72,16 +72,16 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             XmlDocument configXml = new XmlDocument();
             configXml.LoadXml(configxml);
-            base.type = ExtractScheduleType(configXml);
-            if (base.type != ScheduleType.Weekly)
+            type = ExtractScheduleType(configXml);
+            if (type != ScheduleType.Weekly)
             {
                 throw (new ApplicationException("Invalid Configuration Type"));
             }
-            this.StartDate = ExtractDate(configXml, "/schedule/startdate", true);
-            this.StartTime = ExtractTime(configXml, "/schedule/starttime", true);
+            StartDate = ExtractDate(configXml, "/schedule/startdate", true);
+            StartTime = ExtractTime(configXml, "/schedule/starttime", true);
 
-            this.Interval = IfExistsExtractInt(configXml, "/schedule/interval", 1);
-            this.ScheduledDays = ExtractScheduleDay(configXml, "/schedule/days", true);
+            Interval = IfExistsExtractInt(configXml, "/schedule/interval", 1);
+            ScheduledDays = ExtractScheduleDay(configXml, "/schedule/days", true);
         }
 
         /// <summary>
@@ -90,23 +90,23 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <returns></returns>
         public override DateTime GetNextActivationTime()
         {
-            if (this.ScheduledDays == ScheduleDay.None)
+            if (ScheduledDays == ScheduleDay.None)
             {
                 throw (new ApplicationException("Uninitialized weekly schedule"));
             }
             DateTime now = DateTime.Now;
-            if (this.StartDate > now)
+            if (StartDate > now)
             {
-                now = new DateTime(this.StartDate.Year, this.StartDate.Month, this.StartDate.Day, 0, 0, 0);
+                now = new DateTime(StartDate.Year, StartDate.Month, StartDate.Day, 0, 0, 0);
             }
             //Interval set
             DateTime lastSunday = GetLastSunday(now);
-            DateTime firstSunday = GetLastSunday(this.StartDate);
+            DateTime firstSunday = GetLastSunday(StartDate);
             TimeSpan diff = lastSunday.Subtract(firstSunday);
             int daysAhead = diff.Days % (interval * 7);
             if (daysAhead == 0)
             {//possibly this week
-                if ((GetScheduleDayFlag(now) & this.ScheduledDays) > 0)
+                if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
                 {//possibly today
                     if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))
                     {
@@ -116,7 +116,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 while (now.DayOfWeek != DayOfWeek.Saturday)
                 {
                     now = now.AddDays(1);
-                    if ((GetScheduleDayFlag(now) & this.ScheduledDays) > 0)
+                    if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
                         return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);
                 }
             }
@@ -124,7 +124,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             DateTime nextWeek = lastSunday.AddDays((interval * 7) - daysAhead);
             while (nextWeek.DayOfWeek != DayOfWeek.Saturday)
             {
-                if ((GetScheduleDayFlag(nextWeek) & this.ScheduledDays) > 0)
+                if ((GetScheduleDayFlag(nextWeek) & ScheduledDays) > 0)
                     break;
                 nextWeek = nextWeek.AddDays(1);
             }

@@ -65,9 +65,9 @@ namespace Blogical.Shared.Adapters.Common
 		{
 			Trace.WriteLine(String.Format("Adapter.Adapter name: {0}", name));
 
-			this.transportProxy     = null;
-			this.handlerPropertyBag = null;
-			this.initialized        = false;
+			transportProxy     = null;
+			handlerPropertyBag = null;
+			initialized        = false;
 
 			this.name               = name;
 			this.version            = version;
@@ -96,20 +96,20 @@ namespace Blogical.Shared.Adapters.Common
             Trace.WriteLine("Adapter.Initialize");
 
 			//  this is a Singleton and this should only ever be called once
-			if (this.initialized)
+			if (initialized)
 				throw new AlreadyInitialized();				
 
 			this.transportProxy = transportProxy;
-			this.initialized = true;
+			initialized = true;
 		}
 		public virtual void Terminate ()
 		{
             Trace.WriteLine("Adapter.Terminate");
 
-			if (!this.initialized)
+			if (!initialized)
 				throw new NotInitialized();
 			
-			this.transportProxy = null;
+			transportProxy = null;
 		}
 
 		protected virtual void HandlerPropertyBagLoaded ()
@@ -118,13 +118,13 @@ namespace Blogical.Shared.Adapters.Common
 		}
 
 		// IPersistPropertyBag
-		public void GetClassID (out Guid classid) { classid = this.clsid; }
+		public void GetClassID (out Guid classid) { classid = clsid; }
 		public void InitNew () { }
 		public void Load (IPropertyBag pb, int pErrorLog)
 		{
             Trace.WriteLine("Adapter.Load");
             
-            this.handlerPropertyBag = pb;
+            handlerPropertyBag = pb;
 			HandlerPropertyBagLoaded();
 		}
 		public void Save (IPropertyBag pb, bool fClearDirty, bool fSaveAllProperties) { }

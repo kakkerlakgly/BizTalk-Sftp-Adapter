@@ -25,13 +25,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-                return this._interval;
+                return _interval;
 			}
 			set
 			{
-                if (value != Interlocked.Exchange(ref this._interval, value))
+                if (value != Interlocked.Exchange(ref _interval, value))
 				{
-					this.FireChangedEvent();
+					FireChangedEvent();
 				}
 			}
 		}
@@ -42,13 +42,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-                return (ScheduleTimeType)this._scheduleTime;
+                return (ScheduleTimeType)_scheduleTime;
 			}
 			set
 			{
-                if (value != (ScheduleTimeType)Interlocked.Exchange(ref this._scheduleTime, value))
+                if (value != (ScheduleTimeType)Interlocked.Exchange(ref _scheduleTime, value))
 				{
-					this.FireChangedEvent();
+					FireChangedEvent();
 				}
 			}
 		}
@@ -56,14 +56,14 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get 
             {
-                switch (this.ScheduleTime)
+                switch (ScheduleTime)
                 { 
                     case ScheduleTimeType.Hours:
-                        return this._interval * 3600;
+                        return _interval * 3600;
                     case ScheduleTimeType.Minutes:
-                        return this._interval*60;
+                        return _interval*60;
                     default:
-                        return this._interval;
+                        return _interval;
                 }
             }
         }
@@ -82,17 +82,17 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			XmlDocument configXml = new XmlDocument();
 			configXml.LoadXml(configxml);
-			base.type = ExtractScheduleType(configXml);
+			type = ExtractScheduleType(configXml);
 
-			if (base.type != ScheduleType.Timely)
+			if (type != ScheduleType.Timely)
 			{
 				throw (new ApplicationException("Invalid Configuration Type"));
 			}
-			this.StartDate = ExtractDate(configXml, "/schedule/startdate", true);
-			this.StartTime = ExtractTime(configXml, "/schedule/starttime", true);
+			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
+			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
 			
-			this._interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
-            this.ScheduleTime = ExtractScheduleTimeType(configXml, "/schedule/timeintervalltype", true);
+			_interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
+            ScheduleTime = ExtractScheduleTimeType(configXml, "/schedule/timeintervalltype", true);
 
             //if (this.Interval == 0)
             //{
@@ -106,12 +106,12 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		public override DateTime GetNextActivationTime()
 		{
             TraceMessage("[TimeSchedule]Executing GetNextActivationTime");
-            if (this.Interval == 0)
+            if (Interval == 0)
 			{
 				throw(new ApplicationException("Uninitialized timely schedule")); 
 			}
 
-            return DateTime.Now.AddSeconds(this.totalNumdebrOfSeconds);
+            return DateTime.Now.AddSeconds(totalNumdebrOfSeconds);
 
 		}
     }

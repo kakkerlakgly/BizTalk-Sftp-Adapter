@@ -23,7 +23,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         /// <param name="memStream"></param>
         /// <param name="destination">ssh destination path eg. /home/username/afile.txt</param>
-        void Put(System.IO.Stream memStream, string destination);
+        void Put(Stream memStream, string destination);
         /// <summary>
         /// Renameing or moving a file or files.
         /// </summary>
@@ -96,8 +96,8 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="size"></param>
         public FileEntry(string fileName, long size)
         {
-            this.FileName = fileName;
-            this.Size = size;
+            FileName = fileName;
+            Size = size;
         }
         /// <summary>
         /// Name of file. eg Afile.txt

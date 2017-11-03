@@ -40,7 +40,7 @@ namespace Blogical.Shared.Adapters.Common
     /// async batch callback to a series of virtual function calls - all parameterized with the correct
     /// assocaited message object. Derived classes can then decide what they want to do in each case.
     /// </summary>
-    public class Batch : IBTBatchCallBack, System.IDisposable
+    public class Batch : IBTBatchCallBack, IDisposable
     {
         class BatchMessage
         {
@@ -63,17 +63,17 @@ namespace Blogical.Shared.Adapters.Common
 
         public virtual bool OverallSuccess
         {
-            get { return (this.hrStatus >= 0); }    
+            get { return (hrStatus >= 0); }    
         }
 
         public Int32 HRStatus
         {
-            get { return this.hrStatus; }
+            get { return hrStatus; }
         }
 
 
         // IBTBatchCallBack
-        public void BatchComplete (Int32 hrStatus, Int16 nOpCount, BTBatchOperationStatus[] pOperationStatus, System.Object vCallbackCookie)
+        public void BatchComplete (Int32 hrStatus, Int16 nOpCount, BTBatchOperationStatus[] pOperationStatus, Object vCallbackCookie)
         {
             //BT.Trace.Tracer.TraceMessage(BT.TraceLevel.SegmentLifeTime, "CoreAdapter: Entering Batch.BatchComplete");
     
@@ -87,7 +87,7 @@ namespace Blogical.Shared.Adapters.Common
             StartBatchComplete(hrStatus);
 
             //  nothing at all failed in this batch so we are done
-            if (hrStatus < 0 || this.makeSuccessCall)
+            if (hrStatus < 0 || makeSuccessCall)
             {
                 //BT.Trace.Tracer.TraceMessage(BT.TraceLevel.Info, "CoreAdapter: Batch.BatchComplete (hrStatus < 0 || this.makeSuccessCall)");
 
@@ -96,7 +96,7 @@ namespace Blogical.Shared.Adapters.Common
                 foreach (BTBatchOperationStatus status in pOperationStatus)
                 {
                     //  is this the correct behavior?
-                    if (status.Status >= 0 && !this.makeSuccessCall)
+                    if (status.Status >= 0 && !makeSuccessCall)
                         continue;
 
                     switch (status.OperationType)
@@ -108,16 +108,16 @@ namespace Blogical.Shared.Adapters.Common
                                 BatchMessage batchMessage = null;
                                 if (submitIsForSubmitResponse)
                                 {
-                                    batchMessage = (BatchMessage)this.submitResponseMessageArray[i];
+                                    batchMessage = (BatchMessage)submitResponseMessageArray[i];
                                 }
                                 else
                                 {
-                                    batchMessage = (BatchMessage)this.submitArray[i];
+                                    batchMessage = (BatchMessage)submitArray[i];
                                 }
 
                                 if (status.MessageStatus[i] < 0)
                                     SubmitFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     SubmitSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -126,10 +126,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.deleteArray[i];
+                                BatchMessage batchMessage = (BatchMessage)deleteArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     DeleteFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     DeleteSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -138,10 +138,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.resubmitArray[i];
+                                BatchMessage batchMessage = (BatchMessage)resubmitArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     ResubmitFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     ResubmitSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -150,10 +150,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.moveToSuspendQArray[i];
+                                BatchMessage batchMessage = (BatchMessage)moveToSuspendQArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     MoveToSuspendQFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     MoveToSuspendQSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -162,10 +162,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.moveToNextTransportArray[i];
+                                BatchMessage batchMessage = (BatchMessage)moveToNextTransportArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     MoveToNextTransportFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     MoveToNextTransportSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -174,10 +174,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.submitRequestArray[i];
+                                BatchMessage batchMessage = (BatchMessage)submitRequestArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     SubmitRequestFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     SubmitRequestSuccess(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -186,10 +186,10 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)this.cancelResponseMessageArray[i];
+                                BatchMessage batchMessage = (BatchMessage)cancelResponseMessageArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     CancelResponseMessageFailure(batchMessage.correlationToken, status.MessageStatus[i], batchMessage.userData);
-                                else if (this.makeSuccessCall)
+                                else if (makeSuccessCall)
                                     CancelResponseMessageSuccess(batchMessage.correlationToken, status.MessageStatus[i], batchMessage.userData);
                             }
                             break;
@@ -229,9 +229,9 @@ namespace Blogical.Shared.Adapters.Common
 
         public Batch (IBTTransportProxy transportProxy, bool makeSuccessCall)
         {
-            this.hrStatus = -1;
+            hrStatus = -1;
             this.transportProxy = transportProxy;
-            this.transportBatch = this.transportProxy.GetBatch(this, null);
+            transportBatch = this.transportProxy.GetBatch(this, null);
             this.makeSuccessCall = makeSuccessCall;
         }
 
@@ -251,70 +251,70 @@ namespace Blogical.Shared.Adapters.Common
                 throw new InvalidOperationException("Cannot submit empty body or body with non-seekable stream");
             }
 
-            this.transportBatch.SubmitMessage(message);
-            if (null == this.submitArray)
-                this.submitArray = new List<BatchMessage>();
-            this.submitArray.Add(new BatchMessage(message, userData));
+            transportBatch.SubmitMessage(message);
+            if (null == submitArray)
+                submitArray = new List<BatchMessage>();
+            submitArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
         }
 
         public void DeleteMessage (IBaseMessage message, object userData)                   
         { 
-            this.transportBatch.DeleteMessage(message);
-            if (null == this.deleteArray)
-                this.deleteArray = new List<BatchMessage>();
-            this.deleteArray.Add(new BatchMessage(message, userData));
+            transportBatch.DeleteMessage(message);
+            if (null == deleteArray)
+                deleteArray = new List<BatchMessage>();
+            deleteArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
         }
 
         public void Resubmit (IBaseMessage message, DateTime t, object userData)                
         {
-            this.transportBatch.Resubmit(message, t);
-            if (null == this.resubmitArray)
-                this.resubmitArray = new List<BatchMessage>();
-            this.resubmitArray.Add(new BatchMessage(message, userData));
+            transportBatch.Resubmit(message, t);
+            if (null == resubmitArray)
+                resubmitArray = new List<BatchMessage>();
+            resubmitArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
         }
 
         public void MoveToSuspendQ (IBaseMessage message, object userData)           
         {
-            this.transportBatch.MoveToSuspendQ(message);
-            if (null == this.moveToSuspendQArray)
-                this.moveToSuspendQArray = new List<BatchMessage>();
-            this.moveToSuspendQArray.Add(new BatchMessage(message, userData));
+            transportBatch.MoveToSuspendQ(message);
+            if (null == moveToSuspendQArray)
+                moveToSuspendQArray = new List<BatchMessage>();
+            moveToSuspendQArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
         }
 
         public void MoveToNextTransport (IBaseMessage message, object userData)      
         {
-            this.transportBatch.MoveToNextTransport(message);
-            if (null == this.moveToNextTransportArray)
-                this.moveToNextTransportArray = new List<BatchMessage>();
-            this.moveToNextTransportArray.Add(new BatchMessage(message, userData));
+            transportBatch.MoveToNextTransport(message);
+            if (null == moveToNextTransportArray)
+                moveToNextTransportArray = new List<BatchMessage>();
+            moveToNextTransportArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
         }
 
         public void SubmitRequestMessage (IBaseMessage requestMsg, string correlationToken, bool firstResponseOnly, DateTime expirationTime, IBTTransmitter responseCallback, object userData)            
         {
-            this.transportBatch.SubmitRequestMessage(requestMsg, correlationToken, firstResponseOnly, expirationTime, responseCallback);
-            if (null == this.submitRequestArray)
-                this.submitRequestArray = new List<BatchMessage>();
-            this.submitRequestArray.Add(new BatchMessage(requestMsg, userData));
+            transportBatch.SubmitRequestMessage(requestMsg, correlationToken, firstResponseOnly, expirationTime, responseCallback);
+            if (null == submitRequestArray)
+                submitRequestArray = new List<BatchMessage>();
+            submitRequestArray.Add(new BatchMessage(requestMsg, userData));
 
             workToBeDone = true;
         }
 
         public void CancelResponseMessage (string correlationToken, object userData) 
         {
-            this.transportBatch.CancelResponseMessage(correlationToken);
-            if (null == this.cancelResponseMessageArray)
-                this.cancelResponseMessageArray = new List<BatchMessage>();
-            this.cancelResponseMessageArray.Add(new BatchMessage(correlationToken, userData));
+            transportBatch.CancelResponseMessage(correlationToken);
+            if (null == cancelResponseMessageArray)
+                cancelResponseMessageArray = new List<BatchMessage>();
+            cancelResponseMessageArray.Add(new BatchMessage(correlationToken, userData));
 
             workToBeDone = true;
         }
@@ -324,10 +324,10 @@ namespace Blogical.Shared.Adapters.Common
             if (submitArray != null)
                 throw new InvalidOperationException("SubmitResponseMessage and SubmitMessage operations cannot be in the same batch");
 
-            this.transportBatch.SubmitResponseMessage(solicitDocSent, responseDocToSubmit);
-            if (null == this.submitResponseMessageArray)
-                this.submitResponseMessageArray = new List<BatchMessage>();
-            this.submitResponseMessageArray.Add(new BatchMessage(responseDocToSubmit, userData));
+            transportBatch.SubmitResponseMessage(solicitDocSent, responseDocToSubmit);
+            if (null == submitResponseMessageArray)
+                submitResponseMessageArray = new List<BatchMessage>();
+            submitResponseMessageArray.Add(new BatchMessage(responseDocToSubmit, userData));
 
             workToBeDone = true;
             submitIsForSubmitResponse = true;
@@ -377,7 +377,7 @@ namespace Blogical.Shared.Adapters.Common
             {
                 if (workToBeDone)
                 {
-                    IBTDTCCommitConfirm commitConfirm = this.transportBatch.Done(transaction);
+                    IBTDTCCommitConfirm commitConfirm = transportBatch.Done(transaction);
                     return commitConfirm;
                 }
                 else
@@ -385,19 +385,19 @@ namespace Blogical.Shared.Adapters.Common
                     // This condition should never occur on the production box 
                     // (unless there is a product bug). So, this string need not be localized
                     Exception ex = new InvalidOperationException("Adapter is trying to submit an empty batch to EPM. Source = " + 
-                                    this.GetType().ToString());
-                    this.transportProxy.SetErrorInfo(ex);
+                                    GetType().ToString());
+                    transportProxy.SetErrorInfo(ex);
                     throw ex;
                 }
             }
             finally
             {
                 //  undo cyclical reference through COM
-                if (Marshal.IsComObject(this.transportBatch))
+                if (Marshal.IsComObject(transportBatch))
                 {
-                    Marshal.FinalReleaseComObject(this.transportBatch);
-                    GC.SuppressFinalize(this.transportBatch);
-                    this.transportBatch = null;
+                    Marshal.FinalReleaseComObject(transportBatch);
+                    GC.SuppressFinalize(transportBatch);
+                    transportBatch = null;
                 }
 
                 //BT.Trace.Tracer.TraceMessage(BT.TraceLevel.SegmentLifeTime, "CoreAdapter: Leaving Batch.Done");
@@ -411,13 +411,13 @@ namespace Blogical.Shared.Adapters.Common
 
         public virtual void Dispose()
         {
-            if (this.transportBatch != null)
+            if (transportBatch != null)
             {
-                if (Marshal.IsComObject(this.transportBatch))
+                if (Marshal.IsComObject(transportBatch))
                 {
-                    Marshal.FinalReleaseComObject(this.transportBatch);
-                    GC.SuppressFinalize(this.transportBatch);
-                    this.transportBatch = null;
+                    Marshal.FinalReleaseComObject(transportBatch);
+                    GC.SuppressFinalize(transportBatch);
+                    transportBatch = null;
                 }
             }
         }

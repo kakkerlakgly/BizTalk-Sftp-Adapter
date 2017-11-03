@@ -60,49 +60,49 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public string SSHHost
         {
-            get { return this._sshHost; }
+            get { return _sshHost; }
         }
         /// <summary>
         /// The password for SSH password-based authentication
         /// </summary>
         public string SSHPasswordProperty
         {
-            get { return this._sshPasswordProperty; }
+            get { return _sshPasswordProperty; }
         }
         /// <summary>
         /// The port in the SSH server where the SSH service is running; by default 22.
         /// </summary>
         public int SSHPort
         {
-            get { return this._sshPort; }
+            get { return _sshPort; }
         }
         /// <summary>
         /// The username for SSH authentication.
         /// </summary>
         public string SSHUser
         {
-            get { return this._sshUser; }
+            get { return _sshUser; }
         }
         /// <summary>
         /// The certificate to use for client authentication during the SSH handshake.
         /// </summary>
         public string SSHIdentityFile
         {
-            get { return this._sshIdentityFile; }
+            get { return _sshIdentityFile; }
         }
         /// <summary>
         /// The certificate to use for client authentication during the SSH handshake.
         /// </summary>
         public string SSHIdentityThumbprint
         {
-            get { return this._sshIdentityThumbprint; }
+            get { return _sshIdentityThumbprint; }
         }
         /// <summary>
         /// The Single Sign On (SSO) Affiliate Application
         /// </summary>
         public string SSOApplication
         {
-            get { return this._ssoApplication; }
+            get { return _ssoApplication; }
         }
         /// <summary>
         /// The current path to the SFTP server
@@ -111,10 +111,10 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             get
             {
-                if (this._sshRemotePath.EndsWith("/"))
-                    return this._sshRemotePath;
+                if (_sshRemotePath.EndsWith("/"))
+                    return _sshRemotePath;
                 else
-                    return this._sshRemotePath + "/";
+                    return _sshRemotePath + "/";
             }
         }
         /// <summary>
@@ -124,12 +124,12 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             get
             {
-                if (this._sshRemoteTempDir.Length == 0)
-                    return this._sshRemoteTempDir;
-                else if (this._sshRemoteTempDir.EndsWith("/"))
-                    return this._sshRemoteTempDir;
+                if (_sshRemoteTempDir.Length == 0)
+                    return _sshRemoteTempDir;
+                else if (_sshRemoteTempDir.EndsWith("/"))
+                    return _sshRemoteTempDir;
                 else
-                    return this._sshRemoteTempDir + "/";
+                    return _sshRemoteTempDir + "/";
             }
         }
         /// <summary>
@@ -137,21 +137,21 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public string RemoteFile
         {
-            get { return this._sshRemoteFile; }
+            get { return _sshRemoteFile; }
         }
         /// <summary>
         /// The number of errors before the adapter shuts down 
         /// </summary>
         public int ErrorThreshold
         {
-            get { return this._sshErrorThreshold; }
+            get { return _sshErrorThreshold; }
         }
         /// <summary>
         /// Writes a message to the trace listeners
         /// </summary>
         public bool DebugTrace
         {
-            get { return this._sshtrace; }
+            get { return _sshtrace; }
         }
         /// <summary>
         /// Uri
@@ -160,7 +160,7 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             get
             {
-                return CommonFunctions.CombinePath("SFTP://" + this.SSHHost + ":" + this.SSHPort, this.RemotePath, this.RemoteFile);
+                return CommonFunctions.CombinePath("SFTP://" + SSHHost + ":" + SSHPort, RemotePath, RemoteFile);
             }
         }
         /// <summary>
@@ -184,28 +184,28 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         public string ProxyHost
         {
-            get { return this._proxyHost; }
+            get { return _proxyHost; }
         }
         /// <summary>
         /// The port on which the HTTP proxy is running on; by default 80.
         /// </summary>
         public int ProxyPort
         {
-            get { return this._proxyPort; }
+            get { return _proxyPort; }
         }
         /// <summary>
         /// The username used for proxy authentication.
         /// </summary>
         public string ProxyUserName
         {
-            get { return this._proxyUsername; }
+            get { return _proxyUsername; }
         }
         /// <summary>
         /// The password used for proxy authentication.
         /// </summary>
         public string ProxyPassword
         {
-            get { return this._proxyPassword; }
+            get { return _proxyPassword; }
         }
 
 
@@ -251,11 +251,11 @@ namespace Blogical.Shared.Adapters.Sftp
                 locationConfigDom = new XmlDocument();
                 locationConfigDom.LoadXml(config);
 
-                this.ReadLocationConfiguration(locationConfigDom);
+                ReadLocationConfiguration(locationConfigDom);
             }
             else //  the config can be null all that means is that we are doing a dynamic send
             {
-                this.ReadLocationConfiguration(message.Context);
+                ReadLocationConfiguration(message.Context);
             }
         }
 
@@ -266,20 +266,20 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="endpointConfig"></param>
         public void ReadLocationConfiguration(XmlDocument endpointConfig)
         {
-            this._sshtrace = ExtractBool(endpointConfig, "/Config/trace");
+            _sshtrace = ExtractBool(endpointConfig, "/Config/trace");
 
             TraceMessage("[SftpTransmitProperties] ReadLocationConfiguration called");
 
-            this._ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
+            _ssoApplication = IfExistsExtract(endpointConfig, "/Config/ssoapplication", String.Empty);
 
-            if (!String.IsNullOrEmpty(this._ssoApplication))
+            if (!String.IsNullOrEmpty(_ssoApplication))
             {
                 TraceMessage("[SftpTransmitProperties] SSO Authentication");
                 try
                 {
-                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(this._ssoApplication);
-                    this._sshUser = credentials.Username;
-                    this._sshPasswordProperty = credentials.Password;
+                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(_ssoApplication);
+                    _sshUser = credentials.Username;
+                    _sshPasswordProperty = credentials.Password;
                 }
                 catch (Exception e)
                 {
@@ -290,33 +290,33 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 TraceMessage("[SftpTransmitProperties] Username/Password Authentication");
 
-                this._sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
-                this._sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
+                _sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
+                _sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
             }
 
             //this._sshUser = Extract(endpointConfig, "/Config/user", String.Empty);
             //this._sshPasswordProperty = IfExistsExtract(endpointConfig, "/Config/password", String.Empty);
 
-            this._sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
-            this._sshPort = ExtractInt(endpointConfig, "/Config/port");
-            this._sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
-            this._sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
+            _sshHost = Extract(endpointConfig, "/Config/host", String.Empty);
+            _sshPort = ExtractInt(endpointConfig, "/Config/port");
+            _sshIdentityFile = IfExistsExtract(endpointConfig, "/Config/identityfile", String.Empty);
+            _sshIdentityThumbprint = IfExistsExtract(endpointConfig, "/Config/identitythumbprint", String.Empty);
 
-            this._sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
-            this._sshRemoteTempDir = IfNotEmptyExtract(endpointConfig, "/Config/remotetempdir", false, String.Empty);
-            this._sshRemoteFile = Extract(endpointConfig, "/Config/remotefile", String.Empty);
-            this._sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
-            this._connectionLimit = ExtractInt(endpointConfig, "/Config/connectionlimit");
-            this._applySecurityPermissions = IfExistsExtract(endpointConfig, "/Config/applySecurityPermissions", String.Empty);
-            this._verifyFileSize = IfExistsExtractBool(endpointConfig, "/Config/verifyFileSize", false);
-            this._sshRemoteTempFile = IfExistsExtract(endpointConfig, "/Config/remotetempfile", String.Empty);
-            this._sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", String.Empty);
+            _sshRemotePath = Extract(endpointConfig, "/Config/remotepath", String.Empty);
+            _sshRemoteTempDir = IfNotEmptyExtract(endpointConfig, "/Config/remotetempdir", false, String.Empty);
+            _sshRemoteFile = Extract(endpointConfig, "/Config/remotefile", String.Empty);
+            _sshErrorThreshold = ExtractInt(endpointConfig, "/Config/errorThreshold");
+            _connectionLimit = ExtractInt(endpointConfig, "/Config/connectionlimit");
+            _applySecurityPermissions = IfExistsExtract(endpointConfig, "/Config/applySecurityPermissions", String.Empty);
+            _verifyFileSize = IfExistsExtractBool(endpointConfig, "/Config/verifyFileSize", false);
+            _sshRemoteTempFile = IfExistsExtract(endpointConfig, "/Config/remotetempfile", String.Empty);
+            _sshPassphrase = IfExistsExtract(endpointConfig, "/Config/passphrase", String.Empty);
 
             // Proxy Settings
-            this._proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
-            this._proxyPort = ExtractInt(endpointConfig, "/Config/proxyport");
-            this._proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
-            this._proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
+            _proxyHost = IfExistsExtract(endpointConfig, "/Config/proxyserver", String.Empty);
+            _proxyPort = ExtractInt(endpointConfig, "/Config/proxyport");
+            _proxyUsername = IfExistsExtract(endpointConfig, "/Config/proxyusername", String.Empty);
+            _proxyPassword = IfExistsExtract(endpointConfig, "/Config/proxypassword", String.Empty);
         }
 
         /// <summary>
@@ -327,20 +327,20 @@ namespace Blogical.Shared.Adapters.Sftp
         public void ReadLocationConfiguration(IBaseMessageContext context)
         {
             string propertyNS = "Blogical.Shared.Adapters.Sftp.TransmitLocation.v1";
-            this._sshtrace = (bool)Extract(context, "trace", propertyNS, false, false);
+            _sshtrace = (bool)Extract(context, "trace", propertyNS, false, false);
 
             TraceMessage("[SftpTransmitProperties] ReadLocationConfiguration called");
 
-            this._ssoApplication = (string)Extract(context, "ssoapplication", propertyNS, String.Empty, false);
+            _ssoApplication = (string)Extract(context, "ssoapplication", propertyNS, String.Empty, false);
 
-            if (!String.IsNullOrEmpty(this._ssoApplication))
+            if (!String.IsNullOrEmpty(_ssoApplication))
             {
                 TraceMessage("[SftpTransmitProperties] SSO Authentication");
                 try
                 {
-                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(this._ssoApplication);
-                    this._sshUser = credentials.Username;
-                    this._sshPasswordProperty = credentials.Password;
+                    SSOConfigHelper.Credentials credentials = SSOConfigHelper.GetCredentials(_ssoApplication);
+                    _sshUser = credentials.Username;
+                    _sshPasswordProperty = credentials.Password;
                 }
                 catch (Exception e)
                 {
@@ -350,31 +350,31 @@ namespace Blogical.Shared.Adapters.Sftp
             else
             {
                 TraceMessage("[SftpTransmitProperties] Username/Password Authentication");
-                this._sshUser = (string)Extract(context, "user", propertyNS, String.Empty, true);
-                this._sshPasswordProperty = (string)Extract(context, "password", propertyNS, String.Empty, false);
+                _sshUser = (string)Extract(context, "user", propertyNS, String.Empty, true);
+                _sshPasswordProperty = (string)Extract(context, "password", propertyNS, String.Empty, false);
             }
 
             // this._sshUser = (string)Extract(context, "user", propertyNS, String.Empty, true);
             // this._sshPasswordProperty = (string)Extract(context, "password", propertyNS, String.Empty, false);
 
-            this._sshHost = (string)Extract(context, "host", propertyNS, String.Empty, true);
-            this._sshPort = (int)Extract(context, "portno", propertyNS, 22, true);
-            this._sshIdentityFile = (string)Extract(context, "identityfile", propertyNS, String.Empty, false);
-            this._sshIdentityThumbprint = (string)Extract(context, "identitythumbprint", propertyNS, String.Empty, false);
-            this._sshRemotePath = (string)Extract(context, "remotepath", propertyNS, String.Empty, false);
-            this._sshRemoteTempDir = (string)Extract(context, "remotetempdir", propertyNS, String.Empty, false);
-            this._sshRemoteFile = (string)Extract(context, "remotefile", propertyNS, String.Empty, true);
-            this._connectionLimit = (int)Extract(context, "connectionlimit", propertyNS, 10, false);
-            this._applySecurityPermissions = (string)Extract(context, "applySecurityPermissions", propertyNS, String.Empty, false);
-            this._verifyFileSize = (bool)Extract(context, "verifyFileSize", propertyNS, false, false);
-            this._sshRemoteTempFile = (string)Extract(context, "remotetempfile", propertyNS, String.Empty, false);
-            this._sshPassphrase = (string)Extract(context, "passphrase", propertyNS, string.Empty, false);
+            _sshHost = (string)Extract(context, "host", propertyNS, String.Empty, true);
+            _sshPort = (int)Extract(context, "portno", propertyNS, 22, true);
+            _sshIdentityFile = (string)Extract(context, "identityfile", propertyNS, String.Empty, false);
+            _sshIdentityThumbprint = (string)Extract(context, "identitythumbprint", propertyNS, String.Empty, false);
+            _sshRemotePath = (string)Extract(context, "remotepath", propertyNS, String.Empty, false);
+            _sshRemoteTempDir = (string)Extract(context, "remotetempdir", propertyNS, String.Empty, false);
+            _sshRemoteFile = (string)Extract(context, "remotefile", propertyNS, String.Empty, true);
+            _connectionLimit = (int)Extract(context, "connectionlimit", propertyNS, 10, false);
+            _applySecurityPermissions = (string)Extract(context, "applySecurityPermissions", propertyNS, String.Empty, false);
+            _verifyFileSize = (bool)Extract(context, "verifyFileSize", propertyNS, false, false);
+            _sshRemoteTempFile = (string)Extract(context, "remotetempfile", propertyNS, String.Empty, false);
+            _sshPassphrase = (string)Extract(context, "passphrase", propertyNS, string.Empty, false);
 
             // Proxy Settings
-            this._proxyHost = (string)Extract(context, "proxyserver", propertyNS, string.Empty, false);
-            this._proxyPort = (int)Extract(context, "proxyport", propertyNS,80, false);
-            this._proxyUsername = (string)Extract(context, "proxyusername", propertyNS, string.Empty, false);
-            this._proxyPassword = (string)Extract(context, "proxypassword", propertyNS, string.Empty, false); 
+            _proxyHost = (string)Extract(context, "proxyserver", propertyNS, string.Empty, false);
+            _proxyPort = (int)Extract(context, "proxyport", propertyNS,80, false);
+            _proxyUsername = (string)Extract(context, "proxyusername", propertyNS, string.Empty, false);
+            _proxyPassword = (string)Extract(context, "proxypassword", propertyNS, string.Empty, false); 
         }
 
         /// <summary>
@@ -497,7 +497,7 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         private void TraceMessage(string message)
         {
-            if (this.DebugTrace)
+            if (DebugTrace)
                 Trace.WriteLine(message);
         }
         private object Extract(IBaseMessageContext context, string prop, string propNS, object fallback, bool isRequired)

@@ -34,8 +34,8 @@ namespace Blogical.Shared.Adapters.Sftp
         public SftpTransmitterEndpoint(AsyncTransmitter asyncTransmitter)
             : base(asyncTransmitter)
 		{
-			this._asyncTransmitter = asyncTransmitter;
-            this._connections = new List<ISftp>();
+			_asyncTransmitter = asyncTransmitter;
+            _connections = new List<ISftp>();
 
             Trace.WriteLine("[SftpTransmitterEndpoint] Created...");    
 		}
@@ -50,7 +50,7 @@ namespace Blogical.Shared.Adapters.Sftp
             IPropertyBag handlerPropertyBag, 
             string propertyNamespace)
         {
-            this._propertyNamespace = propertyNamespace;
+            _propertyNamespace = propertyNamespace;
         }
 		/// <summary>
         /// Implementation for AsyncTransmitterEndpoint::ProcessMessage
@@ -61,12 +61,12 @@ namespace Blogical.Shared.Adapters.Sftp
         public override IBaseMessage ProcessMessage(IBaseMessage message)
         {
             
-            this._properties = new SftpTransmitProperties(message, _propertyNamespace);
-            ISftp sftp = SftpConnectionPool.GetHostByName(this._properties).GetConnection(this._properties,this._shutdownRequested);
+            _properties = new SftpTransmitProperties(message, _propertyNamespace);
+            ISftp sftp = SftpConnectionPool.GetHostByName(_properties).GetConnection(_properties,_shutdownRequested);
 
             try
             {
-                if (!this._shutdownRequested)
+                if (!_shutdownRequested)
                 {
                     ProcessMessageInternal(message, sftp);
                 }
@@ -79,14 +79,14 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             finally
             {
-                SftpConnectionPool.GetHostByName(this._properties).ReleaseConnection(sftp);
+                SftpConnectionPool.GetHostByName(_properties).ReleaseConnection(sftp);
             }
             return null;
         }
 
         void sftp_OnDisconnect(ISftp sftp)
         {
-            SftpConnectionPool.GetHostByName(this._properties).ReleaseConnection(sftp);
+            SftpConnectionPool.GetHostByName(_properties).ReleaseConnection(sftp);
         }
         /// <summary>
         /// Executed on termination (Stop Host instance)
@@ -94,14 +94,14 @@ namespace Blogical.Shared.Adapters.Sftp
         public override void Dispose()
         {
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
-            this._shutdownRequested = true;
+            _shutdownRequested = true;
             int num = 0;
-            while ((this._connections.Count < this._currentCount) && (num < 100))
+            while ((_connections.Count < _currentCount) && (num < 100))
             {
                 num++;
                 Thread.Sleep(50);
             }
-            foreach (ISftp connection in this._connections)
+            foreach (ISftp connection in _connections)
             {
                 Trace.WriteLine("[SftpTransmitterEndpoint] Disconnecting...");
                 connection.Disconnect();
@@ -122,29 +122,29 @@ namespace Blogical.Shared.Adapters.Sftp
                 Stream source = message.BodyPart.Data;
                 source.Position = 0;
 
-                if (this._properties.RemoteTempFile.Trim().Length > 0) // Temp dir + Temp file
-                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(this._properties.RemoteTempDir, this._properties.RemoteTempFile));
-                else if (this._properties.RemoteTempDir.Trim().Length > 0) // Temp dir + file
-                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(this._properties.RemoteTempDir, this._properties.RemoteFile));
+                if (_properties.RemoteTempFile.Trim().Length > 0) // Temp dir + Temp file
+                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(_properties.RemoteTempDir, _properties.RemoteTempFile));
+                else if (_properties.RemoteTempDir.Trim().Length > 0) // Temp dir + file
+                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(_properties.RemoteTempDir, _properties.RemoteFile));
                 else // dir + file
-                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.RemoteFile));
+                    filePath = SftpTransmitProperties.CreateFileName(message, CommonFunctions.CombinePath(_properties.RemotePath, _properties.RemoteFile));
 
                 TraceMessage("[SftpTransmitterEndpoint] Sftp.Put " + filePath);
                 sftp.Put(source, filePath);
 
                 // If the RemoteTempDir is set then move the file to the RemotePath
-                if (this._properties.RemoteTempDir.Trim().Length > 0)
+                if (_properties.RemoteTempDir.Trim().Length > 0)
                 {
-                    if (this._properties.VerifyFileSize)
+                    if (_properties.VerifyFileSize)
                         VerifyFileSize(sftp, filePath, source.Length); // throws exception if sizes do not match
 
                     string toPath = SftpTransmitProperties.CreateFileName(message, 
-                        CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.RemoteFile));
+                        CommonFunctions.CombinePath(_properties.RemotePath, _properties.RemoteFile));
                     sftp.Rename(filePath, toPath);
-                    sftp.ApplySecurityPermissions(this._properties.ApplySecurityPermissions, toPath);
+                    sftp.ApplySecurityPermissions(_properties.ApplySecurityPermissions, toPath);
                 }
                 else
-                    sftp.ApplySecurityPermissions(this._properties.ApplySecurityPermissions, filePath);
+                    sftp.ApplySecurityPermissions(_properties.ApplySecurityPermissions, filePath);
                 
                 return null;
             }
@@ -159,7 +159,7 @@ namespace Blogical.Shared.Adapters.Sftp
 		}
         private void VerifyFileSize(ISftp sftp, string filePath, long expectedFileSize)
         {
-            FileEntry f = sftp.GetFileEntry(filePath, this._properties.DebugTrace);
+            FileEntry f = sftp.GetFileEntry(filePath, _properties.DebugTrace);
             if (f.Size != expectedFileSize)
             {
                 try
@@ -183,7 +183,7 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         private void TraceMessage(string message)
         {
-            if (this._properties.DebugTrace)
+            if (_properties.DebugTrace)
                 Trace.WriteLine(message);
         }
         /// <summary>
@@ -192,13 +192,13 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <returns></returns>
         private bool CheckErrorThreshold()
         {
-            this._errorCount++;
-            if ((0 != this._properties.ErrorThreshold) && (this._errorCount > this._properties.ErrorThreshold))
+            _errorCount++;
+            if ((0 != _properties.ErrorThreshold) && (_errorCount > _properties.ErrorThreshold))
             {
-                this._asyncTransmitter.Terminate();
+                _asyncTransmitter.Terminate();
 
                 ExceptionHandling.CreateEventLogMessage(
-                    String.Format("[SftpTransmitterEndpoint] Error threshold exceeded {0}. Port is shutting down.\nURI: {1}", this._properties.ErrorThreshold.ToString(), this._properties.Uri),
+                    String.Format("[SftpTransmitterEndpoint] Error threshold exceeded {0}. Port is shutting down.\nURI: {1}", _properties.ErrorThreshold.ToString(), _properties.Uri),
                     EventLogEventIDs.GeneralUnknownError,
                     0,
                     EventLogEntryType.Warning);

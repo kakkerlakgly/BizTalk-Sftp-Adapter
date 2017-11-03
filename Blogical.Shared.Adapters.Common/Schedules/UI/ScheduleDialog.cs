@@ -11,7 +11,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 	/// <summary>
 	/// ScheduleDialog: dialog for selecting schedule type and parameters
 	/// </summary>
-	public class ScheduleDialog : System.Windows.Forms.Form
+	public class ScheduleDialog : Form
 	{
 		private  XmlDocument configXml;
         /// <summary>
@@ -21,55 +21,55 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		{
 			get{return configXml;}
 		}
-		private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.Button cancelButton;
-		private System.Windows.Forms.DateTimePicker dateStart;
-		private System.Windows.Forms.Label labelStartDate;
-		private System.Windows.Forms.Label labelStartTime;
-		private System.Windows.Forms.DateTimePicker timeStart;
-		private System.Windows.Forms.RadioButton radioDayInterval;
-		private System.Windows.Forms.Label labelDays;
-		private System.Windows.Forms.RadioButton radioSelectDays;
-		private System.Windows.Forms.Label labelweeks;
-		private System.Windows.Forms.Label labelEvery;
-		private System.Windows.Forms.RadioButton radioDayofMonth;
-		private System.Windows.Forms.NumericUpDown dayofmonth;
-		private System.Windows.Forms.RadioButton radioOrdinal;
-		private System.Windows.Forms.ComboBox ordinalDropDown;
-		private System.Windows.Forms.ComboBox weekdayDropDown;
-		private System.Windows.Forms.CheckBox monthDecember;
-		private System.Windows.Forms.CheckBox monthNovember;
-		private System.Windows.Forms.CheckBox monthOctober;
-		private System.Windows.Forms.CheckBox monthSeptember;
-		private System.Windows.Forms.CheckBox monthAugust;
-		private System.Windows.Forms.CheckBox monthJuly;
-		private System.Windows.Forms.CheckBox monthJune;
-		private System.Windows.Forms.CheckBox monthMay;
-		private System.Windows.Forms.CheckBox monthApril;
-		private System.Windows.Forms.CheckBox monthMarch;
-		private System.Windows.Forms.CheckBox monthFebruary;
-		private System.Windows.Forms.CheckBox monthJanuary;
-		private System.Windows.Forms.CheckBox weekSaturday;
-		private System.Windows.Forms.CheckBox weekFriday;
-		private System.Windows.Forms.CheckBox weekThursday;
-		private System.Windows.Forms.CheckBox weekWednesday;
-		private System.Windows.Forms.CheckBox weekTuesday;
-		private System.Windows.Forms.CheckBox weekMonday;
-		private System.Windows.Forms.CheckBox weekSunday;
-		private System.Windows.Forms.Label labelSelectDays;
-		private System.Windows.Forms.NumericUpDown weekInterval;
-		private System.Windows.Forms.CheckBox daySaturday;
-		private System.Windows.Forms.CheckBox dayFriday;
-		private System.Windows.Forms.CheckBox dayThursday;
-		private System.Windows.Forms.CheckBox dayWednesday;
-		private System.Windows.Forms.CheckBox dayTuesday;
-		private System.Windows.Forms.CheckBox dayMonday;
-		private System.Windows.Forms.CheckBox daySunday;
-		private System.Windows.Forms.NumericUpDown dayInterval;
-		private System.Windows.Forms.TabControl tabPages;
-		private System.Windows.Forms.TabPage tabDaily;
-		private System.Windows.Forms.TabPage tabWeekly;
-		private System.Windows.Forms.TabPage tabMonthly;
+		private Button okButton;
+		private Button cancelButton;
+		private DateTimePicker dateStart;
+		private Label labelStartDate;
+		private Label labelStartTime;
+		private DateTimePicker timeStart;
+		private RadioButton radioDayInterval;
+		private Label labelDays;
+		private RadioButton radioSelectDays;
+		private Label labelweeks;
+		private Label labelEvery;
+		private RadioButton radioDayofMonth;
+		private NumericUpDown dayofmonth;
+		private RadioButton radioOrdinal;
+		private ComboBox ordinalDropDown;
+		private ComboBox weekdayDropDown;
+		private CheckBox monthDecember;
+		private CheckBox monthNovember;
+		private CheckBox monthOctober;
+		private CheckBox monthSeptember;
+		private CheckBox monthAugust;
+		private CheckBox monthJuly;
+		private CheckBox monthJune;
+		private CheckBox monthMay;
+		private CheckBox monthApril;
+		private CheckBox monthMarch;
+		private CheckBox monthFebruary;
+		private CheckBox monthJanuary;
+		private CheckBox weekSaturday;
+		private CheckBox weekFriday;
+		private CheckBox weekThursday;
+		private CheckBox weekWednesday;
+		private CheckBox weekTuesday;
+		private CheckBox weekMonday;
+		private CheckBox weekSunday;
+		private Label labelSelectDays;
+		private NumericUpDown weekInterval;
+		private CheckBox daySaturday;
+		private CheckBox dayFriday;
+		private CheckBox dayThursday;
+		private CheckBox dayWednesday;
+		private CheckBox dayTuesday;
+		private CheckBox dayMonday;
+		private CheckBox daySunday;
+		private NumericUpDown dayInterval;
+		private TabControl tabPages;
+		private TabPage tabDaily;
+		private TabPage tabWeekly;
+		private TabPage tabMonthly;
         private TabPage tabTimely;
         private Label label1;
         private ComboBox timeType;
@@ -77,7 +77,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components = null;
         /// <summary>
         /// Constructor
         /// </summary>
@@ -91,12 +91,12 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			configXml = new XmlDocument();
 			
 			//default
-			this.tabPages.SelectedTab = this.tabDaily;
-			this.radioDayofMonth.Checked = true;
-			this.radioDayInterval.Checked = true;
+			tabPages.SelectedTab = tabDaily;
+			radioDayofMonth.Checked = true;
+			radioDayInterval.Checked = true;
 			DateTime now =   DateTime.Now;
-			this.dateStart.Value = now;
-			this.timeStart.Value = new DateTime(now.Year, now.Month, now.Day, 0,0,0);
+			dateStart.Value = now;
+			timeStart.Value = new DateTime(now.Year, now.Month, now.Day, 0,0,0);
 		}
 
 		/// <summary>
@@ -771,27 +771,27 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		//
 		// Load ConfigXml into controls
 		//
-		private void ScheduleDialog_Load(object sender, System.EventArgs e)
+		private void ScheduleDialog_Load(object sender, EventArgs e)
 		{
 			if (configXml.ChildNodes.Count > 0)
 			{
 				ScheduleType scheduleType = Schedule.IfExistsExtractScheduleType(configXml);
-				this.dateStart.Value = Schedule.IfExistsExtractDate(configXml, "/schedule/startdate", DateTime.Now);
-				this.timeStart.Value = Schedule.IfExistsExtractTime(configXml, "/schedule/starttime", DateTime.Now);
+				dateStart.Value = Schedule.IfExistsExtractDate(configXml, "/schedule/startdate", DateTime.Now);
+				timeStart.Value = Schedule.IfExistsExtractTime(configXml, "/schedule/starttime", DateTime.Now);
 
 				switch(scheduleType)
 				{
 					case ScheduleType.Daily:
-						this.LoadDailySchedule();
+						LoadDailySchedule();
 						break;
 					case ScheduleType.Weekly:
-						this.LoadWeeklySchedule();
+						LoadWeeklySchedule();
 						break;
 					case ScheduleType.Monthly:
-						this.LoadMonthlySchedule();
+						LoadMonthlySchedule();
 						break;
                     case ScheduleType.Timely:
-                        this.LoadTimelySchedule();
+                        LoadTimelySchedule();
                         break;
 					default:
 						configXml = new XmlDocument();
@@ -801,9 +801,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void LoadDailySchedule()
 		{
-			this.tabPages.SelectedTab = this.tabDaily;
-			this.dayInterval.Value =Convert.ToDecimal( Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 0));
-			if (this.dayInterval.Value == 0)
+			tabPages.SelectedTab = tabDaily;
+			dayInterval.Value =Convert.ToDecimal( Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 0));
+			if (dayInterval.Value == 0)
 			{
 				ScheduleDay days = Schedule.ExtractScheduleDay(configXml, "/schedule/days", false);
 				if ((days & ScheduleDay.Sunday) > 0) daySunday.Checked = true;
@@ -822,8 +822,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void LoadWeeklySchedule()
 		{
-			this.tabPages.SelectedTab = this.tabWeekly;
-			this.weekInterval.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 1));
+			tabPages.SelectedTab = tabWeekly;
+			weekInterval.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 1));
 			ScheduleDay days = Schedule.ExtractScheduleDay(configXml, "/schedule/days", false);
 			if ((days & ScheduleDay.Sunday) > 0) weekSunday.Checked = true;
 			if ((days & ScheduleDay.Monday) > 0) weekMonday.Checked = true;
@@ -835,18 +835,18 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void LoadMonthlySchedule()
 		{
-			this.tabPages.SelectedTab = this.tabMonthly;
-			this.dayofmonth.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/dayofmonth", 0));
-			if (this.dayofmonth.Value == 0)
+			tabPages.SelectedTab = tabMonthly;
+			dayofmonth.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/dayofmonth", 0));
+			if (dayofmonth.Value == 0)
 			{
 				ScheduleOrdinal ordinal = Schedule.ExtractScheduleOrdinal(configXml, "/schedule/ordinal", false);
-				int index = this.ordinalDropDown.Items.IndexOf(ordinal.ToString());
-				this.ordinalDropDown.SelectedIndex = index;
+				int index = ordinalDropDown.Items.IndexOf(ordinal.ToString());
+				ordinalDropDown.SelectedIndex = index;
 				ScheduleDay weekDay = Schedule.ExtractScheduleDay(configXml, "/schedule/weekday", false);
 				string strWeekday = weekDay.ToString();
 				if (strWeekday == "All"){strWeekday = "Day";}
-				index = this.weekdayDropDown.Items.IndexOf(strWeekday);
-				this.weekdayDropDown.SelectedIndex = index;
+				index = weekdayDropDown.Items.IndexOf(strWeekday);
+				weekdayDropDown.SelectedIndex = index;
 				radioDayofMonth.Checked = false;
 			}
 			else
@@ -868,8 +868,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
         private void LoadTimelySchedule()
         {
-            this.tabPages.SelectedTab = this.tabTimely;
-            this.timeInterval.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 0));
+            tabPages.SelectedTab = tabTimely;
+            timeInterval.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/interval", 0));
 
             ScheduleTimeType scheduleTimeType = Schedule.ExtractScheduleTimeType(configXml, "/schedule/timeintervalltype", false);
 
@@ -885,7 +885,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		//
 		// Unload controls into ConfigXml
 		//
-		private void ScheduleDialog_UnLoad(object sender, System.EventArgs e)
+		private void ScheduleDialog_UnLoad(object sender, EventArgs e)
 		{
 			configXml = new XmlDocument();
 			XmlNode root = configXml.CreateNode("element", "schedule", "");
@@ -897,19 +897,19 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			root.AppendChild(starttime);
 			configXml.AppendChild(root);
 			
-			switch(this.tabPages.SelectedTab.Text)
+			switch(tabPages.SelectedTab.Text)
 			{
 				case "Daily":
-					this.UnloadDailySchedule();
+					UnloadDailySchedule();
 					break;
 				case "Weekly":
-					this.UnloadWeeklySchedule();
+					UnloadWeeklySchedule();
 					break;
 				case "Monthly":
-					this.UnloadMonthlySchedule();
+					UnloadMonthlySchedule();
 					break;
                 case "Timely":
-                    this.UnloadTimelySchedule();
+                    UnloadTimelySchedule();
                     break;
 				default:
 					break;
@@ -920,7 +920,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			configXml.DocumentElement.SetAttribute("type", "", "Daily");
 			if (radioDayInterval.Checked)
 			{
-				if (this.dayInterval.Value == 0)
+				if (dayInterval.Value == 0)
 				{
 					throw(new ApplicationException("Must select a daily interval"));
 				}
@@ -931,13 +931,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			else
 			{
 				ScheduleDay result = ScheduleDay.None;
-				if (this.daySunday.Checked) {result = result | ScheduleDay.Sunday;}
-				if (this.dayMonday.Checked) {result = result | ScheduleDay.Monday;}
-				if (this.dayTuesday.Checked) {result = result | ScheduleDay.Tuesday;}
-				if (this.dayWednesday.Checked) {result = result | ScheduleDay.Wednesday;}
-				if (this.dayThursday.Checked) {result = result | ScheduleDay.Thursday;}
-				if (this.dayFriday.Checked) {result = result | ScheduleDay.Friday;}
-				if (this.daySaturday.Checked) {result = result | ScheduleDay.Saturday;}
+				if (daySunday.Checked) {result = result | ScheduleDay.Sunday;}
+				if (dayMonday.Checked) {result = result | ScheduleDay.Monday;}
+				if (dayTuesday.Checked) {result = result | ScheduleDay.Tuesday;}
+				if (dayWednesday.Checked) {result = result | ScheduleDay.Wednesday;}
+				if (dayThursday.Checked) {result = result | ScheduleDay.Thursday;}
+				if (dayFriday.Checked) {result = result | ScheduleDay.Friday;}
+				if (daySaturday.Checked) {result = result | ScheduleDay.Saturday;}
 				if (result == ScheduleDay.None)
 				{
 					throw(new ApplicationException("Must select one or more days of the week"));
@@ -958,13 +958,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			configXml.DocumentElement.AppendChild(interval);
 
 			ScheduleDay result = ScheduleDay.None;
-			if (this.weekSunday.Checked) {result = result | ScheduleDay.Sunday;}
-			if (this.weekMonday.Checked) {result = result | ScheduleDay.Monday;}
-			if (this.weekTuesday.Checked) {result = result | ScheduleDay.Tuesday;}
-			if (this.weekWednesday.Checked) {result = result | ScheduleDay.Wednesday;}
-			if (this.weekThursday.Checked) {result = result | ScheduleDay.Thursday;}
-			if (this.weekFriday.Checked) {result = result | ScheduleDay.Friday;}
-			if (this.weekSaturday.Checked) {result = result | ScheduleDay.Saturday;}
+			if (weekSunday.Checked) {result = result | ScheduleDay.Sunday;}
+			if (weekMonday.Checked) {result = result | ScheduleDay.Monday;}
+			if (weekTuesday.Checked) {result = result | ScheduleDay.Tuesday;}
+			if (weekWednesday.Checked) {result = result | ScheduleDay.Wednesday;}
+			if (weekThursday.Checked) {result = result | ScheduleDay.Thursday;}
+			if (weekFriday.Checked) {result = result | ScheduleDay.Friday;}
+			if (weekSaturday.Checked) {result = result | ScheduleDay.Saturday;}
 			if (result == ScheduleDay.None)
 			{
 				throw(new ApplicationException("Must select one or more days of the week"));
@@ -979,7 +979,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		private void UnloadMonthlySchedule()
 		{
 			configXml.DocumentElement.SetAttribute("type", "", "Monthly");
-			if (this.radioDayofMonth.Checked)
+			if (radioDayofMonth.Checked)
 			{
 				if (this.dayofmonth.Value == 0)
 				{
@@ -991,37 +991,37 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			}
 			else
 			{
-				if (this.ordinalDropDown.SelectedItem == null)
+				if (ordinalDropDown.SelectedItem == null)
 				{
 					throw(new ApplicationException("Must select an ordinal day"));
 				}
 				XmlNode ordinal = configXml.CreateNode("element", "ordinal","");
-				ordinal.InnerText = this.ordinalDropDown.SelectedItem.ToString();
+				ordinal.InnerText = ordinalDropDown.SelectedItem.ToString();
 				configXml.DocumentElement.AppendChild(ordinal);
 				
-				if (this.weekdayDropDown.SelectedItem == null)
+				if (weekdayDropDown.SelectedItem == null)
 				{
 					throw(new ApplicationException("Must select an ordinal week day"));
 				}
 				XmlNode weekday = configXml.CreateNode("element", "weekday","");
-				weekday.InnerText = this.weekdayDropDown.SelectedItem.ToString();
+				weekday.InnerText = weekdayDropDown.SelectedItem.ToString();
 				if (weekday.InnerText == "Day"){	weekday.InnerText = "All";}
 				configXml.DocumentElement.AppendChild(weekday);
 
 			}
 			ScheduleMonth result = ScheduleMonth.None;
-			if (this.monthJanuary.Checked) {result = result | ScheduleMonth.January;}
-			if (this.monthFebruary.Checked) {result = result | ScheduleMonth.February;}
-			if (this.monthMarch.Checked) {result = result | ScheduleMonth.March;}
-			if (this.monthApril.Checked) {result = result | ScheduleMonth.April;}
-			if (this.monthMay.Checked) {result = result | ScheduleMonth.May;}
-			if (this.monthJune.Checked) {result = result | ScheduleMonth.June;}
-			if (this.monthJuly.Checked) {result = result | ScheduleMonth.July;}
-			if (this.monthAugust.Checked) {result = result | ScheduleMonth.August;}
-			if (this.monthSeptember.Checked) {result = result | ScheduleMonth.September;}
-			if (this.monthOctober.Checked) {result = result | ScheduleMonth.October;}
-			if (this.monthNovember.Checked) {result = result | ScheduleMonth.November;}
-			if (this.monthDecember.Checked) {result = result | ScheduleMonth.December;}
+			if (monthJanuary.Checked) {result = result | ScheduleMonth.January;}
+			if (monthFebruary.Checked) {result = result | ScheduleMonth.February;}
+			if (monthMarch.Checked) {result = result | ScheduleMonth.March;}
+			if (monthApril.Checked) {result = result | ScheduleMonth.April;}
+			if (monthMay.Checked) {result = result | ScheduleMonth.May;}
+			if (monthJune.Checked) {result = result | ScheduleMonth.June;}
+			if (monthJuly.Checked) {result = result | ScheduleMonth.July;}
+			if (monthAugust.Checked) {result = result | ScheduleMonth.August;}
+			if (monthSeptember.Checked) {result = result | ScheduleMonth.September;}
+			if (monthOctober.Checked) {result = result | ScheduleMonth.October;}
+			if (monthNovember.Checked) {result = result | ScheduleMonth.November;}
+			if (monthDecember.Checked) {result = result | ScheduleMonth.December;}
 			if (result == ScheduleMonth.None)
 			{
 				throw(new ApplicationException("Must select one or more months"));
@@ -1038,7 +1038,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             configXml.DocumentElement.SetAttribute("type", "", "Timely");
 
             XmlNode intervalNode = configXml.CreateNode("element", "interval", "");
-            intervalNode.InnerText = this.timeInterval.Value.ToString();
+            intervalNode.InnerText = timeInterval.Value.ToString();
             configXml.DocumentElement.AppendChild(intervalNode);
         
             ScheduleTimeType result = ScheduleTimeType.Seconds;
@@ -1061,7 +1061,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
         
         }
 		//
-		private void radioDayInterval_CheckedChanged(object sender, System.EventArgs e)
+		private void radioDayInterval_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioDayInterval.Checked == true)
 			{
@@ -1087,27 +1087,27 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 				daySaturday.Enabled = true;
 			}
 		}
-		private void radioDayofMonth_CheckedChanged(object sender, System.EventArgs e)
+		private void radioDayofMonth_CheckedChanged(object sender, EventArgs e)
 		{
 			if (radioDayofMonth.Checked == true)
 			{
-				this.dayofmonth.Enabled = true;
-				this.weekdayDropDown.Enabled = false;
-				this.ordinalDropDown.Enabled = false;
+				dayofmonth.Enabled = true;
+				weekdayDropDown.Enabled = false;
+				ordinalDropDown.Enabled = false;
 			}
 			else
 			{
-				this.dayofmonth.Enabled = false;
-				this.weekdayDropDown.Enabled = true;
-				this.ordinalDropDown.Enabled = true;
+				dayofmonth.Enabled = false;
+				weekdayDropDown.Enabled = true;
+				ordinalDropDown.Enabled = true;
 			}
 		}
 
-		private void okButton_Click(object sender, System.EventArgs e)
+		private void okButton_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = DialogResult.None;
+			DialogResult = DialogResult.None;
 			ScheduleDialog_UnLoad(sender,  e);
-			this.DialogResult = DialogResult.OK;
+			DialogResult = DialogResult.OK;
 		}
 	}
 }

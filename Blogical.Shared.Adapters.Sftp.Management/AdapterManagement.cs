@@ -123,10 +123,10 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             switch (configType)
             {
                 case ConfigType.ReceiveLocation:
-                    return StaticAdapterManagement.ValidateReceiveLocation(xmlInstance);
+                    return ValidateReceiveLocation(xmlInstance);
 
                 case ConfigType.TransmitLocation:
-                    return StaticAdapterManagement.ValidateTransmitLocation(xmlInstance);
+                    return ValidateTransmitLocation(xmlInstance);
                 default:
                     return xmlInstance;
             }
@@ -144,7 +144,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             string value = null;
             if (null != resource)
             {
-                Assembly assem = this.GetType().Assembly;
+                Assembly assem = GetType().Assembly;
                 Stream stream = assem.GetManifestResourceStream(resource);
                 StreamReader reader = null;
 

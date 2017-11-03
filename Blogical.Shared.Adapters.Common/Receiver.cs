@@ -70,63 +70,63 @@ namespace Blogical.Shared.Adapters.Common
             propertyNamespace)
         {
 			this.endpointType = endpointType;
-            this.control = new ControlledTermination();
+            control = new ControlledTermination();
 		}
 
         public void Dispose()
         {
-            this.control.Dispose();
+            control.Dispose();
         }
 
         //  IBTTransportConfig
         public void AddReceiveEndpoint (string Url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
         {
-            if (!this.Initialized)
+            if (!Initialized)
                 throw new NotInitialized();
 
-            if (this.endpoints.ContainsKey(Url))
+            if (endpoints.ContainsKey(Url))
                 throw new EndpointExists(Url);
 
-            ReceiverEndpoint endpoint = (ReceiverEndpoint)Activator.CreateInstance(this.endpointType);
+            ReceiverEndpoint endpoint = (ReceiverEndpoint)Activator.CreateInstance(endpointType);
 
             if (null == endpoint)
-                throw new CreateEndpointFailed(this.endpointType.FullName, Url);
+                throw new CreateEndpointFailed(endpointType.FullName, Url);
 
-            endpoint.Open(Url, pConfig, pBizTalkConfig, this.HandlerPropertyBag, this.TransportProxy, this.TransportType, this.PropertyNamespace, this.control);
+            endpoint.Open(Url, pConfig, pBizTalkConfig, HandlerPropertyBag, TransportProxy, TransportType, PropertyNamespace, control);
 
-            this.endpoints[Url] = endpoint;
+            endpoints[Url] = endpoint;
         }
         public void UpdateEndpointConfig (string Url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
         {
-            if (!this.Initialized)
+            if (!Initialized)
                 throw new NotInitialized();
 
-            ReceiverEndpoint endpoint = (ReceiverEndpoint)this.endpoints[Url];
+            ReceiverEndpoint endpoint = (ReceiverEndpoint)endpoints[Url];
 
             if (null == endpoint)
                 throw new EndpointNotExists(Url);
 
             //  delegate the update call to the endpoint instance itself
-            endpoint.Update(pConfig, pBizTalkConfig, this.HandlerPropertyBag);
+            endpoint.Update(pConfig, pBizTalkConfig, HandlerPropertyBag);
 		}
         public void RemoveReceiveEndpoint (string Url)
         {
-			if (!this.Initialized)
+			if (!Initialized)
 				throw new NotInitialized();
 
-			ReceiverEndpoint endpoint = (ReceiverEndpoint)this.endpoints[Url];
+			ReceiverEndpoint endpoint = (ReceiverEndpoint)endpoints[Url];
 
 			if (null == endpoint)
 				return;
 
-			this.endpoints.Remove(Url);
+			endpoints.Remove(Url);
 			endpoint.Dispose();
 		}
 
         public ReceiverEndpoint GetEndpoint(string url)
         {
             ReceiverEndpoint endpoint;
-            this.endpoints.TryGetValue(url, out endpoint);
+            endpoints.TryGetValue(url, out endpoint);
 
             return endpoint;
         }
@@ -142,19 +142,19 @@ namespace Blogical.Shared.Adapters.Common
             try
             {
                 base.Terminate();
-                foreach (ReceiverEndpoint endpoint in this.endpoints.Values)
+                foreach (ReceiverEndpoint endpoint in endpoints.Values)
                 {
                     endpoint.Dispose();
                 }
-                this.endpoints.Clear();
-                this.endpoints = null;
+                endpoints.Clear();
+                endpoints = null;
 
                 //  Block until we are done...
-                this.control.Terminate();
+                control.Terminate();
             }
             finally
             {
-                this.Dispose();
+                Dispose();
             }
 		}
     }

@@ -38,7 +38,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         protected override void HandlerPropertyBagLoaded ()
         {
-            IPropertyBag config = this.HandlerPropertyBag;
+            IPropertyBag config = HandlerPropertyBag;
             if (null != config)
             {
                 

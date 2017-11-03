@@ -46,8 +46,8 @@ namespace Blogical.Shared.Adapters.Common
             : base(transportProxy, control, submitComplete, depth)
         {
             this.control = control;
-            this.workDone = submitComplete;
-            base.ReceiveBatchComplete += new ReceiveBatchCompleteHandler(OnBatchComplete);
+            workDone = submitComplete;
+            ReceiveBatchComplete += new ReceiveBatchCompleteHandler(OnBatchComplete);
         }
 
         private void OnBatchComplete(bool overallSuccess)
@@ -74,9 +74,9 @@ namespace Blogical.Shared.Adapters.Common
 
         public bool Wait()
         {
-            this.workDone.WaitOne();
+            workDone.WaitOne();
 
-            return this.overallSuccess;
+            return overallSuccess;
         }
     }
 }

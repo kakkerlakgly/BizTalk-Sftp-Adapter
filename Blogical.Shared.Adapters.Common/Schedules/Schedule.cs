@@ -247,7 +247,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get
             {
-                return this.type;
+                return type;
             }
         }
         /// <summary>
@@ -257,14 +257,14 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get
             {
-                return (DateTime)this.starttime;
+                return (DateTime)starttime;
             }
             set
             {
                 DateTime newDate = new DateTime(1900, 1, 1, value.Hour, value.Minute, value.Second);
-                if (newDate != (DateTime)Interlocked.Exchange(ref this.starttime, (object)newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref starttime, (object)newDate))
                 {
-                    this.FireChangedEvent();
+                    FireChangedEvent();
                 }
             }
         }
@@ -275,14 +275,14 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get
             {
-                return (DateTime)this.startdate;
+                return (DateTime)startdate;
             }
             set
             {
                 DateTime newDate = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0);
-                if (newDate != (DateTime)Interlocked.Exchange(ref this.startdate, (object)newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref startdate, (object)newDate))
                 {
-                    this.FireChangedEvent();
+                    FireChangedEvent();
                 }
             }
         }
@@ -293,9 +293,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public Schedule()
         {
-            this.type = ScheduleType.None;
-            this.starttime = new DateTime(1900, 1, 1, 0, 0, 0);
-            this.startdate = DateTime.Now;
+            type = ScheduleType.None;
+            starttime = new DateTime(1900, 1, 1, 0, 0, 0);
+            startdate = DateTime.Now;
         }
 
         /// <summary>
@@ -303,9 +303,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         protected void FireChangedEvent()
         {
-            if (this.Changed != null)
+            if (Changed != null)
             {
-                this.Changed(this, EventArgs.Empty);
+                Changed(this, EventArgs.Empty);
             }
         }
         /// <summary>
@@ -417,7 +417,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         public static ScheduleDay ExtractScheduleDay(XmlDocument document, string path, bool required)
         {
             string s = Extract(document, path, required);
-            return (Blogical.Shared.Adapters.Common.Schedules.ScheduleDay)Enum.Parse(typeof(Blogical.Shared.Adapters.Common.Schedules.ScheduleDay), s);
+            return (ScheduleDay)Enum.Parse(typeof(ScheduleDay), s);
         }
         /// <summary>
         /// Used internally to read schedule configuration from Xml document
@@ -436,7 +436,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         public static ScheduleMonth ExtractScheduleMonth(XmlDocument document, string path, bool required)
         {
             string s = Extract(document, path, required);
-            return (Blogical.Shared.Adapters.Common.Schedules.ScheduleMonth)Enum.Parse(typeof(Blogical.Shared.Adapters.Common.Schedules.ScheduleMonth), s);
+            return (ScheduleMonth)Enum.Parse(typeof(ScheduleMonth), s);
         }
         //
         // Utility Methods

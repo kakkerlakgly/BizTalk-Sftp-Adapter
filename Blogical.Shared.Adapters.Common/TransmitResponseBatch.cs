@@ -80,38 +80,38 @@ namespace Blogical.Shared.Adapters.Common
                 }
                 else
                 {
-                    base.MoveToNextTransport(msg, userData);
+                    MoveToNextTransport(msg, userData);
                 }
             }
         }
 
         protected override void StartBatchComplete(int hrBatchComplete)
         {
-            this.batchFailed = (this.HRStatus < 0);
+            batchFailed = (HRStatus < 0);
         }
 
         protected override void StartProcessFailures()
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
                 // Retry should happen outside the transaction scope
-                this.batch = new TransmitResponseBatch(this.TransportProxy, this.allWorkDoneDelegate);
-                this.allWorkDoneDelegate = null;
+                batch = new TransmitResponseBatch(TransportProxy, allWorkDoneDelegate);
+                allWorkDoneDelegate = null;
             }
         }
 
         protected override void EndProcessFailures()
         {
-            if (this.batch != null)
+            if (batch != null)
             {
-                if (!this.batch.IsEmpty)
+                if (!batch.IsEmpty)
                 {
-                    this.batch.Done(null);
+                    batch.Done(null);
                 }
                 else
                 {
                     // If suspend or delete fails, then there is nothing adapter can do!
-                    this.batch.Dispose();
+                    batch.Dispose();
                 }
             }
 
@@ -119,14 +119,14 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void EndBatchComplete()
         {
-            if (null != this.allWorkDoneDelegate)
-                this.allWorkDoneDelegate();
+            if (null != allWorkDoneDelegate)
+                allWorkDoneDelegate();
         }
 
         // This is for submit-response
         protected override void SubmitSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
                 // Previous submit operation might have moved the stream position
                 // Seek the stream position back to zero before submitting again!
@@ -141,7 +141,7 @@ namespace Blogical.Shared.Adapters.Common
                     Stream stream = responseBodyPart.GetOriginalDataStream();
                     stream.Position = 0;
                 }
-                this.batch.SubmitResponseMessage(solicit, message);
+                batch.SubmitResponseMessage(solicit, message);
             }
         }
 
@@ -149,14 +149,14 @@ namespace Blogical.Shared.Adapters.Common
         {
             // If response cannot be submitted, then Resubmit the original message?
             // this.batch.Resubmit(message, false, null);
-            this.batch.MoveToSuspendQ(message);
+            batch.MoveToSuspendQ(message);
         }
 
         protected override void DeleteSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
-                this.batch.DeleteMessage(message);
+                batch.DeleteMessage(message);
             }
         }
 
@@ -164,37 +164,37 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void ResubmitSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
                 SystemMessageContext context = new SystemMessageContext(message.Context);
                 DateTime dt = DateTime.Now.AddMinutes(context.RetryInterval);
-                this.batch.Resubmit(message, dt);
+                batch.Resubmit(message, dt);
             }
         }
 
         protected override void ResubmitFailure(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            this.batch.MoveToNextTransport(message);
+            batch.MoveToNextTransport(message);
         }
 
         protected override void MoveToNextTransportSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
-                this.batch.MoveToNextTransport(message);
+                batch.MoveToNextTransport(message);
             }
         }
 
         protected override void MoveToNextTransportFailure(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            this.batch.MoveToSuspendQ(message);
+            batch.MoveToSuspendQ(message);
         }
 
         protected override void MoveToSuspendQSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (this.batchFailed)
+            if (batchFailed)
             {
-                this.batch.MoveToSuspendQ(message);
+                batch.MoveToSuspendQ(message);
             }
         }
 

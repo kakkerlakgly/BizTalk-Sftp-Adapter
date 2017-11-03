@@ -59,37 +59,37 @@ namespace Blogical.Shared.Adapters.Sftp
             ControlledTermination control)
         {
 
-            this._errorCount = 0;
+            _errorCount = 0;
 
-            this._properties = new SftpReceiveProperties();
+            _properties = new SftpReceiveProperties();
             _properties.LocationConfiguration(config, bizTalkConfig);
 
             //  Location properties - possibly override some Handler properties
             XmlDocument locationConfigDom = ConfigProperties.ExtractConfigDom(config);
-            this._properties.ReadLocationConfiguration(locationConfigDom);
+            _properties.ReadLocationConfiguration(locationConfigDom);
 
             //  this is our handle back to the EPM
-            this._transportProxy = transportProxy;
+            _transportProxy = transportProxy;
 
             // used to create new messages / message parts etc.
-            this._messageFactory = this._transportProxy.GetMessageFactory();
+            _messageFactory = _transportProxy.GetMessageFactory();
 
             //  used in the creation of messages
-            this._transportType = transportType;
+            _transportType = transportType;
 
             //  used in the creation of messages
-            this._propertyNamespace = propertyNamespace;
+            _propertyNamespace = propertyNamespace;
 
             // used to track inflight work for shutting down properly
-            this._controlledTermination = control;
+            _controlledTermination = control;
 
             //  create and schedule a new the task
-            this._taskController = new TaskController(
-                new ScheduledTask(this._properties.Uri,
-                new ScheduledTask.TaskDelegate(this.ControlledEndpointTask)),
-                this._properties.Schedule);
+            _taskController = new TaskController(
+                new ScheduledTask(_properties.Uri,
+                new ScheduledTask.TaskDelegate(ControlledEndpointTask)),
+                _properties.Schedule);
 
-            this._taskController.StateChanged += new StateChangedEventHandler(this.OnStateChanged);
+            _taskController.StateChanged += new StateChangedEventHandler(OnStateChanged);
 
             // start the task
             Start();
@@ -110,20 +110,20 @@ namespace Blogical.Shared.Adapters.Sftp
                 _errorCount = 0;
 
                 //  keep handles to these property bags until we are ready
-                this._updatedConfig = config;
-                this._updatedBizTalkConfig = bizTalkConfig;
-                this._updatedHandlerPropertyBag = handlerPropertyBag;
+                _updatedConfig = config;
+                _updatedBizTalkConfig = bizTalkConfig;
+                _updatedHandlerPropertyBag = handlerPropertyBag;
 
                 if (_updatedConfig != null)
                 {
                     XmlDocument locationConfigDom = ConfigProperties.ExtractConfigDom(config);
-                    this._properties.ReadLocationConfiguration(locationConfigDom);
+                    _properties.ReadLocationConfiguration(locationConfigDom);
 
-                    this._taskController = new TaskController(
-                                        new ScheduledTask(this._properties.Uri,
-                                        new ScheduledTask.TaskDelegate(this.ControlledEndpointTask)),
-                                        this._properties.Schedule);
-                    this.isInitialized = false;
+                    _taskController = new TaskController(
+                                        new ScheduledTask(_properties.Uri,
+                                        new ScheduledTask.TaskDelegate(ControlledEndpointTask)),
+                                        _properties.Schedule);
+                    isInitialized = false;
                 }
 
                 //Schedule the polling event
@@ -137,7 +137,7 @@ namespace Blogical.Shared.Adapters.Sftp
         public override void Dispose()
         {
             TraceMessage("[SftpReceiverEndpoint] Dispose called");
-            this._shutdownRequested = true;
+            _shutdownRequested = true;
 
             //  stop the schedule
             Stop();
@@ -148,8 +148,8 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         private void Start()
         {
-            this._taskController.Enabled = true;
-            this._taskController.Start();
+            _taskController.Enabled = true;
+            _taskController.Start();
             TraceMessage("[SftpReceiverEndpoint] Start called");
         }
 
@@ -161,15 +161,15 @@ namespace Blogical.Shared.Adapters.Sftp
             TraceMessage("[SftpReceiverEndpoint] Stop called");
             try
             {
-                this._taskController.Stop();
-                this._taskController.Enabled = false;
-                this._taskController.Dispose();
+                _taskController.Stop();
+                _taskController.Enabled = false;
+                _taskController.Dispose();
                 // this.timer.Dispose();
             }
             catch (Exception e)
             {
                 TraceMessage("[SftpReceiverEndpoint] Stop EXCEPTION");
-                throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
+                throw ExceptionHandling.HandleComponentException(MethodBase.GetCurrentMethod(),
                     new SftpException("Unable to stop receiverEndpoint", e));
             }
         }
@@ -180,26 +180,26 @@ namespace Blogical.Shared.Adapters.Sftp
         public void ControlledEndpointTask()
         {
             // The taskController always starts the task when initializing, so here we ignore this first controller.StartTask() call:
-            if (!this.isInitialized)
+            if (!isInitialized)
             {
-                this.isInitialized = true;
+                isInitialized = true;
                 return;
             }
-            if (this._controlledTermination.Enter())
+            if (_controlledTermination.Enter())
             {
                 TraceMessage("[SftpReceiverEndpoint] ControlledTermination.Enter()");
                 try
                 {
                     lock (this)
                     {
-                        this.EndpointTask();
+                        EndpointTask();
                     }
                     GC.Collect();
                 }
                 finally
                 {
                     TraceMessage("[SftpReceiverEndpoint] ControlledTermination.Leave()");
-                    this._controlledTermination.Leave();
+                    _controlledTermination.Leave();
                 }
             }
         }
@@ -232,8 +232,8 @@ namespace Blogical.Shared.Adapters.Sftp
 
                 throw ExceptionHandling.HandleComponentException(
                     EventLogEventIDs.GeneralUnknownError,
-                    System.Reflection.MethodBase.GetCurrentMethod(),
-                        new Exception("Uri:" + this._properties.Uri + "", ex));
+                    MethodBase.GetCurrentMethod(),
+                        new Exception("Uri:" + _properties.Uri + "", ex));
 
 
             }
@@ -250,15 +250,15 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <returns></returns>
         private bool CheckErrorThreshold()
         {
-            if ((0 != this._properties.ErrorThreshold) && (this._errorCount > this._properties.ErrorThreshold))
+            if ((0 != _properties.ErrorThreshold) && (_errorCount > _properties.ErrorThreshold))
             {
-                this._transportProxy.ReceiverShuttingdown(this._properties.Uri, new ErrorThresholdExceeded());
+                _transportProxy.ReceiverShuttingdown(_properties.Uri, new ErrorThresholdExceeded());
 
                 //Stop the timer.
                 Stop();
 
                 ExceptionHandling.CreateEventLogMessage(
-                    String.Format("[SftpReceiverEndpoint] Error threshold exceeded {0}. Port is shutting down.\nURI: {1}", this._properties.ErrorThreshold.ToString(), this._properties.Uri),
+                    String.Format("[SftpReceiverEndpoint] Error threshold exceeded {0}. Port is shutting down.\nURI: {1}", _properties.ErrorThreshold.ToString(), _properties.Uri),
                     EventLogEventIDs.GeneralUnknownError,
                     0,
                     EventLogEntryType.Warning);
@@ -283,68 +283,68 @@ namespace Blogical.Shared.Adapters.Sftp
             ISftp sftp = null;
             BatchHandler batchHandler = null;
             long bytesInBatch = 0;
-            List<Blogical.Shared.Adapters.Sftp.FileEntry> fileEntries = null;
+            List<FileEntry> fileEntries = null;
 
             try
             {
-                TraceMessage("[SftpReceiverEndpoint] PickupFilesAndSubmit called [" + this._properties.Uri + "]");
+                TraceMessage("[SftpReceiverEndpoint] PickupFilesAndSubmit called [" + _properties.Uri + "]");
 
 
-                if (string.IsNullOrEmpty(this._properties.ProxyHost))
+                if (string.IsNullOrEmpty(_properties.ProxyHost))
                 {
-                    sftp = new SharpSsh.Sftp(this._properties.SSHHost,
-                                        this._properties.SSHUser,
-                                        this._properties.SSHPasswordProperty,
-                                        this._properties.SSHIdentityFile,
-                                        this._properties.SSHIdentityThumbprint,
-                                        this._properties.SSHPort,
-                                        this._properties.SSHPassphrase,
-                                        this._properties.DebugTrace);
+                    sftp = new SharpSsh.Sftp(_properties.SSHHost,
+                                        _properties.SSHUser,
+                                        _properties.SSHPasswordProperty,
+                                        _properties.SSHIdentityFile,
+                                        _properties.SSHIdentityThumbprint,
+                                        _properties.SSHPort,
+                                        _properties.SSHPassphrase,
+                                        _properties.DebugTrace);
                 }
                 else
                 {
-                    sftp = new SharpSsh.Sftp(this._properties.SSHHost,
-                                        this._properties.SSHUser,
-                                        this._properties.SSHPasswordProperty,
-                                        this._properties.SSHIdentityFile,
-                                        this._properties.SSHIdentityThumbprint,
-                                        this._properties.SSHPort,
-                                        this._properties.SSHPassphrase,
-                                        this._properties.DebugTrace,
-                                        this._properties.ProxyHost,
-                                        this._properties.ProxyPort,
-                                        this._properties.ProxyUserName,
-                                        this._properties.ProxyPassword);
+                    sftp = new SharpSsh.Sftp(_properties.SSHHost,
+                                        _properties.SSHUser,
+                                        _properties.SSHPasswordProperty,
+                                        _properties.SSHIdentityFile,
+                                        _properties.SSHIdentityThumbprint,
+                                        _properties.SSHPort,
+                                        _properties.SSHPassphrase,
+                                        _properties.DebugTrace,
+                                        _properties.ProxyHost,
+                                        _properties.ProxyPort,
+                                        _properties.ProxyUserName,
+                                        _properties.ProxyPassword);
 
                 }
 
-                string uri = this._properties.UseLoadBalancing ? this._properties.Uri : null;
+                string uri = _properties.UseLoadBalancing ? _properties.Uri : null;
 
                 lock (_filesInProcess)
                 {
                     // Get a list of all files. If the batch is limited in size (MaximumNumberOfFiles>0), the directory listing 
                     // will quite after the set number of files has been listed.
-                    if (this._properties.MaximumNumberOfFiles > 0)
-                        fileEntries = sftp.Dir(CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.FileMask),
-                            uri, this._properties.MaximumNumberOfFiles, _filesInProcess.Cast<string>(), this._properties.DebugTrace);
+                    if (_properties.MaximumNumberOfFiles > 0)
+                        fileEntries = sftp.Dir(CommonFunctions.CombinePath(_properties.RemotePath, _properties.FileMask),
+                            uri, _properties.MaximumNumberOfFiles, _filesInProcess.Cast<string>(), _properties.DebugTrace);
                     else
-                        fileEntries = sftp.Dir(CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.FileMask),
-                            uri, _filesInProcess.Cast<string>(), this._properties.DebugTrace);
+                        fileEntries = sftp.Dir(CommonFunctions.CombinePath(_properties.RemotePath, _properties.FileMask),
+                            uri, _filesInProcess.Cast<string>(), _properties.DebugTrace);
                 }
                 // If batch has file enties create a BatchHandler and a new sftp connection.
                 if (fileEntries.Count > 0)
                 {
-                    batchHandler = new BatchHandler(sftp, this._propertyNamespace, this._transportType, this._transportProxy, this._properties.DebugTrace, this._properties.UseLoadBalancing);
+                    batchHandler = new BatchHandler(sftp, _propertyNamespace, _transportType, _transportProxy, _properties.DebugTrace, _properties.UseLoadBalancing);
                     // Used for Connection pool: batchHandler.BatchComplete += new BatchHandler.BatchHandlerDelegate(batchHandler_BatchComplete);
                 }
                 // If the NotifyOnEmptyBatch property is set to true, and the batch is empty,
                 // an "emty batch message" is created and added to the batch. This message can
                 // later be picked up by the pipeline components.
-                else if (fileEntries.Count == 0 && this._properties.NotifyOnEmptyBatch)
+                else if (fileEntries.Count == 0 && _properties.NotifyOnEmptyBatch)
                 {
                     Trace.WriteLine(string.Format("[SftpReceiverEndpoint] Sending notification on empty batch.", fileEntries.Count - 1));
-                    batchHandler = new BatchHandler(sftp, this._propertyNamespace, this._transportType, this._transportProxy, this._properties.DebugTrace, this._properties.UseLoadBalancing);
-                    batchHandler.CreateEmptyBatchMessage(this._properties.Uri);
+                    batchHandler = new BatchHandler(sftp, _propertyNamespace, _transportType, _transportProxy, _properties.DebugTrace, _properties.UseLoadBalancing);
+                    batchHandler.CreateEmptyBatchMessage(_properties.Uri);
                     // Used for Connection pool: batchHandler.BatchComplete += new BatchHandler.BatchHandlerDelegate(batchHandler_BatchComplete);
                 }
                 else
@@ -358,39 +358,39 @@ namespace Blogical.Shared.Adapters.Sftp
                 }
                 lock (_filesInProcess)
                 {
-                    foreach (Blogical.Shared.Adapters.Sftp.FileEntry fileEntry in fileEntries)
+                    foreach (FileEntry fileEntry in fileEntries)
                     {
                         // If the file is empty (or a directory) or if it's being processed by another
                         // process, we will just move on.
                         if (fileEntry.Size == 0 ||
-                            _filesInProcess.Contains(CommonFunctions.CombinePath(this._properties.RemotePath,
+                            _filesInProcess.Contains(CommonFunctions.CombinePath(_properties.RemotePath,
                                 fileEntry.FileName)))
                             continue;
 
-                        if (this._properties.MaximumNumberOfFiles == batchHandler.Files.Count &&
-                            this._properties.MaximumNumberOfFiles != 0)
+                        if (_properties.MaximumNumberOfFiles == batchHandler.Files.Count &&
+                            _properties.MaximumNumberOfFiles != 0)
                             break;
 
-                        if (this._properties.MaximumBatchSize < bytesInBatch &&
-                            this._properties.MaximumBatchSize != 0)
+                        if (_properties.MaximumBatchSize < bytesInBatch &&
+                            _properties.MaximumBatchSize != 0)
                             break;
 
                         string fileNamePath =
-                            CommonFunctions.CombinePath(this._properties.RemotePath, fileEntry.FileName);
+                            CommonFunctions.CombinePath(_properties.RemotePath, fileEntry.FileName);
 
                         // Prevent other processes to work with the same file by adding the filename to filesInProcess
                         _filesInProcess.Add(fileNamePath);
 
                         // Create and add message to batch
-                        IBaseMessage msg = batchHandler.CreateMessage(fileNamePath, this._properties.Uri,
+                        IBaseMessage msg = batchHandler.CreateMessage(fileNamePath, _properties.Uri,
                             fileEntry.Size,
-                            this._properties.AfterGet, this._properties.AfterGetFilename);
+                            _properties.AfterGet, _properties.AfterGetFilename);
 
                         if (null == msg)
                         {
                             // If the creation was unsuccessful, remove the file from the files to be processed
                             // so an other process can pick up the file.
-                            this._filesInProcess.Remove(fileNamePath);
+                            _filesInProcess.Remove(fileNamePath);
                             continue;
                         }
 
@@ -405,13 +405,13 @@ namespace Blogical.Shared.Adapters.Sftp
                 }
 
                 // Submit all messages to BTS
-                batchHandler.SubmitFiles(this._controlledTermination, this._filesInProcess);
+                batchHandler.SubmitFiles(_controlledTermination, _filesInProcess);
 
                 // Check if we have been asked to stop - if so don't start another batch
-                if (this._controlledTermination.TerminateCalled)
+                if (_controlledTermination.TerminateCalled)
                     return false;
 
-                return sftp.Exists(CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.FileMask));
+                return sftp.Exists(CommonFunctions.CombinePath(_properties.RemotePath, _properties.FileMask));
             }
             catch (Exception)
             {
@@ -441,7 +441,7 @@ namespace Blogical.Shared.Adapters.Sftp
         
         private void TraceMessage(string message)
         {
-            if (this._properties.DebugTrace)
+            if (_properties.DebugTrace)
                 Trace.WriteLine(message);
         }
         #endregion
@@ -457,7 +457,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             catch
             {
-                throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
+                throw ExceptionHandling.HandleComponentException(MethodBase.GetCurrentMethod(),
                         new Exception("Unable to release Sftp connection"));
             }
         }

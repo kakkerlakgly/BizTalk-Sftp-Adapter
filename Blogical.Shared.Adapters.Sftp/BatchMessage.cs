@@ -23,50 +23,50 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Internal Members
         internal IBaseMessage Message
         {
-            get { return this._message; }
+            get { return _message; }
         }
         internal object UserData
         {
-            get { return this._userData; }
+            get { return _userData; }
         }
         internal string CorrelationToken
         {
-            get { return this._correlationToken; }
+            get { return _correlationToken; }
         }
         internal BatchOperationType OperationType
         {
-            get { return this._operationType; }
+            get { return _operationType; }
         }
         internal SftpReceiveProperties.AfterGetActions AfterGetAction
         {
-            get { return this._aftergetaction; }
+            get { return _aftergetaction; }
         }
         internal string AfterGetFilename
         {
-            get { return this._aftergetfilename; }
+            get { return _aftergetfilename; }
         }
         #endregion
         #region Constructors
         internal BatchMessage(IBaseMessage message, object userData, BatchOperationType oppType)
 		{
-			this._message = message;
-			this._userData = userData;
-			this._operationType = oppType;
+			_message = message;
+			_userData = userData;
+			_operationType = oppType;
 		}
         internal BatchMessage(IBaseMessage message, object userData, BatchOperationType oppType, 
             SftpReceiveProperties.AfterGetActions afterGetAction, string afterGetFilename)
         {
-            this._message = message;
-            this._userData = userData;
-            this._operationType = oppType;
-            this._aftergetaction = afterGetAction;
-            this._aftergetfilename = afterGetFilename;
+            _message = message;
+            _userData = userData;
+            _operationType = oppType;
+            _aftergetaction = afterGetAction;
+            _aftergetfilename = afterGetFilename;
         }
         internal BatchMessage(string correlationToken, object userData, BatchOperationType oppType)
 		{
-			this._correlationToken = correlationToken;
-			this._userData = userData;
-			this._operationType = oppType;
+			_correlationToken = correlationToken;
+			_userData = userData;
+			_operationType = oppType;
         }
         #endregion      
     }

@@ -26,17 +26,17 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return this.interval;
+				return interval;
 			}
 			set
 			{
-				if ((this.ScheduledDays == ScheduleDay.None) && (value <= 1))
+				if ((ScheduledDays == ScheduleDay.None) && (value <= 1))
 				{
 					throw (new ArgumentOutOfRangeException("days", "Must specify scheduled days or interval"));
 				}
-				if (value != Interlocked.Exchange(ref this.interval, value))
+				if (value != Interlocked.Exchange(ref interval, value))
 				{
-					this.FireChangedEvent();
+					FireChangedEvent();
 				}
 			}
 		}
@@ -47,17 +47,17 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return (ScheduleDay)this.days;
+				return (ScheduleDay)days;
 			}
 			set
 			{
-				if ((value == ScheduleDay.None) && (this.Interval <= 1))
+				if ((value == ScheduleDay.None) && (Interval <= 1))
 				{
 					throw (new ArgumentOutOfRangeException("days", "Must specify scheduled days or interval"));
 				}
-				if (value != (ScheduleDay)Interlocked.Exchange(ref this.days, value))
+				if (value != (ScheduleDay)Interlocked.Exchange(ref days, value))
 				{
-					this.FireChangedEvent();
+					FireChangedEvent();
 				}
 			}
 		}		
@@ -75,18 +75,18 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			XmlDocument configXml = new XmlDocument();
 			configXml.LoadXml(configxml);
-			base.type = ExtractScheduleType(configXml);
-			if (base.type != ScheduleType.Daily)
+			type = ExtractScheduleType(configXml);
+			if (type != ScheduleType.Daily)
 			{
 				throw (new ApplicationException("Invalid Configuration Type"));
 			}
-			this.StartDate = ExtractDate(configXml, "/schedule/startdate", true);
-			this.StartTime = ExtractTime(configXml, "/schedule/starttime", true);
+			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
+			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
 			
-			this.interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
-			if (this.Interval == 0)
+			interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
+			if (Interval == 0)
 			{
-				this.ScheduledDays = ExtractScheduleDay(configXml, "/schedule/days", true);
+				ScheduledDays = ExtractScheduleDay(configXml, "/schedule/days", true);
 			}
 		}
         /// <summary>
@@ -96,15 +96,15 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		public override DateTime GetNextActivationTime()
 		{
             TraceMessage("[DaySchedule]Executing GetNextActivationTime");
-			if ((this.Interval == 0) && (this.ScheduledDays == ScheduleDay.None))
+			if ((Interval == 0) && (ScheduledDays == ScheduleDay.None))
 			{
 				throw(new ApplicationException("Uninitialized daily schedule")); 
 			}
 			DateTime now = DateTime.Now;
-			if (this.StartDate > now)
+			if (StartDate > now)
 			{
-				now =  new DateTime(this.StartDate.Year, this.StartDate.Month, this.StartDate.Day, 0, 0,0);
-				if (this.Interval > 1)
+				now =  new DateTime(StartDate.Year, StartDate.Month, StartDate.Day, 0, 0,0);
+				if (Interval > 1)
 				{
 					return now;
 				}
@@ -113,7 +113,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			if (interval > 0)
 			{
 				DateTime compare =  new DateTime(now.Year, now.Month, now.Day,0, 0, 0);
-				TimeSpan diff = compare.Subtract(this.StartDate);
+				TimeSpan diff = compare.Subtract(StartDate);
 				int daysAhead = diff.Days % interval;
 				int daysToGo = 0;
 				if (daysAhead == 0)
@@ -132,7 +132,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				return returnDate.AddDays(daysToGo);
 			}
 			//Day of Week
-			if ((GetScheduleDayFlag(now) & this.ScheduledDays) > 0)
+			if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
 			{ //today could be our lucky day
 				if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))
 				{
@@ -143,7 +143,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			for (int i = 1; i < 8; i++)
 			{
 				now = now.AddDays(1);
-				if ((GetScheduleDayFlag(now) & this.ScheduledDays) > 0)
+				if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
 					break;
 			}
 			return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);

@@ -20,7 +20,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		public delegate void TaskDelegate();
 		// Fields
 		private string name;
-		private ScheduledTask.TaskDelegate taskDelegate;
+		private TaskDelegate taskDelegate;
 		// Properties
         /// <summary>
         /// Allways false
@@ -59,7 +59,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return this.name;
+				return name;
 			}
 		}
 		// Methods
@@ -68,7 +68,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         /// <param name="name"></param>
         /// <param name="taskDelegate"></param>
-		public ScheduledTask(string name, ScheduledTask.TaskDelegate taskDelegate)
+		public ScheduledTask(string name, TaskDelegate taskDelegate)
 		{
 			this.name = name;
 			this.taskDelegate = taskDelegate;
@@ -76,9 +76,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 
 		private void FireProgress(TaskProgress progress)
 		{
-			if (this.Progress != null)
+			if (Progress != null)
 			{
-				this.Progress(this, new TaskProgressEventArgs(progress));
+				Progress(this, new TaskProgressEventArgs(progress));
 			}
 		}
         /// <summary>
@@ -100,13 +100,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			try
 			{
-				this.FireProgress(TaskProgress.Started);
-				this.taskDelegate();
-				this.FireProgress(TaskProgress.Succeeded);
+				FireProgress(TaskProgress.Started);
+				taskDelegate();
+				FireProgress(TaskProgress.Succeeded);
 			}
 			catch (Exception)
 			{
-				this.FireProgress(TaskProgress.Failed);
+				FireProgress(TaskProgress.Failed);
 			}
 		}
         /// <summary>

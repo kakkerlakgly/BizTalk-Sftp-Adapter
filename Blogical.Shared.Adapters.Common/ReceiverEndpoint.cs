@@ -33,7 +33,7 @@ namespace Blogical.Shared.Adapters.Common
 	/// <summary>
 	/// Base class for end point configurations - a home for contains various helper functions.
 	/// </summary>
-	public abstract class ReceiverEndpoint : System.IDisposable
+	public abstract class ReceiverEndpoint : IDisposable
 	{
 		public abstract void Open (string uri, IPropertyBag config, IPropertyBag bizTalkConfig, IPropertyBag handlerPropertyBag, IBTTransportProxy transportProxy, string transportType, string propertyNamespace, ControlledTermination control);
 		public abstract void Update (IPropertyBag config, IPropertyBag bizTalkConfig, IPropertyBag handlerPropertyBag);
