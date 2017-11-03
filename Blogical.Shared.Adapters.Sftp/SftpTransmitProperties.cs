@@ -4,7 +4,6 @@ using System.Xml;
 using Microsoft.BizTalk.Message.Interop;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.SSO.Utility;
 
 namespace Blogical.Shared.Adapters.Sftp
 {
@@ -373,10 +372,10 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <summary>
         /// Load the Transmit Handler configuration settings
         /// </summary>
-        public static void ReadTransmitHandlerConfiguration(XmlDocument configDOM)
+        public static void ReadTransmitHandlerConfiguration(XmlDocument configDom)
         {
             // Handler properties
-            _handlerSendBatchSize = ExtractInt(configDOM, "/Config/sendBatchSize");
+            _handlerSendBatchSize = ExtractInt(configDom, "/Config/sendBatchSize");
         }
         /// <summary>
         /// Determines the name of the file that should be created for a transmitted message
@@ -410,7 +409,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 }
                 catch
                 {
-                    throw new Exception("The %SourceFileName% macro can only be used with the " + Constants.SFTP_ADAPTER_PROPERTIES_NAMESPACE + " namespace.");
+                    throw new Exception("The %SourceFileName% macro can only be used with the " + Constants.SftpAdapterPropertiesNamespace + " namespace.");
                 }
                 uri = uri.Replace("%SourceFileName%", sourceFileName);
             }
@@ -476,7 +475,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             return receivedFileName;
         }
-        private static string ReplaceMessageID(IBaseMessage message, string uri)
+        private static string ReplaceMessageId(IBaseMessage message, string uri)
         {
             Guid msgId = message.MessageID;
 
@@ -487,13 +486,13 @@ namespace Blogical.Shared.Adapters.Sftp
             if (DebugTrace)
                 Trace.WriteLine(message);
         }
-        private object Extract(IBaseMessageContext context, string prop, string propNS, object fallback, bool isRequired)
+        private object Extract(IBaseMessageContext context, string prop, string propNs, object fallback, bool isRequired)
         {
-            Object o = context.Read(prop, propNS);
+            Object o = context.Read(prop, propNs);
             if (!isRequired && null == o)
                 return fallback;
             if (null == o)
-                throw new NoSuchProperty(propNS + "#" + prop);
+                throw new NoSuchProperty(propNs + "#" + prop);
             return o;
         }
 

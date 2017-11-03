@@ -11,8 +11,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules
     public class WeekSchedule : Schedule
     {
         ///Fields
-        private int interval;
-        private object days = 0;
+        private int _interval;
+        private object _days = 0;
 
         // Properties
         /// <summary>
@@ -20,7 +20,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public int Interval
         {
-            get { return interval; }
+            get { return _interval; }
 
             set
             {
@@ -28,7 +28,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 {
                     throw (new ArgumentOutOfRangeException(nameof(value), "Week interval must be between 1 and 52"));
                 }
-                if (value != Interlocked.Exchange(ref interval, value))
+                if (value != Interlocked.Exchange(ref _interval, value))
                 {
                     FireChangedEvent();
                 }
@@ -40,7 +40,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public ScheduleDay ScheduledDays
         {
-            get { return (ScheduleDay)days; }
+            get { return (ScheduleDay)_days; }
 
             set
             {
@@ -48,7 +48,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 {
                     throw (new ArgumentOutOfRangeException(nameof(value), "Must specify the scheduled days"));
                 }
-                if (value != (ScheduleDay)Interlocked.Exchange(ref days, value))
+                if (value != (ScheduleDay)Interlocked.Exchange(ref _days, value))
                 {
                     FireChangedEvent();
                 }
@@ -71,8 +71,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             XmlDocument configXml = new XmlDocument();
             configXml.LoadXml(configxml);
-            type = ExtractScheduleType(configXml);
-            if (type != ScheduleType.Weekly)
+            Type = ExtractScheduleType(configXml);
+            if (Type != ScheduleType.Weekly)
             {
                 throw (new ApplicationException("Invalid Configuration Type"));
             }
@@ -102,7 +102,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             DateTime lastSunday = GetLastSunday(now);
             DateTime firstSunday = GetLastSunday(StartDate);
             TimeSpan diff = lastSunday.Subtract(firstSunday);
-            int daysAhead = diff.Days % (interval * 7);
+            int daysAhead = diff.Days % (_interval * 7);
             if (daysAhead == 0)
             {//possibly this week
                 if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
@@ -120,7 +120,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 }
             }
             //future week
-            DateTime nextWeek = lastSunday.AddDays((interval * 7) - daysAhead);
+            DateTime nextWeek = lastSunday.AddDays((_interval * 7) - daysAhead);
             while (nextWeek.DayOfWeek != DayOfWeek.Saturday)
             {
                 if ((GetScheduleDayFlag(nextWeek) & ScheduledDays) > 0)

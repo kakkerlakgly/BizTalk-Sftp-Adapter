@@ -4,7 +4,6 @@ using Microsoft.BizTalk.Component.Interop;
 using System.Xml;
 using Blogical.Shared.Adapters.Common.Schedules;
 using System.Diagnostics;
-using Microsoft.SSO.Utility;
 
 namespace Blogical.Shared.Adapters.Sftp
 {
@@ -445,8 +444,8 @@ namespace Blogical.Shared.Adapters.Sftp
         /// Read the Blogical.Shared.Adapters.Sftp.Management.ReceiveHandler.xsd and populate 
         /// all properties
         /// </summary>
-        /// <param name="configDOM"></param>
-        public static void ReceiveHandlerConfiguration(XmlDocument configDOM)
+        /// <param name="configDom"></param>
+        public static void ReceiveHandlerConfiguration(XmlDocument configDom)
         {
             // Handler properties
             //handlerPollingInterval = ExtractPollingInterval(configDOM);

@@ -12,8 +12,8 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 	public class DaySchedule: Schedule
 	{
 		//Fields
-		private int interval;					//day interval
-		private object days = 0;				//days of week
+		private int _interval;					//day interval
+		private object _days = 0;				//days of week
 		
         // Properties
         /// <summary>
@@ -23,7 +23,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return interval;
+				return _interval;
 			}
 			set
 			{
@@ -31,7 +31,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				{
 					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval"));
 				}
-				if (value != Interlocked.Exchange(ref interval, value))
+				if (value != Interlocked.Exchange(ref _interval, value))
 				{
 					FireChangedEvent();
 				}
@@ -44,7 +44,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return (ScheduleDay)days;
+				return (ScheduleDay)_days;
 			}
 			set
 			{
@@ -52,7 +52,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				{
 					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval"));
 				}
-				if (value != (ScheduleDay)Interlocked.Exchange(ref days, value))
+				if (value != (ScheduleDay)Interlocked.Exchange(ref _days, value))
 				{
 					FireChangedEvent();
 				}
@@ -72,15 +72,15 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			XmlDocument configXml = new XmlDocument();
 			configXml.LoadXml(configxml);
-			type = ExtractScheduleType(configXml);
-			if (type != ScheduleType.Daily)
+			Type = ExtractScheduleType(configXml);
+			if (Type != ScheduleType.Daily)
 			{
 				throw (new ApplicationException("Invalid Configuration Type"));
 			}
 			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
 			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
 			
-			interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
+			_interval = IfExistsExtractInt(configXml, "/schedule/interval", 0);
 			if (Interval == 0)
 			{
 				ScheduledDays = ExtractScheduleDay(configXml, "/schedule/days", true);
@@ -107,11 +107,11 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				}
 			}
 			//Interval Days
-			if (interval > 0)
+			if (_interval > 0)
 			{
 				DateTime compare =  new DateTime(now.Year, now.Month, now.Day,0, 0, 0);
 				TimeSpan diff = compare.Subtract(StartDate);
-				int daysAhead = diff.Days % interval;
+				int daysAhead = diff.Days % _interval;
 				int daysToGo;
 				if (daysAhead == 0)
 				{
@@ -119,11 +119,11 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 					{
 						return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);
 					}
-					daysToGo = interval;
+					daysToGo = _interval;
 				}
 				else
 				{
-					daysToGo = interval - daysAhead;
+					daysToGo = _interval - daysAhead;
 				}
 				DateTime returnDate = new DateTime(now.Year, now.Month, now.Day , StartTime.Hour, StartTime.Minute, 0);
 				return returnDate.AddDays(daysToGo);

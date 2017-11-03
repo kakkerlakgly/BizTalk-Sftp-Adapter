@@ -32,9 +32,9 @@ namespace Blogical.Shared.Adapters.Common
 {
     public class ControlledTermination : IDisposable
     {
-        private AutoResetEvent e = new AutoResetEvent(false);
-        private int activityCount;
-        private bool terminate;
+        private readonly AutoResetEvent _e = new AutoResetEvent(false);
+        private int _activityCount;
+        private bool _terminate;
 
         //  to be called at the start of the activity
         //  returns false if terminate has been called
@@ -42,12 +42,12 @@ namespace Blogical.Shared.Adapters.Common
         {
             lock (this)
             {
-                if (terminate)
+                if (_terminate)
                 {
                     return false;
                 }
 
-                activityCount++;
+                _activityCount++;
             }
             return true;
         }
@@ -57,11 +57,11 @@ namespace Blogical.Shared.Adapters.Common
         {
             lock (this)
             {
-                activityCount--;
+                _activityCount--;
 
                 // Set the event only if Terminate() is called
-                if (activityCount == 0 && terminate)
-                    e.Set();
+                if (_activityCount == 0 && _terminate)
+                    _e.Set();
             }
         }
 
@@ -72,14 +72,14 @@ namespace Blogical.Shared.Adapters.Common
 
             lock (this)
             {
-                terminate = true;
-                result = (activityCount == 0);
+                _terminate = true;
+                result = (_activityCount == 0);
             }
 
             // If activity count was not zero, wait for pending activities
             if (!result)
             {
-                e.WaitOne();
+                _e.WaitOne();
             }
         }
 
@@ -89,14 +89,14 @@ namespace Blogical.Shared.Adapters.Common
             { 
                 lock (this)
                 {
-                    return terminate;
+                    return _terminate;
                 }
             }
         }
 
         public void Dispose()
         {
-            ((IDisposable)e).Dispose();
+            ((IDisposable)_e).Dispose();
         }
     }
 }

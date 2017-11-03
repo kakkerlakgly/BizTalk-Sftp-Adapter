@@ -26,13 +26,14 @@ namespace Blogical.Shared.Adapters.Sftp
         private const string EMPTYBATCHFILENAME = "EmptyBatch.xml";
         #endregion
         #region Private Fields
-        ISftp _sftp;
-        string _transportType;
-        string _propertyNamespace;
-        bool _useLoadBalancing;
-        IBTTransportProxy _transportProxy;
+
+        readonly ISftp _sftp;
+        readonly string _transportType;
+        readonly string _propertyNamespace;
+        readonly bool _useLoadBalancing;
+        readonly IBTTransportProxy _transportProxy;
         IList _filesInProcess;
-        bool _traceFlag;
+        readonly bool _traceFlag;
 
         #endregion
         #region Constructor
@@ -250,10 +251,10 @@ namespace Blogical.Shared.Adapters.Sftp
             SystemMessageContext messageContext = new SystemMessageContext(pInMsg.Context);
 
             pInMsg.Context.Write("ReceivedFileName",
-                Constants.BIZTALK_FILE_PROPERTIES_NAMESPACE, receivedFilename);
+                Constants.BiztalkFilePropertiesNamespace, receivedFilename);
 
             pInMsg.Context.Write("ReceivedFileName",
-                Constants.SFTP_ADAPTER_PROPERTIES_NAMESPACE, receivedFilename);
+                Constants.SftpAdapterPropertiesNamespace, receivedFilename);
 
             pInMsg.Context.Write("ReceivedFileName",
                 "http://schemas.microsoft.com/BizTalk/2003/" +
@@ -335,7 +336,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
                                 if (_useLoadBalancing)
                                 {
-                                    string uri = batchMessage.Message.Context.Read(Constants.BizTalkSystemPropertyNames.INBOUNDTRANSPORTLOCATION, Constants.BIZTALK_SYSTEM_PROPERTIES_NAMESPACE).ToString();
+                                    string uri = batchMessage.Message.Context.Read(Constants.BizTalkSystemPropertyNames.INBOUNDTRANSPORTLOCATION, Constants.BiztalkSystemPropertiesNamespace).ToString();
                                     DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), _traceFlag);
                                 }
                             }

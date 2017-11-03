@@ -101,11 +101,11 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <summary>
         /// Name of file. eg Afile.txt
         /// </summary>
-        public string FileName;
+        public readonly string FileName;
         /// <summary>
         /// Size in bytes. Later used for setting the size of the stream.
         /// </summary>
-        public long Size;
+        public readonly long Size;
     }
 
     /// <summary>

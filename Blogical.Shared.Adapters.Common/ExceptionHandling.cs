@@ -26,13 +26,13 @@ namespace Blogical.Shared.Adapters.Common
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="eventID"></param>
+        /// <param name="eventId"></param>
         /// <param name="methodId"></param>
         /// <param name="ex"></param>
         /// <returns></returns>
-        public static Exception HandleComponentException(int eventID, string methodId, Exception ex)
+        public static Exception HandleComponentException(int eventId, string methodId, Exception ex)
         {
-            CreateEventLogMessage(ex, methodId, null,eventID);
+            CreateEventLogMessage(ex, methodId, null,eventId);
             return ex;
         }
 
@@ -56,37 +56,37 @@ namespace Blogical.Shared.Adapters.Common
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="eventID"></param>
+        /// <param name="eventId"></param>
         /// <param name="methodBase"></param>
         /// <param name="ex"></param>
         /// <returns></returns>
-        public static Exception HandleComponentException(int eventID, System.Reflection.MethodBase methodBase, Exception ex)
+        public static Exception HandleComponentException(int eventId, System.Reflection.MethodBase methodBase, Exception ex)
         {
             string s = methodBase.DeclaringType.FullName + "." + methodBase.Name;
-            return HandleComponentException(eventID, methodBase.DeclaringType.FullName + "." + methodBase.Name, ex);
+            return HandleComponentException(eventId, methodBase.DeclaringType.FullName + "." + methodBase.Name, ex);
         }
 
         public static void CreateEventLogMessage(Exception ex, string methodId, string messageName)
         {
-            CreateEventLogMessage(createLogMessage(ex, methodId, messageName), 0, 0, EventLogEntryType.Error);
+            CreateEventLogMessage(CreateLogMessage(ex, methodId, messageName), 0, 0, EventLogEntryType.Error);
         }
 
-        public static void CreateEventLogMessage(Exception ex, string methodId, string messageName, int eventID)
+        public static void CreateEventLogMessage(Exception ex, string methodId, string messageName, int eventId)
         {
-            CreateEventLogMessage(createLogMessage(ex, methodId, messageName), eventID, 0, EventLogEntryType.Error);
+            CreateEventLogMessage(CreateLogMessage(ex, methodId, messageName), eventId, 0, EventLogEntryType.Error);
         }
 
-        public static void CreateEventLogMessage(Exception ex, string methodId, string messageName, int eventID, EventLogEntryType entryType)
+        public static void CreateEventLogMessage(Exception ex, string methodId, string messageName, int eventId, EventLogEntryType entryType)
         {
-            CreateEventLogMessage(createLogMessage(ex, methodId, messageName), eventID, 0, entryType);
+            CreateEventLogMessage(CreateLogMessage(ex, methodId, messageName), eventId, 0, entryType);
         }
 
         [EventLogPermission(SecurityAction.Demand, PermissionAccess=EventLogPermissionAccess.Write)]
         public static void CreateEventLogMessage(string message,
-            int eventID, short category, EventLogEntryType entryType)
+            int eventId, short category, EventLogEntryType entryType)
         {
-            EventLog eventLog = new EventLog {Source = EventLogSources.SFTPAdapter};
-            eventLog.WriteEntry(message, entryType, eventID, category);
+            EventLog eventLog = new EventLog {Source = EventLogSources.SftpAdapter};
+            eventLog.WriteEntry(message, entryType, eventId, category);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Blogical.Shared.Adapters.Common
         /// <param name="methodId">Name of the method that handled this exception.</param>
         /// <param name="messageName">The name of the message that caused the exception. (null if not available)</param>
         /// <returns>A string to write to the event-log</returns>
-        private static string createLogMessage(Exception ex, string methodId, string messageName) {
+        private static string CreateLogMessage(Exception ex, string methodId, string messageName) {
             
             StringBuilder message = new StringBuilder();
             // Add info about log-entry
@@ -107,13 +107,13 @@ namespace Blogical.Shared.Adapters.Common
                 message.AppendFormat("Message name: {0}\r\n", messageName);
             // Add info about exception
             message.Append("\r\n------------------------------\r\nInformation:\r\n");
-            message.Append(exceptionMessage(ex));
+            message.Append(ExceptionMessage(ex));
             // Add info about inner exceptions
             Exception e = ex;
             while (e.InnerException != null)
             {
                 message.Append("------------------------------\r\n");
-                message.Append(exceptionMessage(e.InnerException));
+                message.Append(ExceptionMessage(e.InnerException));
                 message.Append("\r\n");
                 e = e.InnerException;
             }
@@ -126,7 +126,7 @@ namespace Blogical.Shared.Adapters.Common
         /// </summary>
         /// <param name="ex">The exception to describe</param>
         /// <returns>A message describing an Exception.</returns>
-        private static string exceptionMessage(Exception ex)
+        private static string ExceptionMessage(Exception ex)
         {
             // Add exception info
             StringBuilder message = new StringBuilder();

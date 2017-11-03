@@ -22,34 +22,33 @@
 
 
 using System;
-
 using System.Collections.Specialized;
 using Microsoft.BizTalk.SSOClient.Interop;
 
-namespace Microsoft.SSO.Utility
+namespace Blogical.Shared.Adapters.Sftp
 {
     public class ConfigurationPropertyBag : IPropertyBag
     {
-        private HybridDictionary properties;
+        private readonly HybridDictionary _properties;
         internal ConfigurationPropertyBag()
         {
-            properties = new HybridDictionary();
+            _properties = new HybridDictionary();
         }
         public void Read(string propName, out object ptrVar, int errLog)
         {
-            ptrVar = properties[propName];
+            ptrVar = _properties[propName];
         }
         public void Write(string propName, ref object ptrVar)
         {
-            properties.Add(propName, ptrVar);
+            _properties.Add(propName, ptrVar);
         }
         public bool Contains(string key)
         {
-            return properties.Contains(key);
+            return _properties.Contains(key);
         }
         public void Remove(string key)
         {
-            properties.Remove(key);
+            _properties.Remove(key);
         }
     }
 

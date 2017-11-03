@@ -50,7 +50,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 				}
 			}
 		}
-        long totalNumdebrOfSeconds
+        long TotalNumdebrOfSeconds
         {
             get 
             {
@@ -80,9 +80,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 		{
 			XmlDocument configXml = new XmlDocument();
 			configXml.LoadXml(configxml);
-			type = ExtractScheduleType(configXml);
+			Type = ExtractScheduleType(configXml);
 
-			if (type != ScheduleType.Timely)
+			if (Type != ScheduleType.Timely)
 			{
 				throw (new ApplicationException("Invalid Configuration Type"));
 			}
@@ -109,7 +109,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 				throw(new ApplicationException("Uninitialized timely schedule")); 
 			}
 
-            return DateTime.Now.AddSeconds(totalNumdebrOfSeconds);
+            return DateTime.Now.AddSeconds(TotalNumdebrOfSeconds);
 
 		}
     }

@@ -10,60 +10,43 @@ namespace Blogical.Shared.Adapters.Sftp
 	internal class BatchMessage
     {
         #region Private Members
-        private IBaseMessage _message;
-		private object _userData;
-		private string _correlationToken;
-		private BatchOperationType _operationType;
-        private SftpReceiveProperties.AfterGetActions _aftergetaction;
-        private string _aftergetfilename;
+
         #endregion
         #region Internal Members
-        internal IBaseMessage Message
-        {
-            get { return _message; }
-        }
-        internal object UserData
-        {
-            get { return _userData; }
-        }
-        internal string CorrelationToken
-        {
-            get { return _correlationToken; }
-        }
-        internal BatchOperationType OperationType
-        {
-            get { return _operationType; }
-        }
-        internal SftpReceiveProperties.AfterGetActions AfterGetAction
-        {
-            get { return _aftergetaction; }
-        }
-        internal string AfterGetFilename
-        {
-            get { return _aftergetfilename; }
-        }
+        internal IBaseMessage Message { get; }
+
+        internal object UserData { get; }
+
+        internal string CorrelationToken { get; }
+
+        internal BatchOperationType OperationType { get; }
+
+        internal SftpReceiveProperties.AfterGetActions AfterGetAction { get; }
+
+        internal string AfterGetFilename { get; }
+
         #endregion
         #region Constructors
         internal BatchMessage(IBaseMessage message, object userData, BatchOperationType oppType)
 		{
-			_message = message;
-			_userData = userData;
-			_operationType = oppType;
+			Message = message;
+			UserData = userData;
+			OperationType = oppType;
 		}
         internal BatchMessage(IBaseMessage message, object userData, BatchOperationType oppType, 
             SftpReceiveProperties.AfterGetActions afterGetAction, string afterGetFilename)
         {
-            _message = message;
-            _userData = userData;
-            _operationType = oppType;
-            _aftergetaction = afterGetAction;
-            _aftergetfilename = afterGetFilename;
+            Message = message;
+            UserData = userData;
+            OperationType = oppType;
+            AfterGetAction = afterGetAction;
+            AfterGetFilename = afterGetFilename;
         }
         internal BatchMessage(string correlationToken, object userData, BatchOperationType oppType)
 		{
-			_correlationToken = correlationToken;
-			_userData = userData;
-			_operationType = oppType;
+			CorrelationToken = correlationToken;
+			UserData = userData;
+			OperationType = oppType;
         }
         #endregion      
     }

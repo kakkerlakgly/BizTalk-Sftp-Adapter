@@ -15,7 +15,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
     /// <history>2013-11-10 Greg Sharp, Add X.509 identity certificate support</history>
     public class StaticAdapterManagement : IStaticAdapterConfig, IAdapterConfigValidation
     {
-        private static ResourceManager _resourceManager = new ResourceManager("Blogical.Shared.Adapters.Sftp.Management.SftpResource", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager ResourceManager = new ResourceManager("Blogical.Shared.Adapters.Sftp.Management.SftpResource", Assembly.GetExecutingAssembly());
 
         /// <summary>
         /// Populating properties from property schemas
@@ -31,7 +31,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             XmlNodeList nodes = document.SelectNodes("/descendant::*[@_locID]");
             foreach (XmlNode node in nodes)
             {
-                string locID = node.Attributes["_locID"].Value;
+                string locId = node.Attributes["_locID"].Value;
                 //node.InnerText = resourceManager.GetString(locID);
             }
 
@@ -53,16 +53,16 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             switch (type)
             {
                 case ConfigType.ReceiveHandler:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveHandler.xsd"), _resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveHandler.xsd"), ResourceManager);
 
                 case ConfigType.ReceiveLocation:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveLocation.xsd"), _resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveLocation.xsd"), ResourceManager);
 
                 case ConfigType.TransmitHandler:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitHandler.xsd"), _resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitHandler.xsd"), ResourceManager);
 
                 case ConfigType.TransmitLocation:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitLocation.xsd"), _resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitLocation.xsd"), ResourceManager);
 
                 default:
                     return null;
@@ -85,10 +85,10 @@ namespace Blogical.Shared.Adapters.Sftp.Management
         /// Gets the XML instance of TreeView that needs to be rendered
         /// </summary>
         /// <param name="endPointConfiguration"></param>
-        /// <param name="NodeIdentifier"></param>
+        /// <param name="nodeIdentifier"></param>
         /// <returns>Location of TreeView xml instance</returns>
         public string GetServiceOrganization(IPropertyBag endPointConfiguration,
-                                             string NodeIdentifier)
+                                             string nodeIdentifier)
         {
             string result = GetResource("Blogical.Shared.Adapters.Sftp.Management.CategorySchema.xml");
             return result;
@@ -300,7 +300,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             }
             return nodeHost;
         }
-        internal static XmlNode GetNode(XmlDocument doc, string field, bool create)
+        internal static XmlNode GetNode(XmlDocument doc, string field, bool create = true)
         {
             //bool create = true;
             XmlNode nodeHost = doc.SelectSingleNode("/Config/" + field);
@@ -319,10 +319,6 @@ namespace Blogical.Shared.Adapters.Sftp.Management
                 nodeHost.InnerText = defValue;
             }
             return nodeHost;
-        }
-        internal static XmlNode GetNode(XmlDocument doc, string field)
-        {
-            return GetNode(doc, field, true);
         }
     }
 }

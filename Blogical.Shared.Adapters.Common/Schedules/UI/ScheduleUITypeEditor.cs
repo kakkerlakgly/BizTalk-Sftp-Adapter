@@ -15,8 +15,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 	/// </summary>
 	public class ScheduleUITypeEditor : UITypeEditor 
 	{
-		private IWindowsFormsEditorService service;
-		private ScheduleDialog dialog;
+		private IWindowsFormsEditorService _service;
+		private ScheduleDialog _dialog;
 
         /// <summary>
         /// Returns Modal Type
@@ -42,15 +42,15 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		{
 			if (context?.Instance != null && null != provider) 
 			{
-				service = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
-				if (null != service) 
+				_service = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
+				if (null != _service) 
 				{
-					dialog = new ScheduleDialog();
+					_dialog = new ScheduleDialog();
 					if (value != null)
-						dialog.ConfigXml.LoadXml((string)value);
-					if (service.ShowDialog(dialog) == DialogResult.OK)
+						_dialog.ConfigXml.LoadXml((string)value);
+					if (_service.ShowDialog(_dialog) == DialogResult.OK)
 					{
-						value = dialog.ConfigXml.OuterXml;
+						value = _dialog.ConfigXml.OuterXml;
 					}
 				}
 			}
@@ -58,7 +58,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void Exit(object sender, EventArgs e)
 		{
-		    service?.CloseDropDown();
+		    _service?.CloseDropDown();
 		}
 	}
     /// <summary>

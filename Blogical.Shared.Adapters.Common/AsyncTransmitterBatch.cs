@@ -52,56 +52,55 @@ namespace Blogical.Shared.Adapters.Common
     /// 
     public class AsyncTransmitterBatch : IBTTransmitterBatch
     {
-        protected int maxBatchSize;
-		protected string propertyNamespace;
-        protected IBTTransportProxy transportProxy;
-		protected AsyncTransmitter asyncTransmitter;
+        private readonly int _maxBatchSize;
+        private readonly IBTTransportProxy _transportProxy;
+        private readonly AsyncTransmitter _asyncTransmitter;
 
-        private IList<IBaseMessage> messages;
+        private readonly IList<IBaseMessage> _messages;
 
 		protected IList<IBaseMessage> Messages
 		{
-			get { return messages; }
+			get { return _messages; }
 		}
 
         private delegate void WorkerDelegate();
 
         public AsyncTransmitterBatch (int maxBatchSize, Type endpointType, string propertyNamespace, IPropertyBag handlerPropertyBag, IBTTransportProxy transportProxy, AsyncTransmitter asyncTransmitter)
         {
-            this.maxBatchSize = maxBatchSize;
-            this.propertyNamespace = propertyNamespace;
-            this.transportProxy = transportProxy;
-            this.asyncTransmitter = asyncTransmitter;
+            this._maxBatchSize = maxBatchSize;
+            this.PropertyNamespace = propertyNamespace;
+            this._transportProxy = transportProxy;
+            this._asyncTransmitter = asyncTransmitter;
             
-            messages = new List<IBaseMessage>();
+            _messages = new List<IBaseMessage>();
 
             // this.worker = new WorkerDelegate(Worker);
         }
 
-        public string PropertyNamespace { get { return propertyNamespace; } }
+        public string PropertyNamespace { get; }
 
         // IBTTransmitterBatch
         public object BeginBatch (out int nMaxBatchSize)
         {
-            nMaxBatchSize = maxBatchSize;
+            nMaxBatchSize = _maxBatchSize;
             return null;
         }
         // Just build a list of messages for this batch - return false means we are asynchronous
         public bool TransmitMessage (IBaseMessage message)
         {
-            messages.Add(message);
+            _messages.Add(message);
             return false;
         }
         public void Clear ()
         {
-            messages.Clear();
+            _messages.Clear();
         }
         public void Done (IBTDTCCommitConfirm commitConfirm)
         {
-            if (messages.Count == 0)
+            if (_messages.Count == 0)
             {
                 Exception ex = new InvalidOperationException("Send adapter received an emtpy batch for transmission from BizTalk");
-                transportProxy.SetErrorInfo(ex);
+                _transportProxy.SetErrorInfo(ex);
 
                 return;
             }
@@ -109,10 +108,10 @@ namespace Blogical.Shared.Adapters.Common
             //  The Enter/Leave is used to implement the Terminate call from BizTalk.
 
             //  Do an "Enter" for every message
-            int MessageCount = messages.Count;
-            for (int i = 0; i < MessageCount; i++)
+            int messageCount = _messages.Count;
+            for (int i = 0; i < messageCount; i++)
             {
-                if (!asyncTransmitter.Enter())
+                if (!_asyncTransmitter.Enter())
                     throw new InvalidOperationException("Send adapter Enter call was false within Done. This is illegal and should never happen."); ;
             }
 
@@ -123,8 +122,8 @@ namespace Blogical.Shared.Adapters.Common
             catch (Exception)
             {
                 //  If there was an error we had better do the "Leave" here
-                for (int i = 0; i < MessageCount; i++)
-                    asyncTransmitter.Leave();
+                for (int i = 0; i < messageCount; i++)
+                    _asyncTransmitter.Leave();
             }
         }
 
@@ -135,28 +134,28 @@ namespace Blogical.Shared.Adapters.Common
 
             //  If we sort into subbatches we will need a "Leave" for each otherwise do all the "Leaves" here
             //  In this code we have only one batch. If a sort into subbatches was added this number might change.
-            int BatchCount = 1;
-            int MessageCount = messages.Count;
-            int LeaveCount = MessageCount - BatchCount;
+            int batchCount = 1;
+            int messageCount = _messages.Count;
+            int leaveCount = messageCount - batchCount;
 
-            for (int i = 0; i < LeaveCount; i++)
-                asyncTransmitter.Leave();
+            for (int i = 0; i < leaveCount; i++)
+                _asyncTransmitter.Leave();
 
             bool needToLeave = true;
 
             try
             {
-                using (Batch batch = new TransmitResponseBatch(transportProxy, AllWorkDone))
+                using (Batch batch = new TransmitResponseBatch(_transportProxy, AllWorkDone))
                 {
 
-                    foreach (IBaseMessage message in messages)
+                    foreach (IBaseMessage message in _messages)
                     {
                         AsyncTransmitterEndpoint endpoint = null;
 
                         try
                         {
                             // Get appropriate endpoint for the message. Should always be non-null
-                            endpoint = asyncTransmitter.GetEndpoint(message);
+                            endpoint = _asyncTransmitter.GetEndpoint(message);
 
                             //  ask the endpoint to process the message
                             IBaseMessage responseMsg = endpoint.ProcessMessage(message);
@@ -195,7 +194,7 @@ namespace Blogical.Shared.Adapters.Common
             {
                 //  We need to Leave from this thread because the Done call failed and so there won't be any callback happening
                 if (needToLeave)
-                    asyncTransmitter.Leave();
+                    _asyncTransmitter.Leave();
             }
         }
 
@@ -221,7 +220,7 @@ namespace Blogical.Shared.Adapters.Common
 
         private void AllWorkDone ()
         {
-            asyncTransmitter.Leave();
+            _asyncTransmitter.Leave();
         }
     }
 }

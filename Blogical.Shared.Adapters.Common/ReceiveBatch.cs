@@ -41,97 +41,97 @@ namespace Blogical.Shared.Adapters.Common
     {
         public ReceiveBatch (IBTTransportProxy transportProxy, ControlledTermination control, ManualResetEvent orderedEvent, int depth) : base(transportProxy, true)
         {
-            this.control = control;
-            this.orderedEvent = orderedEvent;
-            innerBatch = null;
-            this.depth = depth;
+            this._control = control;
+            this._orderedEvent = orderedEvent;
+            _innerBatch = null;
+            this._depth = depth;
         }
 
         public ReceiveBatch(IBTTransportProxy transportProxy, ControlledTermination control, ReceiveBatchCompleteHandler callback, int depth) : base(transportProxy, true)
         {
-            this.control = control;
+            this._control = control;
 
             if( callback != null )
             {
                 ReceiveBatchComplete += callback;
             }
 
-            innerBatch = null;
-            this.depth = depth;
+            _innerBatch = null;
+            this._depth = depth;
         }
 
         protected override void StartProcessFailures ()
         {
             // Keep a recusive batch depth so we stop trying at some point.
-            if (!OverallSuccess && depth > 0)
+            if (!OverallSuccess && _depth > 0)
             {
                 //  we don't at this point care about ordering with respect to failures
-                if (orderedEvent != null)
+                if (_orderedEvent != null)
                 {
-                    innerBatch =
-                        new ReceiveBatch(TransportProxy, control, orderedEvent, depth - 1)
+                    _innerBatch =
+                        new ReceiveBatch(TransportProxy, _control, _orderedEvent, _depth - 1)
                         {
                             ReceiveBatchComplete = ReceiveBatchComplete
                         };
                 }
                 else
                 {
-                    innerBatch = new ReceiveBatch(TransportProxy, control, ReceiveBatchComplete, depth - 1);
+                    _innerBatch = new ReceiveBatch(TransportProxy, _control, ReceiveBatchComplete, _depth - 1);
                 }
-                innerBatchCount = 0;
+                _innerBatchCount = 0;
             }
         }
         protected override void EndProcessFailures ()
         {
-            if (innerBatch != null && innerBatchCount > 0)
+            if (_innerBatch != null && _innerBatchCount > 0)
             {
                 try
                 {
-                    innerBatch.Done(null);
-                    needToLeave = false;
+                    _innerBatch.Done(null);
+                    _needToLeave = false;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.EndProcessFailures Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
         }
         protected override void EndBatchComplete ()
         {
-            if (needToLeave)
-                control.Leave();
+            if (_needToLeave)
+                _control.Leave();
 
             //  if there is no pending work and we have been given an event to set then set it!
-            if (innerBatch == null)
+            if (_innerBatch == null)
             {
                 // Theoretically, suspend should never fail unless DB is down/not-reachable
                 // or the stream is not seekable. In such cases, there is a chance of duplicates
                 // but that's safer than deleting messages that are not in the DB.
-                ReceiveBatchComplete?.Invoke(OverallSuccess && !suspendFailed);
+                ReceiveBatchComplete?.Invoke(OverallSuccess && !_suspendFailed);
 
-                orderedEvent?.Set();
+                _orderedEvent?.Set();
             }
         }
 
         protected override void SubmitFailure (IBaseMessage message, Int32 hrStatus, object userData)
         {
-            failedMessages.Add(new FailedMessage(message, hrStatus));
+            _failedMessages.Add(new FailedMessage(message, hrStatus));
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
 
-            if (innerBatch != null)
+            if (_innerBatch != null)
             {
                 try
                 {
                     originalStream.Seek(0, SeekOrigin.Begin);
                     message.BodyPart.Data = originalStream;
-                    innerBatch.MoveToSuspendQ(message, userData);
-                    innerBatchCount++;
+                    _innerBatch.MoveToSuspendQ(message, userData);
+                    _innerBatchCount++;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.SubmitFailure Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
         }
@@ -139,21 +139,21 @@ namespace Blogical.Shared.Adapters.Common
         {
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
 
-            if (innerBatch != null)
+            if (_innerBatch != null)
             {
-                failedMessages.Add(new FailedMessage(message, hrStatus));
+                _failedMessages.Add(new FailedMessage(message, hrStatus));
                 // this good message was caught up with some bad ones - it needs to be submitted again
                 try
                 {
                     originalStream.Seek(0, SeekOrigin.Begin);
                     message.BodyPart.Data = originalStream;
-                    innerBatch.SubmitMessage(message, userData);
-                    innerBatchCount++;
+                    _innerBatch.SubmitMessage(message, userData);
+                    _innerBatchCount++;
                 }
                 catch(Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.SubmitSuccess Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
             else
@@ -164,22 +164,22 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void SubmitRequestFailure(IBaseMessage message, int hrStatus, object userData)
         {
-            failedMessages.Add(new FailedMessage(message, hrStatus));
+            _failedMessages.Add(new FailedMessage(message, hrStatus));
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
 
-            if (innerBatch != null)
+            if (_innerBatch != null)
             {
                 try
                 {
                     originalStream.Seek(0, SeekOrigin.Begin);
                     message.BodyPart.Data = originalStream;
-                    innerBatch.MoveToSuspendQ(message, userData);
-                    innerBatchCount++;
+                    _innerBatch.MoveToSuspendQ(message, userData);
+                    _innerBatchCount++;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.SubmitFailure Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
         }
@@ -188,20 +188,20 @@ namespace Blogical.Shared.Adapters.Common
         {
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
 
-            if (innerBatch != null)
+            if (_innerBatch != null)
             {
-                failedMessages.Add(new FailedMessage(message, hrStatus));
+                _failedMessages.Add(new FailedMessage(message, hrStatus));
                 try
                 {
                     originalStream.Seek(0, SeekOrigin.Begin);
                     message.BodyPart.Data = originalStream;
-                    innerBatch.SubmitMessage(message, userData);
-                    innerBatchCount++;
+                    _innerBatch.SubmitMessage(message, userData);
+                    _innerBatchCount++;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.SubmitSuccess Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
             else
@@ -212,7 +212,7 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void MoveToSuspendQFailure (IBaseMessage message, Int32 hrStatus, object userData)
         {
-            suspendFailed = true;
+            _suspendFailed = true;
 
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
             originalStream.Close();
@@ -223,19 +223,19 @@ namespace Blogical.Shared.Adapters.Common
             Stream originalStream = message.BodyPart.GetOriginalDataStream();
 
             //  We may not be done: so if we have successful suspends from last time then suspend them again
-            if (innerBatch != null)
+            if (_innerBatch != null)
             {
                 try
                 {
                     originalStream.Seek(0, SeekOrigin.Begin);
                     message.BodyPart.Data = originalStream;
-                    innerBatch.MoveToSuspendQ(message, userData);
-                    innerBatchCount++;
+                    _innerBatch.MoveToSuspendQ(message, userData);
+                    _innerBatchCount++;
                 }
                 catch (Exception e)
                 {
                     Trace.WriteLine("ReceiveBatch.MoveToSuspendQSuccess Exception: {0}", e.Message);
-                    innerBatch = null;
+                    _innerBatch = null;
                 }
             }
             else
@@ -243,20 +243,20 @@ namespace Blogical.Shared.Adapters.Common
                 originalStream.Close();
             }
         }
-        private bool needToLeave = true;
-        private ControlledTermination control;
-        private ReceiveBatch innerBatch;
-        private int innerBatchCount;
-        private ManualResetEvent orderedEvent;
-        private int depth;
-        private bool suspendFailed;
+        private bool _needToLeave = true;
+        private readonly ControlledTermination _control;
+        private ReceiveBatch _innerBatch;
+        private int _innerBatchCount;
+        private readonly ManualResetEvent _orderedEvent;
+        private readonly int _depth;
+        private bool _suspendFailed;
 
-        private IList<FailedMessage> failedMessages = new List<FailedMessage>();
+        private IList<FailedMessage> _failedMessages = new List<FailedMessage>();
 
         public IList<FailedMessage> FailedMessages
         {
-            get { return failedMessages; }
-            set { failedMessages = value; }
+            get { return _failedMessages; }
+            set { _failedMessages = value; }
         }
 
         public event ReceiveBatchCompleteHandler ReceiveBatchComplete;
@@ -264,25 +264,14 @@ namespace Blogical.Shared.Adapters.Common
 
     public class FailedMessage
     {
-        private IBaseMessage message;
-        private int status;
+        public IBaseMessage Message { get; set; }
 
-        public IBaseMessage Message
-        {
-            get { return message; }
-            set { message = value; }
-        }
-
-        public int Status
-        {
-            get { return status; }
-            set { status = value; }
-        }
+        public int Status { get; set; }
 
         public FailedMessage(IBaseMessage message, int status)
         {
-            this.message = message;
-            this.status = status;
+            this.Message = message;
+            this.Status = status;
         }
     }
 }

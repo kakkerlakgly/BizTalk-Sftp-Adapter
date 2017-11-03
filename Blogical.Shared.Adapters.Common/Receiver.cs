@@ -48,10 +48,10 @@ namespace Blogical.Shared.Adapters.Common
         IDisposable
     {
         //  core member data
-        private Dictionary<string, ReceiverEndpoint> endpoints = new Dictionary<string, ReceiverEndpoint>(StringComparer.OrdinalIgnoreCase);
-        private Type endpointType;
+        private Dictionary<string, ReceiverEndpoint> _endpoints = new Dictionary<string, ReceiverEndpoint>(StringComparer.OrdinalIgnoreCase);
+        private readonly Type _endpointType;
 
-        private ControlledTermination control;
+        private readonly ControlledTermination _control;
 
         protected Receiver (
             string name,
@@ -69,64 +69,64 @@ namespace Blogical.Shared.Adapters.Common
             clsid,
             propertyNamespace)
         {
-			this.endpointType = endpointType;
-            control = new ControlledTermination();
+			this._endpointType = endpointType;
+            _control = new ControlledTermination();
 		}
 
         public void Dispose()
         {
-            control.Dispose();
+            _control.Dispose();
         }
 
         //  IBTTransportConfig
-        public void AddReceiveEndpoint (string Url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
+        public void AddReceiveEndpoint (string url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
         {
             if (!Initialized)
                 throw new NotInitialized();
 
-            if (endpoints.ContainsKey(Url))
-                throw new EndpointExists(Url);
+            if (_endpoints.ContainsKey(url))
+                throw new EndpointExists(url);
 
-            ReceiverEndpoint endpoint = (ReceiverEndpoint)Activator.CreateInstance(endpointType);
+            ReceiverEndpoint endpoint = (ReceiverEndpoint)Activator.CreateInstance(_endpointType);
 
             if (null == endpoint)
-                throw new CreateEndpointFailed(endpointType.FullName, Url);
+                throw new CreateEndpointFailed(_endpointType.FullName, url);
 
-            endpoint.Open(Url, pConfig, pBizTalkConfig, HandlerPropertyBag, TransportProxy, TransportType, PropertyNamespace, control);
+            endpoint.Open(url, pConfig, pBizTalkConfig, HandlerPropertyBag, TransportProxy, TransportType, PropertyNamespace, _control);
 
-            endpoints[Url] = endpoint;
+            _endpoints[url] = endpoint;
         }
-        public void UpdateEndpointConfig (string Url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
+        public void UpdateEndpointConfig (string url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
         {
             if (!Initialized)
                 throw new NotInitialized();
 
-            ReceiverEndpoint endpoint = endpoints[Url];
+            ReceiverEndpoint endpoint = _endpoints[url];
 
             if (null == endpoint)
-                throw new EndpointNotExists(Url);
+                throw new EndpointNotExists(url);
 
             //  delegate the update call to the endpoint instance itself
             endpoint.Update(pConfig, pBizTalkConfig, HandlerPropertyBag);
 		}
-        public void RemoveReceiveEndpoint (string Url)
+        public void RemoveReceiveEndpoint (string url)
         {
 			if (!Initialized)
 				throw new NotInitialized();
 
-			ReceiverEndpoint endpoint = endpoints[Url];
+			ReceiverEndpoint endpoint = _endpoints[url];
 
 			if (null == endpoint)
 				return;
 
-			endpoints.Remove(Url);
+			_endpoints.Remove(url);
 			endpoint.Dispose();
 		}
 
         public ReceiverEndpoint GetEndpoint(string url)
         {
             ReceiverEndpoint endpoint;
-            endpoints.TryGetValue(url, out endpoint);
+            _endpoints.TryGetValue(url, out endpoint);
 
             return endpoint;
         }
@@ -136,15 +136,15 @@ namespace Blogical.Shared.Adapters.Common
             try
             {
                 base.Terminate();
-                foreach (ReceiverEndpoint endpoint in endpoints.Values)
+                foreach (ReceiverEndpoint endpoint in _endpoints.Values)
                 {
                     endpoint.Dispose();
                 }
-                endpoints.Clear();
-                endpoints = null;
+                _endpoints.Clear();
+                _endpoints = null;
 
                 //  Block until we are done...
-                control.Terminate();
+                _control.Terminate();
             }
             finally
             {

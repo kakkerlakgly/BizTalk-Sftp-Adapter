@@ -1,19 +1,21 @@
-using System.Diagnostics;
 using System.ComponentModel;
 using System.Configuration.Install;
-using Blogical.Shared.Adapters.Common;
+using System.Diagnostics;
 
-[RunInstaller(true)]
-public class MyEventLogInstaller : Installer
+namespace Blogical.Shared.Adapters.Common
 {
-    public MyEventLogInstaller()
+    [RunInstaller(true)]
+    public class MyEventLogInstaller : Installer
     {
-        EventLogInstaller installer = new EventLogInstaller
+        public MyEventLogInstaller()
         {
-            Log = "Application",
-            Source = EventLogSources.SFTPAdapter
-        };
+            EventLogInstaller installer = new EventLogInstaller
+            {
+                Log = "Application",
+                Source = EventLogSources.SftpAdapter
+            };
 
-        Installers.Add(installer);
+            Installers.Add(installer);
+        }
     }
 }

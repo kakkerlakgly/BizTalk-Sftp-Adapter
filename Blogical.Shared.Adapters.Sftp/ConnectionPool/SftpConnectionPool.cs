@@ -44,10 +44,10 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                 {
                     string name = node.Attributes["hostName"].Value;
                     int connLimit = int.Parse(node.Attributes["connectionLimit"].Value);
-                    _hosts.Add(new SftpHost(name, connLimit, true));
+                    Hosts.Add(new SftpHost(name, connLimit, true));
                     Trace.WriteLine("[SftpConnectionPool] A limited connections("+connLimit.ToString()+") given to "+ name+".");
                 }
-                Trace.WriteLine("[SftpConnectionPool] SftpConnectionPool was loaded with " + _hosts.Count.ToString() + " hosts.");
+                Trace.WriteLine("[SftpConnectionPool] SftpConnectionPool was loaded with " + Hosts.Count.ToString() + " hosts.");
             }
             catch (Exception e)
             {
@@ -56,7 +56,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
             }
 
         }
-        static ConcurrentBag<SftpHost> _hosts = new ConcurrentBag<SftpHost>();
+        static readonly ConcurrentBag<SftpHost> Hosts = new ConcurrentBag<SftpHost>();
         /// <summary>
         /// Default number of connections per server
         /// </summary>
@@ -69,9 +69,9 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <returns></returns>
         public static SftpHost GetHostByName(SftpTransmitProperties properties)//string hostName, bool trace, int connectionLimit)
         {
-            lock (_hosts)
+            lock (Hosts)
             {
-                foreach (SftpHost host in _hosts)
+                foreach (SftpHost host in Hosts)
                 {
                     if (host.HostName == properties.SSHHost)
                     {
@@ -86,7 +86,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                 }
 
                 SftpHost newHost = new SftpHost(properties.SSHHost, properties.ConnectionLimit, properties.DebugTrace);
-                _hosts.Add(newHost);
+                Hosts.Add(newHost);
 
                 return newHost;
             }
@@ -96,10 +96,10 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// </summary>
         public static void Dispose()
         {
-            lock (_hosts)
+            lock (Hosts)
             {
                 SftpHost host;
-                while (_hosts.TryTake(out host))
+                while (Hosts.TryTake(out host))
                 {
                     ISftp sftp;
                     while (host.Connections.TryPop(out sftp))
@@ -121,7 +121,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
     {
         #region Private Members
         int _currentCount;
-        bool _trace;
+        readonly bool _trace;
         #endregion
         #region Constructors
 
@@ -142,7 +142,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <summary>
         /// Connection pool
         /// </summary>
-        public ConcurrentStack<ISftp> Connections = new ConcurrentStack<ISftp>();
+        public readonly ConcurrentStack<ISftp> Connections = new ConcurrentStack<ISftp>();
         /// <summary>
         /// Connection limit per server
         /// </summary>
@@ -150,7 +150,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <summary>
         /// Server name
         /// </summary>
-        public string HostName;
+        public readonly string HostName;
         #endregion
         #region Public Methods
 

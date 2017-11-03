@@ -54,11 +54,7 @@ namespace Blogical.Shared.Adapters.Common
         private const int MAX_BATCH_SIZE = 50;
 
         //  members to initialize the batch with
-        private int maxBatchSize;
-        private Type endpointType;
-        private IDictionary<string, AsyncTransmitterEndpoint> endpoints = new Dictionary<string, AsyncTransmitterEndpoint>();
-
-        private ControlledTermination control;
+        private readonly IDictionary<string, AsyncTransmitterEndpoint> _endpoints = new Dictionary<string, AsyncTransmitterEndpoint>();
 
         protected AsyncTransmitter (
             string name,
@@ -77,26 +73,20 @@ namespace Blogical.Shared.Adapters.Common
             clsid,
             propertyNamespace)
         {
-            this.endpointType = endpointType;
-            this.maxBatchSize = maxBatchSize;
-            control = new ControlledTermination();
+            this.EndpointType = endpointType;
+            this.MaxBatchSize = maxBatchSize;
+            ControlledTermination = new ControlledTermination();
         }
 
-        protected virtual int MaxBatchSize
-        {
-            get { return maxBatchSize; }
-        }
+        protected virtual int MaxBatchSize { get; }
 
-        protected Type EndpointType
-        {
-            get { return endpointType; }
-        }
+        protected Type EndpointType { get; }
 
-        protected ControlledTermination ControlledTermination { get { return control; } }
+        protected ControlledTermination ControlledTermination { get; }
 
         public void Dispose()
         {
-            control.Dispose();
+            ControlledTermination.Dispose();
         }
 
         // IBTBatchTransmitter
@@ -130,19 +120,19 @@ namespace Blogical.Shared.Adapters.Common
             // Provide a virtual "CreateEndpointParameters" method to map message to endpoint
             EndpointParameters endpointParameters = CreateEndpointParameters(message);
 
-            lock (endpoints)
+            lock (_endpoints)
             {
-                AsyncTransmitterEndpoint endpoint = endpoints[endpointParameters.SessionKey];
+                AsyncTransmitterEndpoint endpoint = _endpoints[endpointParameters.SessionKey];
                 if (null == endpoint)
                 {
                     //  we haven't seen this location so far this batch so make a new endpoint
-                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(endpointType, this);
+                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(EndpointType, this);
 
                     endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
 
                     if (endpoint.ReuseEndpoint)
                     {
-                        endpoints[endpointParameters.SessionKey] = endpoint;
+                        _endpoints[endpointParameters.SessionKey] = endpoint;
                     }
                 }
                 return endpoint;
@@ -156,9 +146,9 @@ namespace Blogical.Shared.Adapters.Common
                 System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Terminate");
                 //  Block until we are done...
                 // Let all endpoints finish the work they are doing before disposing them
-                control.Terminate();
+                ControlledTermination.Terminate();
 
-                foreach (AsyncTransmitterEndpoint endpoint in endpoints.Values)
+                foreach (AsyncTransmitterEndpoint endpoint in _endpoints.Values)
                 {
                     //  clean up and potentially close any endpoints
                     try
@@ -182,13 +172,13 @@ namespace Blogical.Shared.Adapters.Common
         public bool Enter ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Enter");
-            return control.Enter();
+            return ControlledTermination.Enter();
         }
 
         public void Leave ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Leave");
-            control.Leave();
+            ControlledTermination.Leave();
         }
     }
 }

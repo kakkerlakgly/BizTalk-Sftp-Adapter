@@ -224,29 +224,20 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         public event EventHandler Changed;
         // Fields
         /// <summary>
-        /// Type of Scheduler such as Daily, Weekly etc
-        /// </summary>
-        protected ScheduleType type;
-        /// <summary>
         /// DateTime when schedule should start
         /// </summary>
-        protected object starttime;
+        protected object Starttime;
         /// <summary>
         /// DateTime when schedule should end
         /// </summary>
-        protected object startdate;
+        protected object Startdate;
 
         //Properties
         /// <summary>
         /// Type of Scheduler such as Daily, Weekly etc
         /// </summary>
-        public ScheduleType Type
-        {
-            get
-            {
-                return type;
-            }
-        }
+        public ScheduleType Type { get; protected set; }
+
         /// <summary>
         /// DateTime when schedule should start
         /// </summary>
@@ -254,12 +245,12 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get
             {
-                return (DateTime)starttime;
+                return (DateTime)Starttime;
             }
             set
             {
                 DateTime newDate = new DateTime(1900, 1, 1, value.Hour, value.Minute, value.Second);
-                if (newDate != (DateTime)Interlocked.Exchange(ref starttime, newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref Starttime, newDate))
                 {
                     FireChangedEvent();
                 }
@@ -272,12 +263,12 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             get
             {
-                return (DateTime)startdate;
+                return (DateTime)Startdate;
             }
             set
             {
                 DateTime newDate = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0);
-                if (newDate != (DateTime)Interlocked.Exchange(ref startdate, newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref Startdate, newDate))
                 {
                     FireChangedEvent();
                 }
@@ -290,9 +281,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         public Schedule()
         {
-            type = ScheduleType.None;
-            starttime = new DateTime(1900, 1, 1, 0, 0, 0);
-            startdate = DateTime.Now;
+            Type = ScheduleType.None;
+            Starttime = new DateTime(1900, 1, 1, 0, 0, 0);
+            Startdate = DateTime.Now;
         }
 
         /// <summary>

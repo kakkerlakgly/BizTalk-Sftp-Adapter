@@ -19,8 +19,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
 		public delegate void TaskDelegate();
 		// Fields
-		private string name;
-		private TaskDelegate taskDelegate;
+	    private readonly TaskDelegate _taskDelegate;
 		// Properties
         /// <summary>
         /// Allways false
@@ -55,14 +54,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <summary>
         /// Name of task == URI
         /// </summary>
-		public string Name
-		{
-			get
-			{
-				return name;
-			}
-		}
-		// Methods
+		public string Name { get; }
+
+	    // Methods
         /// <summary>
         /// Constructor
         /// </summary>
@@ -70,8 +64,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <param name="taskDelegate"></param>
 		public ScheduledTask(string name, TaskDelegate taskDelegate)
 		{
-			this.name = name;
-			this.taskDelegate = taskDelegate;
+			this.Name = name;
+			this._taskDelegate = taskDelegate;
 		}
 
 		private void FireProgress(TaskProgress progress)
@@ -98,7 +92,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 			try
 			{
 				FireProgress(TaskProgress.Started);
-				taskDelegate();
+				_taskDelegate();
 				FireProgress(TaskProgress.Succeeded);
 			}
 			catch (Exception)

@@ -32,19 +32,19 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <summary>
         /// Name of the application host or server
         /// </summary>
-        public string Host;
+        public readonly string Host;
         /// <summary>
         /// Unique id retrieved from server
         /// </summary>
-        public string HostKey;
+        public readonly string HostKey;
     }
     /// <summary>
     /// 
     /// </summary>
     internal static class ApplicationStorageHelper
     {
-        const string settingsFileName = "SftpHostFiles.config";
-        const string objlock = "lock";
+        const string SettingsFileName = "SftpHostFiles.config";
+        const string Objlock = "lock";
         /// <summary>
         /// Load all hostkeys from IsolatedStorage.
         /// Eg. \Document and Settings\[BizTalk Service User]\Local Settings\Application Data\IsolatedStorage\
@@ -53,48 +53,48 @@ namespace Blogical.Shared.Adapters.Sftp
         public static IProducerConsumerCollection<ApplicationStorage> Load()
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
-            var ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
-            if (isoStore.GetFileNames(settingsFileName).Length == 0)
+            var applicationStorage = new ConcurrentBag<ApplicationStorage>();
+            if (isoStore.GetFileNames(SettingsFileName).Length == 0)
             {
-                return ApplicationStorage;
+                return applicationStorage;
             }
 
             // Read the stream from Isolated Storage.
-            lock (objlock)
+            lock (Objlock)
             {
-                using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore))
+                using (Stream stream = new IsolatedStorageFileStream(SettingsFileName, FileMode.OpenOrCreate, isoStore))
                 {
                     XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
                     using (TextReader reader = new StreamReader(stream))
                     {
                         ApplicationStorage[] arr = (ApplicationStorage[])ser.Deserialize(reader);
                     }
-                    ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
+                    applicationStorage = new ConcurrentBag<ApplicationStorage>();
                 }
             }
-            return ApplicationStorage;
+            return applicationStorage;
         }
 
         public static IProducerConsumerCollection<ApplicationStorage> _Load()
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
-            var ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
-            if (isoStore.GetFileNames(settingsFileName).Length == 0)
+            var applicationStorage = new ConcurrentBag<ApplicationStorage>();
+            if (isoStore.GetFileNames(SettingsFileName).Length == 0)
             {
-                return ApplicationStorage;
+                return applicationStorage;
             }
 
             // Read the stream from Isolated Storage.
-            using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore))
+            using (Stream stream = new IsolatedStorageFileStream(SettingsFileName, FileMode.OpenOrCreate, isoStore))
             {
                 XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
                 using (TextReader reader = new StreamReader(stream))
                 {
                     ApplicationStorage[]arr= (ApplicationStorage[])ser.Deserialize(reader);
                 }
-                ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
+                applicationStorage = new ConcurrentBag<ApplicationStorage>();
             }
-            return ApplicationStorage;
+            return applicationStorage;
         }
         /// <summary>
         /// Save hostkeys to IsolatedStorage
@@ -107,9 +107,9 @@ namespace Blogical.Shared.Adapters.Sftp
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
             // Greg Sharp: Provide thread-safety around write access to the config file
-            lock (objlock)
+            lock (Objlock)
             {
-                using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.Create, isoStore))
+                using (Stream stream = new IsolatedStorageFileStream(SettingsFileName, FileMode.Create, isoStore))
                 {
                     XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
                     using (TextWriter writer = new StreamWriter(stream))

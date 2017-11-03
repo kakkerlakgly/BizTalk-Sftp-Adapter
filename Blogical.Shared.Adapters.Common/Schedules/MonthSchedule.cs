@@ -12,10 +12,10 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 	public class MonthSchedule: Schedule
 	{
 		// Fields
-		private int day;							//day of month
-		private object ordinal = 0;				//ordinal week day (first, last..)
-		private object weekday = 0;				//day of week ( Monday, Tuesday...)
-		private object months = 0;				//months of year flag
+		private int _day;							//day of month
+		private object _ordinal = 0;				//ordinal week day (first, last..)
+		private object _weekday = 0;				//day of week ( Monday, Tuesday...)
+		private object _months = 0;				//months of year flag
 		// Properties
         /// <summary>
         /// Every...
@@ -24,7 +24,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return day;
+				return _day;
 			}
 			set
 			{
@@ -32,7 +32,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				{
 					throw (new ArgumentOutOfRangeException(nameof(value), "Day range: 0 - 31"));
 				}
-				if (value != Interlocked.Exchange(ref day, value))
+				if (value != Interlocked.Exchange(ref _day, value))
 				{
 					FireChangedEvent();
 				}
@@ -45,11 +45,11 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return (ScheduleOrdinal)ordinal;
+				return (ScheduleOrdinal)_ordinal;
 			}
 			set
 			{
-				if (value != (ScheduleOrdinal)Interlocked.Exchange(ref ordinal, value))
+				if (value != (ScheduleOrdinal)Interlocked.Exchange(ref _ordinal, value))
 				{
 					FireChangedEvent();
 				}
@@ -62,11 +62,11 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return (ScheduleDay)weekday;
+				return (ScheduleDay)_weekday;
 			}
 			set
 			{
-				if (value != (ScheduleDay)Interlocked.Exchange(ref weekday, value))
+				if (value != (ScheduleDay)Interlocked.Exchange(ref _weekday, value))
 				{
 					FireChangedEvent();
 				}
@@ -79,7 +79,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			get
 			{
-				return (ScheduleMonth)months;
+				return (ScheduleMonth)_months;
 			}
 			set
 			{
@@ -87,7 +87,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				{
 					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify a month"));
 				}
-				if (value != (ScheduleMonth)Interlocked.Exchange(ref months, value))
+				if (value != (ScheduleMonth)Interlocked.Exchange(ref _months, value))
 				{
 					FireChangedEvent();
 				}
@@ -107,8 +107,8 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		{
 			XmlDocument configXml = new XmlDocument();
 			configXml.LoadXml(configxml);
-			type = ExtractScheduleType(configXml);
-			if (type != ScheduleType.Monthly)
+			Type = ExtractScheduleType(configXml);
+			if (Type != ScheduleType.Monthly)
 			{
 				throw (new ApplicationException("Invalid Configuration Type"));
 			}
@@ -140,7 +140,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if ((ScheduledMonths & GetScheduleMonthFlag(now)) > 0)
 				{ // could be our lucky month
-					if ((day <=  DateTime.DaysInMonth(now.Year, now.Month)))
+					if ((_day <=  DateTime.DaysInMonth(now.Year, now.Month)))
 					{
 						if (((Day == now.Day) && (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour)))
 										||(Day > now.Day))
@@ -153,7 +153,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				{
 					now = now.AddMonths(1);
 					if (((ScheduledMonths & GetScheduleMonthFlag(now)) > 0) && 
-												(day <=  DateTime.DaysInMonth(now.Year, now.Month)))
+												(_day <=  DateTime.DaysInMonth(now.Year, now.Month)))
 						break;
 				}
 				return new DateTime(now.Year, now.Month, Day, StartTime.Hour, StartTime.Minute, 0);

@@ -24,7 +24,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
         #endregion
 
-        private bool isInitialized;
+        private bool _isInitialized;
 
         #region Constructor
 
@@ -103,7 +103,7 @@ namespace Blogical.Shared.Adapters.Sftp
                                         new ScheduledTask(_properties.Uri,
                                         ControlledEndpointTask),
                                         _properties.Schedule);
-                    isInitialized = false;
+                    _isInitialized = false;
                 }
 
                 //Schedule the polling event
@@ -159,9 +159,9 @@ namespace Blogical.Shared.Adapters.Sftp
         public void ControlledEndpointTask()
         {
             // The taskController always starts the task when initializing, so here we ignore this first controller.StartTask() call:
-            if (!isInitialized)
+            if (!_isInitialized)
             {
-                isInitialized = true;
+                _isInitialized = true;
                 return;
             }
             if (_controlledTermination.Enter())
@@ -442,7 +442,7 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Private Members
 
         // The workload of files
-        private ArrayList _filesInProcess = ArrayList.Synchronized(new ArrayList());
+        private readonly ArrayList _filesInProcess = ArrayList.Synchronized(new ArrayList());
 
         //  Receive adapter properties
         private SftpReceiveProperties _properties;

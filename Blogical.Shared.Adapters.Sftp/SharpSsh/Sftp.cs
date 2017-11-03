@@ -19,19 +19,19 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
     public class Sftp : ISftp
     {
         #region Private Members
-        private IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
+        private readonly IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
         const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
         const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
         DateTime _connectedSince;
         SftpClient _sftp;
-        string _identityFile;
-        string _host;
-        string _user = String.Empty;
-        string _password;
-        string _passphrase = String.Empty;
+        readonly string _identityFile;
+        readonly string _host;
+        readonly string _user = String.Empty;
+        readonly string _password;
+        readonly string _passphrase = String.Empty;
 
         // Proxy Settings
-        string _proxyHost = string.Empty;
+        readonly string _proxyHost = string.Empty;
 
         #endregion
         #region ISftp Members
@@ -115,12 +115,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     return _sftp.OpenRead(fromFilePath);
                 }
                 catch
                 {
-                    reConnect();
+                    ReConnect();
                     return _sftp.OpenRead(fromFilePath);
                 }
             }
@@ -147,7 +147,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     _sftp.UploadFile(memStream, destination);
                 }
                 catch
@@ -182,12 +182,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     _sftp.RenameFile(oldName, newName);
                 }
                 catch
                 {
-                    reConnect();
+                    ReConnect();
                     _sftp.RenameFile(oldName, newName);
                 }
             }
@@ -218,12 +218,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     return dir(fileMask, uri, 0, filesInProcess, trace);
                 }
                 catch
                 {
-                    reConnect();
+                    ReConnect();
                     return dir(fileMask, uri, 0, filesInProcess, trace);
                 }
             }
@@ -255,12 +255,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     return dir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
                 }
                 catch
                 {
-                    reConnect();
+                    ReConnect();
                     return dir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
                 }
             }
@@ -294,12 +294,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 try
                 {
-                    connect();
+                    Connect();
                     _sftp.Delete(filePath);
                 }
                 catch
                 {
-                    reConnect();
+                    ReConnect();
                     _sftp.Delete(filePath);
                 }
             }
@@ -311,13 +311,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             {
                 RaiseOnDisconnect();
             }
-        }
-        /// <summary>
-        /// Open an ssh connection
-        /// </summary>
-        public void Connect()
-        {
-            connect();
         }
         /// <summary>
         /// Disconnects from sever
@@ -376,36 +369,17 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             }
             catch { throw new Exception("Unable to parse permissions to integer"); }
         }
-
-        /// <summary>
-        /// The event is fired when Disconnect is called
-        /// </summary>
-        public event DisconnectEventHandler OnDisconnect;
-
-        /// <summary>
-        /// Gets information about a file.
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="trace"></param>
-        /// <returns></returns>
-        public FileEntry GetFileEntry(string filePath, bool trace)
-        {
-            return getFileEntry(filePath, trace);
-        }
         #endregion
         #region Private Methods
+
         /// <summary>
-        /// Connects to server
+        /// Open an ssh connection
         /// </summary>
-        private void connect()
-        {
-            connect(false);
-        }
-        private void connect(bool force)
+        public void Connect()
         {
             try
             {
-                if (!_sftp.IsConnected || force)
+                if (!_sftp.IsConnected)
                 {
                     if (DebugTrace)
                         Trace.WriteLine("[SftpConnectionPool] Connecting to " + _host);
@@ -427,14 +401,14 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 throw ExceptionHandling.HandleComponentException(
                     EventLogEventIDs.UnableToConnectToHost,
                     System.Reflection.MethodBase.GetCurrentMethod(),
-                        new Exception("Unable to connect to Sftp host [" + _host + "]", ex));
+                    new Exception("Unable to connect to Sftp host [" + _host + "]", ex));
             }
         }
-        private void reConnect()
+        private void ReConnect()
         {
             Disconnect();
             Trace.WriteLine("[SftpConnectionPool] Reconnecting to " + _host);
-            connect(false);
+            Connect();
         }
         void RaiseOnDisconnect()
         {
@@ -445,8 +419,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                     Disconnect();
 
                 //this.connect();
-
-                OnDisconnect?.Invoke(this);
 
                 Trace.WriteLine("[SftpConnectionPool] Connection has timed out");
 
@@ -556,7 +528,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        private List<FileEntry> RandomDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             List<FileEntry> fileEntries = new List<FileEntry>();
 
@@ -636,7 +608,13 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             }
         }
 
-        private FileEntry getFileEntry(string filePath, bool trace)
+        /// <summary>
+        /// Gets information about a file.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="trace"></param>
+        /// <returns></returns>
+        public FileEntry GetFileEntry(string filePath, bool trace)
         {
             try
             {

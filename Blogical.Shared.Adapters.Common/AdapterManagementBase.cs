@@ -49,7 +49,7 @@ namespace Blogical.Shared.Adapters.Common
             }
 		}
 
-		protected XmlDocument LocalizeSchemaDOM (string schema, ResourceManager resourceManager)
+		protected XmlDocument LocalizeSchemaDom (string schema, ResourceManager resourceManager)
 		{
 			XmlDocument document = new XmlDocument();
 			document.LoadXml(schema);
@@ -57,8 +57,8 @@ namespace Blogical.Shared.Adapters.Common
 			XmlNodeList nodes = document.SelectNodes("/descendant::*[@_locID]");
 			foreach (XmlNode node in nodes)
 			{
-				string locID = node.Attributes["_locID"].Value;
-				node.InnerText = resourceManager.GetString(locID);
+				string locId = node.Attributes["_locID"].Value;
+				node.InnerText = resourceManager.GetString(locId);
 			}
 
 			return document;
@@ -75,7 +75,7 @@ namespace Blogical.Shared.Adapters.Common
 
 		protected string LocalizeSchema (string schema, ResourceManager resourceManager)
 		{
-			return MakeString(LocalizeSchemaDOM(schema, resourceManager));
+			return MakeString(LocalizeSchemaDom(schema, resourceManager));
 		}
 
 		protected XmlDocument AddPathToEditorAssembly (XmlDocument document, string assemblyPath)

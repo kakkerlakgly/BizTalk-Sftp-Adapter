@@ -34,94 +34,94 @@ namespace Blogical.Shared.Adapters.Common
 	{
         public TxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, bool makeSuccessCall) : base(transportProxy, makeSuccessCall)
         {
-			this.control = control;
+			this.Control = control;
 
-            comTxn = TransactionInterop.GetDtcTransaction(transaction);
+            ComTxn = TransactionInterop.GetDtcTransaction(transaction);
 
             //  the System.Transactions transaction - must be the original transaction - only that can be used to commit
-            this.transaction = transaction;
+            this.Transaction = transaction;
 
-			this.orderedEvent = orderedEvent;
+			this.OrderedEvent = orderedEvent;
 		}
         public TxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, IDtcTransaction comTxn, CommittableTransaction transaction, ManualResetEvent orderedEvent, bool makeSuccessCall) : base(transportProxy, makeSuccessCall)
         {
-            this.control = control;
-            this.comTxn = comTxn;
-            this.transaction = transaction;
-            this.orderedEvent = orderedEvent;
+            this.Control = control;
+            this.ComTxn = comTxn;
+            this.Transaction = transaction;
+            this.OrderedEvent = orderedEvent;
         }
         public override void Done ()
 		{
-            CommitConfirm = base.Done(comTxn);
+            CommitConfirm = base.Done(ComTxn);
 		}
 		protected override void EndBatchComplete ()
 		{
-			if (pendingWork)
+			if (_pendingWork)
 			{
 				return;
 			}
 			try
 			{
-				if (needToAbort)
+				if (_needToAbort)
 				{
-                    transaction.Rollback();
+                    Transaction.Rollback();
 
-                    CommitConfirm.DTCCommitConfirm(comTxn, false); 
+                    CommitConfirm.DTCCommitConfirm(ComTxn, false); 
 				}
 				else
 				{
-                    transaction.Commit();
+                    Transaction.Commit();
 
-                    CommitConfirm.DTCCommitConfirm(comTxn, true); 
+                    CommitConfirm.DTCCommitConfirm(ComTxn, true); 
 				}
 			}
 			catch
 			{
 				try
 				{
-					CommitConfirm.DTCCommitConfirm(comTxn, false); 
+					CommitConfirm.DTCCommitConfirm(ComTxn, false); 
 				}
 				catch
 				{
 				}
 			}
 			//  note the pending work check at the top of this function removes the need to check a needToLeave flag
-			control.Leave();
+			Control.Leave();
 
-		    orderedEvent?.Set();
+		    OrderedEvent?.Set();
 		}
         protected void SetAbort()
         {
-            needToAbort = true;
+            _needToAbort = true;
         }
         protected void SetComplete()
         {
-            needToAbort = false;
+            _needToAbort = false;
         }
         protected void SetPendingWork()
 		{
-			pendingWork = true;
+			_pendingWork = true;
 		}
 		protected IBTDTCCommitConfirm CommitConfirm
 		{
 			set
 			{
-				commitConfirm = value;
-				commitConfirmEvent.Set();
+				_commitConfirm = value;
+				_commitConfirmEvent.Set();
 			}
 			get
 			{
-				commitConfirmEvent.WaitOne();
-				return commitConfirm;
+				_commitConfirmEvent.WaitOne();
+				return _commitConfirm;
 			}
 		}
-        protected IDtcTransaction comTxn;
-        protected CommittableTransaction transaction;
-        protected ControlledTermination control;
-		protected IBTDTCCommitConfirm commitConfirm;
-		protected ManualResetEvent orderedEvent;
-		private ManualResetEvent commitConfirmEvent = new ManualResetEvent(false);
-		private bool needToAbort = true;
-		private bool pendingWork;
+        protected readonly IDtcTransaction ComTxn;
+        protected readonly CommittableTransaction Transaction;
+        protected readonly ControlledTermination Control;
+	    private IBTDTCCommitConfirm _commitConfirm;
+		protected readonly ManualResetEvent OrderedEvent;
+		private readonly ManualResetEvent _commitConfirmEvent = new ManualResetEvent(false);
+		private bool _needToAbort = true;
+		private bool _pendingWork;
 	}
 }

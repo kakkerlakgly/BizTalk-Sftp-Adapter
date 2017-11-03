@@ -31,9 +31,9 @@ namespace Blogical.Shared.Adapters.Common
 {
     public class SyncReceiveSubmitBatch : ReceiveBatch
     {
-        private ManualResetEvent workDone;
+        private readonly ManualResetEvent _workDone;
         private bool _overallSuccess;
-        private ControlledTermination control;
+        private readonly ControlledTermination _control;
 
         public SyncReceiveSubmitBatch(IBTTransportProxy transportProxy, ControlledTermination control, int depth)
             : this(transportProxy, control, new ManualResetEvent(false), depth) { }
@@ -42,19 +42,19 @@ namespace Blogical.Shared.Adapters.Common
                                         ManualResetEvent submitComplete, int depth)
             : base(transportProxy, control, submitComplete, depth)
         {
-            this.control = control;
-            workDone = submitComplete;
+            this._control = control;
+            _workDone = submitComplete;
             ReceiveBatchComplete += OnBatchComplete;
         }
 
         private void OnBatchComplete(bool overallSuccess)
         {
-            this._overallSuccess = overallSuccess;
+            _overallSuccess = overallSuccess;
         }
 
         public override void Done()
         {
-            bool needToLeave = control.Enter();
+            bool needToLeave = _control.Enter();
 
             try
             {
@@ -63,7 +63,7 @@ namespace Blogical.Shared.Adapters.Common
             catch
             {
                 if (needToLeave)
-                    control.Leave();
+                    _control.Leave();
 
                 throw;
             }
@@ -71,7 +71,7 @@ namespace Blogical.Shared.Adapters.Common
 
         public bool Wait()
         {
-            workDone.WaitOne();
+            _workDone.WaitOne();
 
             return _overallSuccess;
         }

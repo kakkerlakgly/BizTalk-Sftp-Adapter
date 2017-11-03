@@ -39,20 +39,20 @@ namespace Blogical.Shared.Adapters.Common
 	{
 		public delegate void TxnAborted ();
 
-		private TxnAborted txnAborted;
+		private readonly TxnAborted _txnAborted;
 
         public AbortOnFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, TxnAborted txnAborted) : base(transportProxy, control, transaction, orderedEvent, false)
         { 
-			this.txnAborted = txnAborted;
+			this._txnAborted = txnAborted;
 		}
         public AbortOnFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, IDtcTransaction comTxn, CommittableTransaction transaction, ManualResetEvent orderedEvent, TxnAborted txnAborted)
             : base(transportProxy, control, comTxn, transaction, orderedEvent, false)
         {
-            this.txnAborted = txnAborted;
+            this._txnAborted = txnAborted;
         }
         protected override void StartBatchComplete (int hrBatchComplete)
         {
-            if (HRStatus >= 0)
+            if (HrStatus >= 0)
             {
                 SetComplete();
             }
@@ -60,7 +60,7 @@ namespace Blogical.Shared.Adapters.Common
         protected override void StartProcessFailures ()
 		{
 			SetAbort();
-		    txnAborted?.Invoke();
+		    _txnAborted?.Invoke();
 		}
 	}
 
@@ -69,18 +69,18 @@ namespace Blogical.Shared.Adapters.Common
 	{
 		public delegate void StopProcessing ();
 
-		private StopProcessing stopProcessing;
+		private readonly StopProcessing _stopProcessing;
 
         public AbortOnAllFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, StopProcessing stopProcessing) : base(transportProxy, control, transaction, orderedEvent, false)
         {
-			this.stopProcessing = stopProcessing;
+			this._stopProcessing = stopProcessing;
 		}
 		protected override void StartBatchComplete (int hrBatchComplete)
 		{
-            if (HRStatus != 0)
+            if (HrStatus != 0)
             {
                 SetAbort();
-                stopProcessing?.Invoke();
+                _stopProcessing?.Invoke();
             }
             else
             {
@@ -98,26 +98,26 @@ namespace Blogical.Shared.Adapters.Common
 		{
 			if (!OverallSuccess)
 			{
-				innerBatch = new AbortOnFailureReceiveTxnBatch(TransportProxy, control, comTxn, transaction, orderedEvent, null);
-				innerBatchCount = 0;
+				_innerBatch = new AbortOnFailureReceiveTxnBatch(TransportProxy, Control, ComTxn, Transaction, OrderedEvent, null);
+				_innerBatchCount = 0;
 			}
 		}
 		protected override void SubmitFailure (IBaseMessage message, Int32 hrStatus, object userData)
 		{
-			if (innerBatch != null)
+			if (_innerBatch != null)
 			{
                 try
                 {
                     Stream originalStream = message.BodyPart.GetOriginalDataStream();
 				    originalStream.Seek(0, SeekOrigin.Begin);
 				    message.BodyPart.Data = originalStream;
-                    innerBatch.MoveToSuspendQ(message);
-					innerBatchCount++;
+                    _innerBatch.MoveToSuspendQ(message);
+					_innerBatchCount++;
 				}
 				catch (Exception e)
 				{
                     Trace.WriteLine("SingleMessageReceiveTxnBatch.SubmitFailure Exception: {0}", e.Message);
-					innerBatch = null;
+					_innerBatch = null;
 					SetAbort();
 				}
 			}
@@ -128,11 +128,11 @@ namespace Blogical.Shared.Adapters.Common
         }
 		protected override void EndProcessFailures ()
 		{
-			if (innerBatch != null && innerBatchCount > 0)
+			if (_innerBatch != null && _innerBatchCount > 0)
 			{
 				try
 				{
-					innerBatch.Done();
+					_innerBatch.Done();
 					SetPendingWork();
 				}
 				catch (Exception)
@@ -141,8 +141,8 @@ namespace Blogical.Shared.Adapters.Common
 				}
 			}
 		}
-		private Batch innerBatch;
-		private int innerBatchCount;
+		private Batch _innerBatch;
+		private int _innerBatchCount;
 	}
 }
 

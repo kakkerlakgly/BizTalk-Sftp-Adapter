@@ -33,12 +33,12 @@ namespace Blogical.Shared.Adapters.Common
     public abstract class EndpointParameters
     {
         public abstract string SessionKey { get; }
-        public string OutboundLocation { get { return outboundLocation; } }
+        public string OutboundLocation { get; }
+
         public EndpointParameters (string outboundLocation)
         {
-            this.outboundLocation = outboundLocation;
+            this.OutboundLocation = outboundLocation;
         }
-        protected string outboundLocation;
     }
 
     internal class DefaultEndpointParameters : EndpointParameters
@@ -46,7 +46,7 @@ namespace Blogical.Shared.Adapters.Common
         public override string SessionKey 
         {
             //  the SessionKey is the outboundLocation in the default case
-            get { return outboundLocation; }
+            get { return OutboundLocation; }
         }
         public DefaultEndpointParameters (string outboundLocation) : base(outboundLocation)
         {

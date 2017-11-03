@@ -17,12 +17,12 @@ namespace Blogical.Shared.Adapters.Common
     {
         public delegate void AllWorkDoneDelegate();
 
-        private AllWorkDoneDelegate allWorkDoneDelegate;
+        private AllWorkDoneDelegate _allWorkDoneDelegate;
 
         public TransmitResponseBatch(IBTTransportProxy transportProxy, AllWorkDoneDelegate allWorkDoneDelegate)
             : base(transportProxy, true)
         {
-            this.allWorkDoneDelegate = allWorkDoneDelegate;
+            this._allWorkDoneDelegate = allWorkDoneDelegate;
         }
 
         public override void SubmitResponseMessage(IBaseMessage solicitDocSent, IBaseMessage responseDocToSubmit)
@@ -56,8 +56,8 @@ namespace Blogical.Shared.Adapters.Common
                 {
                     new UpdateProperty
                     {
-                        Name = retryCountProp.Name.Name,
-                        NameSpace = retryCountProp.Name.Namespace,
+                        Name = RetryCountProp.Name.Name,
+                        NameSpace = RetryCountProp.Name.Namespace,
                         Value = context.RetryCount++
                     }
                 };
@@ -85,31 +85,31 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void StartBatchComplete(int hrBatchComplete)
         {
-            batchFailed = (HRStatus < 0);
+            _batchFailed = (HrStatus < 0);
         }
 
         protected override void StartProcessFailures()
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
                 // Retry should happen outside the transaction scope
-                batch = new TransmitResponseBatch(TransportProxy, allWorkDoneDelegate);
-                allWorkDoneDelegate = null;
+                _batch = new TransmitResponseBatch(TransportProxy, _allWorkDoneDelegate);
+                _allWorkDoneDelegate = null;
             }
         }
 
         protected override void EndProcessFailures()
         {
-            if (batch != null)
+            if (_batch != null)
             {
-                if (!batch.IsEmpty)
+                if (!_batch.IsEmpty)
                 {
-                    batch.Done(null);
+                    _batch.Done(null);
                 }
                 else
                 {
                     // If suspend or delete fails, then there is nothing adapter can do!
-                    batch.Dispose();
+                    _batch.Dispose();
                 }
             }
 
@@ -117,13 +117,13 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void EndBatchComplete()
         {
-            allWorkDoneDelegate?.Invoke();
+            _allWorkDoneDelegate?.Invoke();
         }
 
         // This is for submit-response
         protected override void SubmitSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
                 // Previous submit operation might have moved the stream position
                 // Seek the stream position back to zero before submitting again!
@@ -138,7 +138,7 @@ namespace Blogical.Shared.Adapters.Common
                     Stream stream = responseBodyPart.GetOriginalDataStream();
                     stream.Position = 0;
                 }
-                batch.SubmitResponseMessage(solicit, message);
+                _batch.SubmitResponseMessage(solicit, message);
             }
         }
 
@@ -146,14 +146,14 @@ namespace Blogical.Shared.Adapters.Common
         {
             // If response cannot be submitted, then Resubmit the original message?
             // this.batch.Resubmit(message, false, null);
-            batch.MoveToSuspendQ(message);
+            _batch.MoveToSuspendQ(message);
         }
 
         protected override void DeleteSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
-                batch.DeleteMessage(message);
+                _batch.DeleteMessage(message);
             }
         }
 
@@ -161,44 +161,44 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void ResubmitSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
                 SystemMessageContext context = new SystemMessageContext(message.Context);
                 DateTime dt = DateTime.Now.AddMinutes(context.RetryInterval);
-                batch.Resubmit(message, dt);
+                _batch.Resubmit(message, dt);
             }
         }
 
         protected override void ResubmitFailure(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            batch.MoveToNextTransport(message);
+            _batch.MoveToNextTransport(message);
         }
 
         protected override void MoveToNextTransportSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
-                batch.MoveToNextTransport(message);
+                _batch.MoveToNextTransport(message);
             }
         }
 
         protected override void MoveToNextTransportFailure(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            batch.MoveToSuspendQ(message);
+            _batch.MoveToSuspendQ(message);
         }
 
         protected override void MoveToSuspendQSuccess(IBaseMessage message, Int32 hrStatus, object userData)
         {
-            if (batchFailed)
+            if (_batchFailed)
             {
-                batch.MoveToSuspendQ(message);
+                _batch.MoveToSuspendQ(message);
             }
         }
 
         // Nothing can be done if suspend fails
 
-        private TransmitResponseBatch batch;
-        private bool batchFailed;
-        private static BTS.RetryCount retryCountProp = new BTS.RetryCount();
+        private TransmitResponseBatch _batch;
+        private bool _batchFailed;
+        private static readonly BTS.RetryCount RetryCountProp = new BTS.RetryCount();
     }
 }

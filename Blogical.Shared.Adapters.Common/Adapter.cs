@@ -43,19 +43,10 @@ namespace Blogical.Shared.Adapters.Common
 		IPersistPropertyBag
 	{
 		//  core member data
-		private string propertyNamespace;
-		private IBTTransportProxy _transportProxy;
-		private IPropertyBag handlerPropertyBag;
-		private bool initialized;
 
-		//  member data for implementing IBTTransport
-		private string name;
-		private string version;
-		private string description;
-		private string transportType;
-		private Guid   clsid;
+	    //  member data for implementing IBTTransport
 
-		protected Adapter (
+	    protected Adapter (
 			string name,
 			string version,
 			string description,
@@ -65,51 +56,52 @@ namespace Blogical.Shared.Adapters.Common
 		{
 			Trace.WriteLine(String.Format("Adapter.Adapter name: {0}", name));
 
-			_transportProxy     = null;
-			handlerPropertyBag = null;
-			initialized        = false;
+			TransportProxy     = null;
+			HandlerPropertyBag = null;
+			Initialized        = false;
 
-			this.name               = name;
-			this.version            = version;
-			this.description        = description;
-			this.transportType      = transportType;
-			this.clsid              = clsid;
+			this.Name               = name;
+			this.Version            = version;
+			this.Description        = description;
+			this.TransportType      = transportType;
+			this.ClassID              = clsid;
 
-			this.propertyNamespace  = propertyNamespace;
+			this.PropertyNamespace  = propertyNamespace;
 		}
 
-		protected string            PropertyNamespace  { get { return propertyNamespace; } }
-		public IBTTransportProxy    TransportProxy     { get { return _transportProxy; } }
-		protected IPropertyBag      HandlerPropertyBag { get { return handlerPropertyBag; } }
-		protected bool              Initialized        { get { return initialized; } }
+		protected string            PropertyNamespace { get; }
+	    public IBTTransportProxy    TransportProxy { get; private set; }
+	    protected IPropertyBag      HandlerPropertyBag { get; private set; }
+	    protected bool              Initialized { get; private set; }
 
-		//  IBTTransport
-		public string Name { get { return name; } }
-		public string Version { get { return version; } }
-		public string Description { get { return description; } }
-		public string TransportType { get { return transportType; } }
-		public Guid ClassID { get { return clsid; } }
+	    //  IBTTransport
+		public string Name { get; }
 
-		//  IBTransportControl
+	    public string Version { get; }
+	    public string Description { get; }
+	    public string TransportType { get; }
+	    public Guid ClassID { get; }
+
+	    //  IBTransportControl
 		public virtual void Initialize (IBTTransportProxy transportProxy)
 		{
             Trace.WriteLine("Adapter.Initialize");
 
 			//  this is a Singleton and this should only ever be called once
-			if (initialized)
+			if (Initialized)
 				throw new AlreadyInitialized();				
 
-			this._transportProxy = transportProxy;
-			initialized = true;
+			TransportProxy = transportProxy;
+			Initialized = true;
 		}
 		public virtual void Terminate ()
 		{
             Trace.WriteLine("Adapter.Terminate");
 
-			if (!initialized)
+			if (!Initialized)
 				throw new NotInitialized();
 			
-			_transportProxy = null;
+			TransportProxy = null;
 		}
 
 		protected virtual void HandlerPropertyBagLoaded ()
@@ -118,13 +110,13 @@ namespace Blogical.Shared.Adapters.Common
 		}
 
 		// IPersistPropertyBag
-		public void GetClassID (out Guid classid) { classid = clsid; }
+		public void GetClassID (out Guid classid) { classid = ClassID; }
 		public void InitNew () { }
 		public void Load (IPropertyBag pb, int pErrorLog)
 		{
             Trace.WriteLine("Adapter.Load");
             
-            handlerPropertyBag = pb;
+            HandlerPropertyBag = pb;
 			HandlerPropertyBagLoaded();
 		}
 		public void Save (IPropertyBag pb, bool fClearDirty, bool fSaveAllProperties) { }

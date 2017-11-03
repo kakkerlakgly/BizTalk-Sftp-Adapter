@@ -11,17 +11,17 @@ namespace Blogical.Shared.Adapters.Common
         /// <summary>
         /// The namespace to BizTalk file context properties.
         /// </summary>
-        public const string BIZTALK_FILE_PROPERTIES_NAMESPACE = "http://schemas.microsoft.com/BizTalk/2003/file-properties";
+        public const string BiztalkFilePropertiesNamespace = "http://schemas.microsoft.com/BizTalk/2003/file-properties";
 
         /// <summary>
         /// The namespace to BizTalk system context properties.
         /// </summary>
-        public const string BIZTALK_SYSTEM_PROPERTIES_NAMESPACE = "http://schemas.microsoft.com/BizTalk/2003/system-properties";
+        public const string BiztalkSystemPropertiesNamespace = "http://schemas.microsoft.com/BizTalk/2003/system-properties";
 
         /// <summary>
         /// The namespace to SFTP adapter properties.
         /// </summary>
-        public const string SFTP_ADAPTER_PROPERTIES_NAMESPACE = "http://schemas.microsoft.com/BizTalk/2006/sftp-properties";
+        public const string SftpAdapterPropertiesNamespace = "http://schemas.microsoft.com/BizTalk/2006/sftp-properties";
 
         #endregion
 
@@ -105,7 +105,7 @@ namespace Blogical.Shared.Adapters.Common
     /// </summary>
     public static class EventLogSources
     {
-        public const string SFTPAdapter = "SFTPAdapter";
+        public const string SftpAdapter = "SFTPAdapter";
     }
 
     public static class EventLogEventIDs
