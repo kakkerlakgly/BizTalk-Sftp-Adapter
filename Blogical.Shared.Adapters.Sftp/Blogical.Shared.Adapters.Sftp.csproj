@@ -107,6 +107,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Microsoft BizTalk Server 2016\Microsoft.XLANGs.BaseTypes.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -129,8 +133,6 @@
     <Compile Include="SftpTransmitProperties.cs" />
     <Compile Include="SftpTransmitter.cs" />
     <Compile Include="SftpTransmitterEndpoint.cs" />
-    <Compile Include="SharpSsh\MemoryOutputStream.cs" />
-    <Compile Include="SharpSsh\MemoryInputStream.cs" />
     <Compile Include="SharpSsh\Sftp.cs" />
     <Compile Include="SSOConfigHelper.cs" />
   </ItemGroup>
@@ -138,10 +140,6 @@
     <ProjectReference Include="..\Blogical.Shared.Adapters.Common\Blogical.Shared.Adapters.Common.csproj">
       <Project>{44B780E7-6D79-4BAF-9994-28CFFA1172A6}</Project>
       <Name>Blogical.Shared.Adapters.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SharpSSH-1.1.1.13.src\SharpSSH.csproj">
-      <Project>{d27cf69d-4681-492a-be4d-d3d209104423}</Project>
-      <Name>SharpSSH</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +168,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

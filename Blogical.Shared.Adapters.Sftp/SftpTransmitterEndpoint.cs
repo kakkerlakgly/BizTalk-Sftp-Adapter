@@ -12,7 +12,6 @@ using Blogical.Shared.Adapters.Common;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Blogical.Shared.Adapters.Sftp.ConnectionPool;
-using Tamir.SharpSsh.jsch;
 
 namespace Blogical.Shared.Adapters.Sftp
 {

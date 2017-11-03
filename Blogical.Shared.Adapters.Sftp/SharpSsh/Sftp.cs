@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Tamir.SharpSsh.jsch;
-using Tamir.SharpSsh.jsch.examples;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using Tamir.SharpSsh;
 using Microsoft.BizTalk.Streaming;
 using System.IO.IsolatedStorage;
+using System.Linq;
 using Blogical.Shared.Adapters.Common;
+using Renci.SshNet;
+using Renci.SshNet.Common;
 
 namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 {
@@ -24,7 +24,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
         DateTime _connectedSince;
         object createdCounterObject = null;
-        SshTransfer _sftp = null;
+        SftpClient _sftp = null;
         string _identityFile;
         string _identityThumbprint;
         string _host = String.Empty;
@@ -56,21 +56,9 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <history>2007-10-11 - Mikael Hkansson, Added code head to all public methods</history>
         /// <history>2008-11-23 - Johan Hedberg, Added passphrase</history>
         /// <history>2013-11-10 - Greg Sharp, Various: preserve stack trace on error, allow reconnection attempts, add X.509 identity certificate support</history>
-        public Sftp(string host, string user, string password, string identityFile, string identityThumbprint, int port, string passphrase, bool debugTrace)
+        public Sftp(string host, string user, string password, string identityFile, string identityThumbprint, int port, string passphrase, bool debugTrace) : 
+            this(host, user, password, identityFile, identityThumbprint, port, passphrase, debugTrace, string.Empty, 80, string.Empty, string.Empty)
         {
-            if (string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(identityFile))
-                password = null;
-
-            this._applicationStorage = ApplicationStorageHelper.Load();
-            this._sftp = new SshTransfer(host, user, password);
-            this._identityFile = identityFile;
-            this._identityThumbprint = identityThumbprint;
-            this._host = host;
-            this._user = user;
-            this._password = password;
-            this._port = port;
-            this._passphrase = passphrase;
-            this.DebugTrace = debugTrace;
         }
         public Sftp(string host,
             string user,
@@ -85,11 +73,30 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             string proxyUserName,
             string proxyPassword)
         {
-            if (string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(identityFile))
-                password = null;
-
             this._applicationStorage = ApplicationStorageHelper.Load();
-            this._sftp = new SshTransfer(host, user, password);
+
+            var connectionInfo = !string.IsNullOrEmpty(this._proxyHost)
+                ? new ConnectionInfo(host, port, user, ProxyTypes.Socks5, proxyHost, proxyPort, proxyUserName,
+                    proxyPassword)
+                : new ConnectionInfo(host, port, user);
+
+            if (string.IsNullOrEmpty(identityFile))
+            {
+                if (!string.IsNullOrEmpty(password))
+                    _sftp.ConnectionInfo.AuthenticationMethods.Add(new PasswordAuthenticationMethod(user, password));
+            }
+            else
+            {
+                _sftp.ConnectionInfo.AuthenticationMethods.Add(
+                    !String.IsNullOrEmpty(_passphrase)
+                        ? new PrivateKeyAuthenticationMethod(_user, new PrivateKeyFile(_identityFile, _passphrase))
+                        : new PrivateKeyAuthenticationMethod(_user, new PrivateKeyFile(_identityFile)));
+                //else if (!String.IsNullOrEmpty(this._identityThumbprint))
+                //_sftp.AddIdentityCert(this._identityThumbprint); 
+            }
+
+            this._sftp = new SftpClient(connectionInfo);
+            this._sftp.HostKeyReceived += CheckHostKey;
             this._identityFile = identityFile;
             this._identityThumbprint = identityThumbprint;
             this._host = host;
@@ -103,6 +110,9 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             this._proxyUserName = proxyUserName;
             this._proxyPassword = proxyPassword;
         }
+
+
+
         /// <summary>
         /// Used for receiving files
         /// </summary>
@@ -115,12 +125,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 try
                 {
                     connect();
-                    return _sftp.GetStream(fromFilePath);
+                    return _sftp.OpenRead(fromFilePath);
                 }
                 catch
                 {
                     reConnect();
-                    return _sftp.GetStream(fromFilePath);
+                    return _sftp.OpenRead(fromFilePath);
                 }
             }
             catch (Exception ex)
@@ -147,7 +157,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 try
                 {
                     connect();
-                    _sftp.PutStream(memStream, destination);
+                    _sftp.UploadFile(memStream, destination);
                 }
                 catch
                 {
@@ -182,12 +192,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 try
                 {
                     connect();
-                    _sftp.Rename(oldName, newName);
+                    _sftp.RenameFile(oldName, newName);
                 }
                 catch
                 {
                     reConnect();
-                    _sftp.Rename(oldName, newName);
+                    _sftp.RenameFile(oldName, newName);
                 }
             }
             catch (Exception ex)
@@ -323,10 +333,10 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 Trace.WriteLine("[SftpConnectionPool] Disconnecting from " + _host);
             try
             {
-                if (this._sftp.Connected)
+                if (this._sftp.IsConnected)
                 {
-                    this._sftp.Close();
-                    this._sftp = new SshTransfer(this._host, this._user, this._password);
+                    this._sftp.Disconnect();
+                    this._sftp = new SftpClient(this._host, this._user, this._password);
                 }
             }
             catch (Exception ex)
@@ -351,7 +361,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
             try
             {
-                byte[] buffer = Util.getBytes(permissions);
+                byte[] buffer = Encoding.Default.GetBytes(permissions);
                 int currentPos;
                 int perm = 0;
                 for (int pos = 0; pos < buffer.Length; pos++)
@@ -367,7 +377,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                     perm |= (currentPos - '0');
                 }
 
-                _sftp.SftpChannel.chmod(perm, filePath);
+                _sftp.ChangePermissions(filePath, (short)perm);
             }
             catch { throw new Exception("Unable to parse permissions to integer"); }
         }
@@ -400,35 +410,23 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         {
             try
             {
-                if (!this._sftp.Connected || force)
+                if (!this._sftp.IsConnected || force)
                 {
                     if (this.DebugTrace)
                         Trace.WriteLine("[SftpConnectionPool] Connecting to " + _host);
 
-                    if (!String.IsNullOrEmpty(_identityFile) && !String.IsNullOrEmpty(_passphrase))
-                        _sftp.AddIdentityFile(_identityFile, _passphrase);
-                    else if (!String.IsNullOrEmpty(_identityFile))
-                        _sftp.AddIdentityFile(_identityFile);
-                    else if (!String.IsNullOrEmpty(this._identityThumbprint))
-                        _sftp.AddIdentityCert(this._identityThumbprint);
 
-                    if (!String.IsNullOrEmpty(this._proxyHost))
-                    {
-                        this._sftp.ConnectThroughProxy(this._port, this._proxyHost, this._proxyPort, this._proxyUserName, this._proxyPassword);
-                    }
-                    else
-                    {
-                        this._sftp.Connect(this._port);
 
-                        //Make sure HostKey match previously retrieved HostKey.
-                        CheckHostKey();
-                    }
+
+                    this._sftp.Connect();
+
+                    //Make sure HostKey match previously retrieved HostKey.
                     this._connectedSince = DateTime.Now;
                 }
             }
             catch (Exception ex)
             {
-                if (this._sftp.Connected)
+                if (this._sftp.IsConnected)
                     this.Disconnect();
 
                 throw ExceptionHandling.HandleComponentException(
@@ -448,7 +446,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             TimeSpan ts = DateTime.Now.Subtract(this._connectedSince);
             if (ts.TotalSeconds > TOTALLIFETIME)
             {
-                if (this._sftp.Connected)
+                if (this._sftp.IsConnected)
                     this.Disconnect();
 
                 //this.connect();
@@ -461,16 +459,18 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             }
 
         }
-        void CheckHostKey()
+
+        void CheckHostKey(object sender, HostKeyEventArgs hostKeyEventArgs)
         {
             object hostKey = ApplicationStorageHelper.GetHostKey(this._applicationStorage, this._host);
 
             if (hostKey == null)
             {
-                this._applicationStorage.Add(new ApplicationStorage(this._host, this._sftp.HostKey.getKey()));
+                this._applicationStorage.Add(new ApplicationStorage(this._host,
+                    Convert.ToBase64String(hostKeyEventArgs.HostKey, 0, hostKeyEventArgs.HostKey.Length)));
                 ApplicationStorageHelper.Save(this._applicationStorage);
             }
-            else if (hostKey.ToString() != this._sftp.HostKey.getKey())
+            else if (hostKey.ToString() != Convert.ToBase64String(hostKeyEventArgs.HostKey, 0, hostKeyEventArgs.HostKey.Length))
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
                        new Exception("HostKey does not match previously retrieved HostKey."));
         }
@@ -484,12 +484,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 List<FileEntry> fileEntries = new List<FileEntry>();
                 ArrayList checkedOutFiles = new ArrayList();
 
-                foreach (Tamir.SharpSsh.jsch.ChannelSftp.LsEntry entry in _sftp.Dir2(fileMask))
+                foreach(var entry in _sftp.ListDirectory(fileMask))
                 {
                     string remotePath = Path.GetDirectoryName(fileMask);
-                    long size = entry.getAttrs().getSize();
-                    bool isDirectory = entry.getAttrs().isDir();
-                    string fileName = entry.getFilename();
+                    long size = entry.Attributes.Size;
+                    bool isDirectory = entry.Attributes.IsDirectory;
+                    string fileName = entry.Name;
                     DateTime fileLastWriten;
 
                     if (isDirectory || size == 0)
@@ -497,7 +497,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                     try
                     {
-                        fileLastWriten = DateTime.Parse(entry.getAttrs().getMtimeString());
+                        fileLastWriten = entry.Attributes.LastWriteTime;
                     }
                     catch { fileLastWriten = DateTime.Now.AddMinutes(1); }
 
@@ -577,19 +577,19 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
             try
             {
-                Tamir.SharpSsh.java.util.Vector entries = _sftp.Dir2(fileMask);
+                var entries = _sftp.ListDirectory(fileMask).ToList();
 
                 System.Random autoRand = new System.Random();
 
                 while (entries.Count > 0 && (fileEntries.Count < maxNumberOfFiles || maxNumberOfFiles == 0))
                 {
                     index = autoRand.Next(entries.Count - 1);
-                    Tamir.SharpSsh.jsch.ChannelSftp.LsEntry entry = (Tamir.SharpSsh.jsch.ChannelSftp.LsEntry)entries[index];
+                    var entry = entries[index];
 
                     remotePath = Path.GetDirectoryName(fileMask);
-                    size = entry.getAttrs().getSize();
-                    isDirectory = entry.getAttrs().isDir();
-                    fileName = entry.getFilename();
+                    size = entry.Attributes.Size;
+                    isDirectory = entry.Attributes.IsDirectory;
+                    fileName = entry.Name;
 
                     if (isDirectory)
                     {
@@ -599,7 +599,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                     try
                     {
-                        fileLastWriten = DateTime.Parse(entry.getAttrs().getMtimeString());
+                        fileLastWriten = entry.Attributes.LastWriteTime;
                     }
                     catch { fileLastWriten = DateTime.Now.AddMinutes(1); }
                     ts = DateTime.Now.Subtract(fileLastWriten);
@@ -657,10 +657,10 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 if (trace)
                     Trace.WriteLine("[SftpReceiverEndpoint] GetFileEntry(" + filePath + ")");
 
-                foreach (Tamir.SharpSsh.jsch.ChannelSftp.LsEntry entry in _sftp.Dir2(filePath))
+                foreach (var entry in _sftp.ListDirectory(filePath))
                 {
-                    long size = entry.getAttrs().getSize();
-                    string fileName = entry.getFilename();
+                    long size = entry.Attributes.Size;
+                    string fileName = entry.Name;
                     return new FileEntry(fileName, size);
                 }
 
@@ -686,114 +686,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         public void Dispose()
         {
 
-        }
-        #endregion
-        #region SshTransfer
-        class SshTransfer : SshTransferProtocolBase
-        {
-            public SshTransfer(string sftpHost, string user, string password)
-                : base(sftpHost, user, password)
-            {
-
-            }
-
-            protected override string ChannelType
-            {
-                get { return "sftp"; }
-            }
-
-            public ChannelSftp SftpChannel
-            {
-                get { return (ChannelSftp)m_channel; }
-            }
-
-            ////Get
-            //public Stream GetStream(string fromFilePath)
-            //{
-            //    MemoryOutputStream memStream = new MemoryOutputStream("");
-            //    SftpChannel.get(fromFilePath, memStream);
-            //    return memStream.GetMemoryStream();
-            //}
-
-            //Get
-            public Stream GetStream(string fromFilePath)
-            {
-                MemoryOutputStream ms = new MemoryOutputStream(SftpChannel, fromFilePath);
-                ms.Load();
-
-                return ms.InnerStream;
-            }
-
-            //Put
-            public void PutStream(System.IO.Stream memStream, string destination)
-            {
-                SftpChannel.put(new MemoryInputStream(memStream), destination);
-            }
-
-            //MkDir
-            public override void Mkdir(string directory)
-            {
-
-                SftpChannel.mkdir(directory);
-            }
-
-            // Dir
-            public Tamir.SharpSsh.java.util.Vector Dir2(string path)
-            {
-                try
-                {
-                    return SftpChannel.ls(path);
-                }
-                catch (Exception ex)
-                {
-
-                    if (path.IndexOf("*") != -1 || path.IndexOf("?") != -1)
-                        throw ex;
-                    else
-                        return new Tamir.SharpSsh.java.util.Vector();
-
-
-                }
-            }
-            // Exists
-            public bool Exists(string fileName)
-            {
-                return Dir2(fileName).Count > 0;
-            }
-
-            // Rename
-            public void Rename(string oldName, string newName)
-            {
-                SftpChannel.rename(oldName, newName);
-            }
-
-            // Delete
-            public void Delete(string path)
-            {
-                Trace.WriteLine("[SftpReceiverEndpoint] Delete " + path);
-                SftpChannel.rm(path);
-            }
-
-
-            public override void Get(string fromFilePath, string toFilePath)
-            {
-                throw new Exception("The method or operation is not implemented.");
-            }
-
-            public override void Put(string fromFilePath, string toFilePath)
-            {
-                throw new Exception("The method or operation is not implemented.");
-            }
-
-            public override void Close()
-            {
-                base.Close();
-            }
-
-            public override void Cancel()
-            {
-                throw new Exception("The method or operation is not implemented.");
-            }
         }
         #endregion
     }

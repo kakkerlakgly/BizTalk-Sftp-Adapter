@@ -19,3 +19,5 @@
 /.vs/Blogical.Adapters.Sftp/v14/.suo
 /packages/DiffieHellman.1.0.0/DiffieHellman.1.0.0.nupkg
 *.nupkg
+/packages/SSH.NET.2016.1.0/lib
+/Blogical.Shared.Adapters.Sftp/bin/Debug
