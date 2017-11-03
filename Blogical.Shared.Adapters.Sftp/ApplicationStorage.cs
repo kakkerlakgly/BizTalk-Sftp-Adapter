@@ -62,22 +62,14 @@ namespace Blogical.Shared.Adapters.Sftp
             // Read the stream from Isolated Storage.
             lock (objlock)
             {
-                Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore);
-                if (stream != null)
+                using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore))
                 {
-                    try
+                    XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
+                    using (TextReader reader = new StreamReader(stream))
                     {
-                        XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
-                        TextReader reader = new StreamReader(stream);
                         ApplicationStorage[] arr = (ApplicationStorage[])ser.Deserialize(reader);
-                        ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
-                        reader.Close();
                     }
-                    finally
-                    {
-                        // We are done with it.
-                        stream.Close();
-                    }
+                    ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
                 }
             }
             return ApplicationStorage;
@@ -93,22 +85,14 @@ namespace Blogical.Shared.Adapters.Sftp
             }
 
             // Read the stream from Isolated Storage.
-            Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore);
-            if (stream != null)
+            using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.OpenOrCreate, isoStore))
             {
-                try
+                XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
+                using (TextReader reader = new StreamReader(stream))
                 {
-                    XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
-    				TextReader reader = new StreamReader(stream);
                     ApplicationStorage[]arr= (ApplicationStorage[])ser.Deserialize(reader);
-                    ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
-    				reader.Close();             
                 }
-                finally
-                {
-                    // We are done with it.
-                    stream.Close();
-                }
+                ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
             }
             return ApplicationStorage;
         }
@@ -125,19 +109,12 @@ namespace Blogical.Shared.Adapters.Sftp
             // Greg Sharp: Provide thread-safety around write access to the config file
             lock (objlock)
             {
-                Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.Create, isoStore);
-                if (stream != null)
+                using (Stream stream = new IsolatedStorageFileStream(settingsFileName, FileMode.Create, isoStore))
                 {
-                    try
+                    XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
+                    using (TextWriter writer = new StreamWriter(stream))
                     {
-                        XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
-                        TextWriter writer = new StreamWriter(stream);
                         ser.Serialize(writer, applicationStorage.ToArray());
-                        writer.Close();
-                    }
-                    finally
-                    {
-                        stream.Close();
                     }
                 }
             }

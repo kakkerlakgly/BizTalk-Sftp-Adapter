@@ -905,8 +905,6 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
                 case "Timely":
                     UnloadTimelySchedule();
                     break;
-				default:
-					break;
 			}	
 		}
 		private void UnloadDailySchedule()
@@ -1035,7 +1033,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             intervalNode.InnerText = timeInterval.Value.ToString();
             configXml.DocumentElement.AppendChild(intervalNode);
         
-            ScheduleTimeType result = ScheduleTimeType.Seconds;
+            ScheduleTimeType result;
             switch (timeType.Text.ToUpper())
             {
                 case "HOURS":
@@ -1057,7 +1055,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		//
 		private void radioDayInterval_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioDayInterval.Checked == true)
+			if (radioDayInterval.Checked)
 			{
 				dayInterval.Enabled = true;
 				daySunday.Enabled = false;
@@ -1083,7 +1081,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		}
 		private void radioDayofMonth_CheckedChanged(object sender, EventArgs e)
 		{
-			if (radioDayofMonth.Checked == true)
+			if (radioDayofMonth.Checked)
 			{
 				_dayofmonth.Enabled = true;
 				weekdayDropDown.Enabled = false;

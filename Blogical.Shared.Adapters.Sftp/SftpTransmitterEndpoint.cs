@@ -17,8 +17,8 @@ namespace Blogical.Shared.Adapters.Sftp
     {
         #region Private Fields
         private bool _shutdownRequested;
-        private SftpTransmitProperties _properties = null;
-        private AsyncTransmitter _asyncTransmitter = null;
+        private SftpTransmitProperties _properties;
+        private AsyncTransmitter _asyncTransmitter;
         private string _propertyNamespace;
         int _errorCount; //  error count for comparison with the error threshold
         #endregion

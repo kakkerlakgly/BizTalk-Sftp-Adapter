@@ -16,14 +16,14 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
     /// <summary>
     /// SharpSsh sftp wrapper class
     /// </summary>
-    public class Sftp : ISftp, IDisposable
+    public class Sftp : ISftp
     {
         #region Private Members
         private IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
         const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
         const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
         DateTime _connectedSince;
-        SftpClient _sftp = null;
+        SftpClient _sftp;
         string _identityFile;
         string _host;
         string _user = String.Empty;
@@ -559,13 +559,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             List<FileEntry> fileEntries = new List<FileEntry>();
-            string remotePath = string.Empty;
-            long size;
-            bool isDirectory = false;
-            string fileName = string.Empty;
-            DateTime fileLastWriten;
-            int index;
-            TimeSpan ts;
 
             try
             {
@@ -575,13 +568,13 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                 while (entries.Count > 0 && (fileEntries.Count < maxNumberOfFiles || maxNumberOfFiles == 0))
                 {
-                    index = autoRand.Next(entries.Count - 1);
+                    var index = autoRand.Next(entries.Count - 1);
                     var entry = entries[index];
 
-                    remotePath = Path.GetDirectoryName(fileMask);
-                    size = entry.Attributes.Size;
-                    isDirectory = entry.Attributes.IsDirectory;
-                    fileName = entry.Name;
+                    var remotePath = Path.GetDirectoryName(fileMask);
+                    var size = entry.Attributes.Size;
+                    var isDirectory = entry.Attributes.IsDirectory;
+                    var fileName = entry.Name;
 
                     if (isDirectory)
                     {
@@ -589,12 +582,13 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                         continue;
                     }
 
+                    DateTime fileLastWriten;
                     try
                     {
                         fileLastWriten = entry.Attributes.LastWriteTime;
                     }
                     catch { fileLastWriten = DateTime.Now.AddMinutes(1); }
-                    ts = DateTime.Now.Subtract(fileLastWriten);
+                    var ts = DateTime.Now.Subtract(fileLastWriten);
 
                     try
                     {

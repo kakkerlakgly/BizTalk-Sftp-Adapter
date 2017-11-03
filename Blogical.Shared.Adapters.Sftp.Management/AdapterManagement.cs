@@ -13,7 +13,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
     /// This class is used for administrating both the Receive and the Send adapter.
     /// </summary>
     /// <history>2013-11-10 Greg Sharp, Add X.509 identity certificate support</history>
-    public class StaticAdapterManagement : IAdapterConfig, IStaticAdapterConfig, IAdapterConfigValidation
+    public class StaticAdapterManagement : IStaticAdapterConfig, IAdapterConfigValidation
     {
         private static ResourceManager _resourceManager = new ResourceManager("Blogical.Shared.Adapters.Sftp.Management.SftpResource", Assembly.GetExecutingAssembly());
 
@@ -144,9 +144,8 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             {
                 Assembly assem = GetType().Assembly;
                 Stream stream = assem.GetManifestResourceStream(resource);
-                StreamReader reader = null;
 
-                using (reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
                     value = reader.ReadToEnd();
                 }

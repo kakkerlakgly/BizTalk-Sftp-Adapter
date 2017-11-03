@@ -26,13 +26,13 @@ namespace Blogical.Shared.Adapters.Sftp
         private const string EMPTYBATCHFILENAME = "EmptyBatch.xml";
         #endregion
         #region Private Fields
-        ISftp _sftp = null;
+        ISftp _sftp;
         string _transportType;
         string _propertyNamespace;
         bool _useLoadBalancing;
         IBTTransportProxy _transportProxy;
-        IList _filesInProcess = null;
-        bool _traceFlag = false;
+        IList _filesInProcess;
+        bool _traceFlag;
 
         #endregion
         #region Constructor
@@ -134,14 +134,12 @@ namespace Blogical.Shared.Adapters.Sftp
         internal IBaseMessage CreateMessage(string fileName, string uri, long size,
             SftpReceiveProperties.AfterGetActions afterGetAction, string afterGetFilename)
         {
-            Stream stream;
-            IBaseMessage message = null;
             try
             {
                 TraceMessage("[SftpReceiverEndpoint] Reading file to stream " + fileName);
 
                 // Retrieves the message from sftp server.
-                stream = _sftp.Get(fileName);
+                var stream = _sftp.Get(fileName);
                 stream.Position = 0;
 
 
@@ -149,7 +147,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 IBaseMessageFactory messageFactory = _transportProxy.GetMessageFactory();
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = stream;
-                message = messageFactory.CreateMessage();
+                var message = messageFactory.CreateMessage();
                 message.AddPart(MESSAGE_BODY, part, true);
 
                 // Setting metadata
@@ -161,7 +159,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     };
 
                 // Write/Promote any adapter specific properties on the message context
-                message.Context.Write(REMOTEFILENAME, _propertyNamespace, (object)fileName);
+                message.Context.Write(REMOTEFILENAME, _propertyNamespace, fileName);
 
                 SetReceivedFileName(message, fileName);
 
@@ -199,7 +197,6 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <returns></returns>
         internal IBaseMessage CreateEmptyBatchMessage(string uri)
         {
-            IBaseMessage message = null;
             try
             {
 
@@ -219,7 +216,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 IBaseMessageFactory messageFactory = _transportProxy.GetMessageFactory();
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = ross;
-                message = messageFactory.CreateMessage();
+                var message = messageFactory.CreateMessage();
                 message.AddPart(MESSAGE_BODY, part, true);
 
                 SystemMessageContext context =
@@ -280,7 +277,7 @@ namespace Blogical.Shared.Adapters.Sftp
             string fileName = "Could not get fileName";
             try
             {
-                if (overallStatus == true) //Batch completed
+                if (overallStatus) //Batch completed
                 {
                     lock (_filesInProcess)
                     {
@@ -350,18 +347,14 @@ namespace Blogical.Shared.Adapters.Sftp
                     }
 
 
-                    TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", overallStatus));
+                    TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", true));
                 }
             }
             catch (Exception e)
             {
-                Trace.WriteLine(string.Format("[SftpReceiverEndpoint] OnBatchComplete EXCEPTION!"));
+                Trace.WriteLine("[SftpReceiverEndpoint] OnBatchComplete EXCEPTION!");
                 _filesInProcess.Remove(fileName);
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(), e);
-            }
-            finally
-            {
-
             }
         }
         #endregion

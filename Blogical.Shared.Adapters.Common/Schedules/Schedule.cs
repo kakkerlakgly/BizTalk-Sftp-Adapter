@@ -259,7 +259,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             set
             {
                 DateTime newDate = new DateTime(1900, 1, 1, value.Hour, value.Minute, value.Second);
-                if (newDate != (DateTime)Interlocked.Exchange(ref starttime, (object)newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref starttime, newDate))
                 {
                     FireChangedEvent();
                 }
@@ -277,7 +277,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             set
             {
                 DateTime newDate = new DateTime(value.Year, value.Month, value.Day, 0, 0, 0);
-                if (newDate != (DateTime)Interlocked.Exchange(ref startdate, (object)newDate))
+                if (newDate != (DateTime)Interlocked.Exchange(ref startdate, newDate))
                 {
                     FireChangedEvent();
                 }
@@ -384,7 +384,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             string type = document.DocumentElement.GetAttribute("type");
             if (type == String.Empty)
-                throw new ApplicationException(string.Format("Schedule Type missing: "));
+                throw new ApplicationException("Schedule Type missing: ");
             return (ScheduleType)Enum.Parse(typeof(ScheduleType), type);
         }
         /// <summary>
@@ -447,7 +447,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         protected ScheduleMonth GetScheduleMonthFlag(DateTime date)
         {
-            return (ScheduleMonth)(Math.Pow(2, (int)date.Month - 1));
+            return (ScheduleMonth)(Math.Pow(2, date.Month - 1));
         }
         /// <summary>
         /// Determines the previous Sunday, from the date parameter
@@ -505,8 +505,6 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                     break;
                 case ScheduleOrdinal.Last:
                     result = days[index - 1];
-                    break;
-                default:
                     break;
             }
             return result;

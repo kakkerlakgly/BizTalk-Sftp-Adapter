@@ -25,7 +25,7 @@ namespace Blogical.Shared.Adapters.Sftp
         string _sshIdentityFile                     = String.Empty;
         string _sshIdentityThumbprint               = String.Empty;
         string _ssoApplication                      = String.Empty;
-        bool _sshtrace                              = false;
+        bool _sshtrace;
 
         string _sshRemotePath                       = String.Empty;
         string _sshRemoteTempDir                    = String.Empty;
@@ -33,7 +33,7 @@ namespace Blogical.Shared.Adapters.Sftp
         int _sshErrorThreshold                      = 10;
         int _connectionLimit                        = 10;
         string _applySecurityPermissions            = String.Empty;
-        bool _verifyFileSize                        = false;
+        bool _verifyFileSize;
 
         // Proxy settings
         string _proxyHost                           = String.Empty;
@@ -235,15 +235,13 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="propertyNamespace"></param>
         public SftpTransmitProperties(IBaseMessage message, string propertyNamespace)
         {
-            XmlDocument locationConfigDom = null;
-
             //  get the adapter configuration off the message
             IBaseMessageContext context = message.Context;
             string config = (string)context.Read("AdapterConfig", propertyNamespace);
 
             if (null != config)
             {
-                locationConfigDom = new XmlDocument();
+                var locationConfigDom = new XmlDocument();
                 locationConfigDom.LoadXml(config);
 
                 ReadLocationConfiguration(locationConfigDom);
@@ -404,7 +402,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             if (uri.IndexOf("%SourceFileName%") > -1)
             {
-                string sourceFileName = string.Empty;
+                string sourceFileName;
                 try
                 {
                     string filePath = GetReceivedFileName(message);
@@ -482,11 +480,7 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             Guid msgId = message.MessageID;
 
-            string res = uri.Replace("%MessageID%", msgId.ToString());
-            if (res != null)
-                return res;
-            else
-                return uri;
+            return uri.Replace("%MessageID%", msgId.ToString());
         }
         private void TraceMessage(string message)
         {

@@ -118,10 +118,10 @@ namespace Blogical.Shared.Adapters.Common
         protected IDtcTransaction comTxn;
         protected CommittableTransaction transaction;
         protected ControlledTermination control;
-		protected IBTDTCCommitConfirm commitConfirm = null;
+		protected IBTDTCCommitConfirm commitConfirm;
 		protected ManualResetEvent orderedEvent;
 		private ManualResetEvent commitConfirmEvent = new ManualResetEvent(false);
 		private bool needToAbort = true;
-		private bool pendingWork = false;
+		private bool pendingWork;
 	}
 }

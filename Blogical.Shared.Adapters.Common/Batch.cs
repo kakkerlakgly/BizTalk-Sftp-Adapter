@@ -105,14 +105,14 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = null;
+                                BatchMessage batchMessage;
                                 if (submitIsForSubmitResponse)
                                 {
-                                    batchMessage = (BatchMessage)submitResponseMessageArray[i];
+                                    batchMessage = submitResponseMessageArray[i];
                                 }
                                 else
                                 {
-                                    batchMessage = (BatchMessage)submitArray[i];
+                                    batchMessage = submitArray[i];
                                 }
 
                                 if (status.MessageStatus[i] < 0)
@@ -126,7 +126,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)deleteArray[i];
+                                BatchMessage batchMessage = deleteArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     DeleteFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -138,7 +138,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)resubmitArray[i];
+                                BatchMessage batchMessage = resubmitArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     ResubmitFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -150,7 +150,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)moveToSuspendQArray[i];
+                                BatchMessage batchMessage = moveToSuspendQArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     MoveToSuspendQFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -162,7 +162,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)moveToNextTransportArray[i];
+                                BatchMessage batchMessage = moveToNextTransportArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     MoveToNextTransportFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -174,7 +174,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)submitRequestArray[i];
+                                BatchMessage batchMessage = submitRequestArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     SubmitRequestFailure(batchMessage.message, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -186,7 +186,7 @@ namespace Blogical.Shared.Adapters.Common
                         {
                             for (int i=0; i<status.MessageCount; i++)
                             {
-                                BatchMessage batchMessage = (BatchMessage)cancelResponseMessageArray[i];
+                                BatchMessage batchMessage = cancelResponseMessageArray[i];
                                 if (status.MessageStatus[i] < 0)
                                     CancelResponseMessageFailure(batchMessage.correlationToken, status.MessageStatus[i], batchMessage.userData);
                                 else if (makeSuccessCall)
@@ -385,7 +385,7 @@ namespace Blogical.Shared.Adapters.Common
                     // This condition should never occur on the production box 
                     // (unless there is a product bug). So, this string need not be localized
                     Exception ex = new InvalidOperationException("Adapter is trying to submit an empty batch to EPM. Source = " + 
-                                    GetType().ToString());
+                                    GetType());
                     transportProxy.SetErrorInfo(ex);
                     throw ex;
                 }
@@ -444,7 +444,7 @@ namespace Blogical.Shared.Adapters.Common
         private IList<BatchMessage> cancelResponseMessageArray;
         private IList<BatchMessage> submitResponseMessageArray;
 
-        private bool workToBeDone = false;
-        private bool submitIsForSubmitResponse = false;
+        private bool workToBeDone;
+        private bool submitIsForSubmitResponse;
     }
 }

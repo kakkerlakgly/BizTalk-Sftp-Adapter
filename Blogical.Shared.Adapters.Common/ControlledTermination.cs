@@ -33,8 +33,8 @@ namespace Blogical.Shared.Adapters.Common
     public class ControlledTermination : IDisposable
     {
         private AutoResetEvent e = new AutoResetEvent(false);
-        private int activityCount = 0;
-        private bool terminate = false;
+        private int activityCount;
+        private bool terminate;
 
         //  to be called at the start of the activity
         //  returns false if terminate has been called
@@ -42,7 +42,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             lock (this)
             {
-                if (true == terminate)
+                if (terminate)
                 {
                     return false;
                 }

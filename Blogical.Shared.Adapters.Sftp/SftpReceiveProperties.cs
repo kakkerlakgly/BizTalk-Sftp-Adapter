@@ -16,11 +16,7 @@ namespace Blogical.Shared.Adapters.Sftp
     public class SftpReceiveProperties : ConfigProperties
     {
         #region Constructor
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public SftpReceiveProperties()
-        { }
+
         #endregion
         #region Private Fields
         string _sshHost             = String.Empty;
@@ -33,11 +29,11 @@ namespace Blogical.Shared.Adapters.Sftp
 
         string _sshFileMask         = String.Empty;
         string _sshRemotePath       = String.Empty;
-        bool _sshtrace              = false;
-        bool _notifyOnEmptyBatch    = false;
+        bool _sshtrace;
+        bool _notifyOnEmptyBatch;
         int _sshErrorThreshold      = 10;
-        int _maximumnumberoffiles   = 0;
-        int _maximumbatchsize       = 0;
+        int _maximumnumberoffiles;
+        int _maximumbatchsize;
         bool _useLoadBalancing      = true;
 
         Schedule _schedule;

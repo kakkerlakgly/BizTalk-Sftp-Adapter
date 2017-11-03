@@ -11,7 +11,6 @@ namespace Blogical.Shared.Adapters.Sftp
     /// </summary>
     public interface ISftp: IDisposable
     {
-        bool DebugTrace { get; set; }
         /// <summary>
         /// Get a readable stream from a file on the ssh server
         /// </summary>

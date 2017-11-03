@@ -249,7 +249,7 @@ namespace Blogical.Shared.Adapters.Common
         private int innerBatchCount;
         private ManualResetEvent orderedEvent;
         private int depth;
-        private bool suspendFailed = false;
+        private bool suspendFailed;
 
         private IList<FailedMessage> failedMessages = new List<FailedMessage>();
 

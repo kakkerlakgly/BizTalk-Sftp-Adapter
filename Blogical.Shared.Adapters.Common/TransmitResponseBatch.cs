@@ -25,7 +25,7 @@ namespace Blogical.Shared.Adapters.Common
             this.allWorkDoneDelegate = allWorkDoneDelegate;
         }
 
-        public override sealed void SubmitResponseMessage(IBaseMessage solicitDocSent, IBaseMessage responseDocToSubmit)
+        public override void SubmitResponseMessage(IBaseMessage solicitDocSent, IBaseMessage responseDocToSubmit)
         {
             IBaseMessagePart bodyPart = responseDocToSubmit.BodyPart;
             if (bodyPart == null)
@@ -198,7 +198,7 @@ namespace Blogical.Shared.Adapters.Common
         // Nothing can be done if suspend fails
 
         private TransmitResponseBatch batch;
-        private bool batchFailed = false;
+        private bool batchFailed;
         private static BTS.RetryCount retryCountProp = new BTS.RetryCount();
     }
 }

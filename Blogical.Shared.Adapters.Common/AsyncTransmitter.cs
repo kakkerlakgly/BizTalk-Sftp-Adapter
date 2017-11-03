@@ -136,10 +136,7 @@ namespace Blogical.Shared.Adapters.Common
                 if (null == endpoint)
                 {
                     //  we haven't seen this location so far this batch so make a new endpoint
-                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(endpointType, new object[] { this });
-
-                    if (null == endpoint)
-                        throw new CreateEndpointFailed(endpointType.FullName, endpointParameters.OutboundLocation);
+                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(endpointType, this);
 
                     endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
 

@@ -1,19 +1,12 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace Blogical.Shared.Adapters.Sftp
 {
 	internal class SftpException : ApplicationException
 	{
-        public SftpException () { }
+	    public SftpException (string msg) : base(msg) { }
 
-		public SftpException (string msg) : base(msg) { }
-
-		public SftpException (Exception inner) : base(String.Empty, inner) { }
-
-		public SftpException (string msg, Exception e) : base(msg, e) { }
-
-        protected SftpException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+	    public SftpException (string msg, Exception e) : base(msg, e) { }
 	}
 }
 

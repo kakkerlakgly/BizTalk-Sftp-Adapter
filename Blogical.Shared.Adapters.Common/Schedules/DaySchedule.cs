@@ -12,7 +12,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 	public class DaySchedule: Schedule
 	{
 		//Fields
-		private int interval = 0;					//day interval
+		private int interval;					//day interval
 		private object days = 0;				//days of week
 		
         // Properties
@@ -112,7 +112,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				DateTime compare =  new DateTime(now.Year, now.Month, now.Day,0, 0, 0);
 				TimeSpan diff = compare.Subtract(StartDate);
 				int daysAhead = diff.Days % interval;
-				int daysToGo = 0;
+				int daysToGo;
 				if (daysAhead == 0)
 				{
 					if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))

@@ -146,7 +146,7 @@ namespace Blogical.Shared.Adapters.Common
 
             try
             {
-                using (Batch batch = new TransmitResponseBatch(transportProxy, new TransmitResponseBatch.AllWorkDoneDelegate(AllWorkDone)))
+                using (Batch batch = new TransmitResponseBatch(transportProxy, AllWorkDone))
                 {
 
                     foreach (IBaseMessage message in messages)
@@ -156,7 +156,7 @@ namespace Blogical.Shared.Adapters.Common
                         try
                         {
                             // Get appropriate endpoint for the message. Should always be non-null
-                            endpoint = (AsyncTransmitterEndpoint)asyncTransmitter.GetEndpoint(message);
+                            endpoint = asyncTransmitter.GetEndpoint(message);
 
                             //  ask the endpoint to process the message
                             IBaseMessage responseMsg = endpoint.ProcessMessage(message);
@@ -182,7 +182,6 @@ namespace Blogical.Shared.Adapters.Common
                             if (endpoint != null && endpoint.ReuseEndpoint == false)
                             {
                                 endpoint.Dispose();
-                                endpoint = null;
                             }
                         }
                     }

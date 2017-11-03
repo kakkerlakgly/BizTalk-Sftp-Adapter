@@ -21,16 +21,13 @@ namespace Blogical.Shared.Adapters.Sftp
     internal class SftpReceiverEndpoint : ReceiverEndpoint
     {
         #region Constants
-        private const string MESSAGE_BODY = "body";
-        private const string REMOTEFILENAME = "FileName";
+
         #endregion
 
-        private bool isInitialized = false;
+        private bool isInitialized;
 
         #region Constructor
-        public SftpReceiverEndpoint()
-        {
-        }
+
         #endregion
         #region Public Methods (Adapter Service Control)
         /// <summary>
@@ -71,10 +68,10 @@ namespace Blogical.Shared.Adapters.Sftp
             //  create and schedule a new the task
             _taskController = new TaskController(
                 new ScheduledTask(_properties.Uri,
-                new ScheduledTask.TaskDelegate(ControlledEndpointTask)),
+                ControlledEndpointTask),
                 _properties.Schedule);
 
-            _taskController.StateChanged += new StateChangedEventHandler(OnStateChanged);
+            _taskController.StateChanged += OnStateChanged;
 
             // start the task
             Start();
@@ -104,7 +101,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
                     _taskController = new TaskController(
                                         new ScheduledTask(_properties.Uri,
-                                        new ScheduledTask.TaskDelegate(ControlledEndpointTask)),
+                                        ControlledEndpointTask),
                                         _properties.Schedule);
                     isInitialized = false;
                 }
@@ -263,9 +260,7 @@ namespace Blogical.Shared.Adapters.Sftp
         private bool PickupFilesAndSubmit()
         {
             ISftp sftp = null;
-            BatchHandler batchHandler = null;
             long bytesInBatch = 0;
-            List<FileEntry> fileEntries = null;
 
             try
             {
@@ -302,6 +297,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
                 string uri = _properties.UseLoadBalancing ? _properties.Uri : null;
 
+                List<FileEntry> fileEntries;
                 lock (_filesInProcess)
                 {
                     // Get a list of all files. If the batch is limited in size (MaximumNumberOfFiles>0), the directory listing 
@@ -314,6 +310,7 @@ namespace Blogical.Shared.Adapters.Sftp
                             uri, _filesInProcess, _properties.DebugTrace);
                 }
                 // If batch has file enties create a BatchHandler and a new sftp connection.
+                BatchHandler batchHandler;
                 if (fileEntries.Count > 0)
                 {
                     batchHandler = new BatchHandler(sftp, _propertyNamespace, _transportType, _transportProxy, _properties.DebugTrace, _properties.UseLoadBalancing);
@@ -416,7 +413,6 @@ namespace Blogical.Shared.Adapters.Sftp
                 {
                     sftp.Disconnect();
                     sftp.Dispose();
-                    sftp = null;
                 }
             }
         }
@@ -434,7 +430,6 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 sftp.Disconnect();
                 sftp.Dispose();
-                sftp = null;
                 //SftpConnectionPool.GetHostByName(this._properties.SSHHost).ReleaseConnection(sftp);
             }
             catch

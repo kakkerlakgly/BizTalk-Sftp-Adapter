@@ -143,8 +143,6 @@ and [FileName] ='{1}' ";
                 {
                     if(trace)
                         Trace.WriteLine("[SftpReceiverEndpoint] Error when Checking in file [" + filename + "]");
-    
-                    return ;
                 }
             }
         }

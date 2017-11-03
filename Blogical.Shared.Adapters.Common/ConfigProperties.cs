@@ -38,7 +38,7 @@ namespace Blogical.Shared.Adapters.Common
         // Various useful helper functions
         public static XmlDocument ExtractConfigDomImpl (IPropertyBag pConfig, bool required)
         {
-            object obj = null;
+            object obj;
             pConfig.Read("AdapterConfig", out obj, 0);
             if (!required && null == obj)
                 return null;

@@ -12,7 +12,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
     public class TimeSchedule : Schedule
     {
         //Fields
-		private int _interval = 0;					//polling interval
+		private int _interval;					//polling interval
         private object _scheduleTime = 0;			//hours, minutes, seconds
 		
         // Properties

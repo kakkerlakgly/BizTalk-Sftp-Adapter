@@ -101,7 +101,7 @@ namespace Blogical.Shared.Adapters.Common
             if (!Initialized)
                 throw new NotInitialized();
 
-            ReceiverEndpoint endpoint = (ReceiverEndpoint)endpoints[Url];
+            ReceiverEndpoint endpoint = endpoints[Url];
 
             if (null == endpoint)
                 throw new EndpointNotExists(Url);
@@ -114,7 +114,7 @@ namespace Blogical.Shared.Adapters.Common
 			if (!Initialized)
 				throw new NotInitialized();
 
-			ReceiverEndpoint endpoint = (ReceiverEndpoint)endpoints[Url];
+			ReceiverEndpoint endpoint = endpoints[Url];
 
 			if (null == endpoint)
 				return;
@@ -130,12 +130,6 @@ namespace Blogical.Shared.Adapters.Common
 
             return endpoint;
         }
-
-        //  IBTransportControl
-        public override void Initialize (IBTTransportProxy transportProxy)
-        {
-			base.Initialize(transportProxy);
-		}
 
         public override void Terminate ()
         {

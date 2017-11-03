@@ -25,7 +25,6 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
             }
             catch 
             {
-                return;
             }
         }
         
@@ -122,7 +121,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
     {
         #region Private Members
         int _currentCount;
-        bool _trace = false;
+        bool _trace;
         #endregion
         #region Constructors
 
@@ -170,7 +169,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                     TraceMessage(
                         "[SftpConnectionPool] GetConnectionFromPool creating a new connection (not from pool)");
                     //ISftp sftp = new Sftp(this.HostName, username, password, identityFile, port, passphrase, this._trace);
-                    ISftp sftp = null;
+                    ISftp sftp;
                     if (string.IsNullOrEmpty(properties.ProxyHost))
                     {
                         sftp = new SharpSsh.Sftp(properties.SSHHost,
@@ -212,7 +211,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                     TraceMessage("[SftpConnectionPool] GetConnectionFromPool creating a new connection for pool");
                     //ISftp sftp = new SharpSsh.Sftp(this.HostName, username, password, identityFile, port, passphrase, this._trace);
 
-                    ISftp sftp = null;
+                    ISftp sftp;
                     if (string.IsNullOrEmpty(properties.ProxyHost))
                     {
                         sftp = new SharpSsh.Sftp(properties.SSHHost,
@@ -244,7 +243,6 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
                     _currentCount++;
                     return sftp;
                 }
-                continue;
             }
             return null;
 

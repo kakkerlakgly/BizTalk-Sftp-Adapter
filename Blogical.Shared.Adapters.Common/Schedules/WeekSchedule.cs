@@ -11,7 +11,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
     public class WeekSchedule : Schedule
     {
         ///Fields
-        private int interval = 0;
+        private int interval;
         private object days = 0;
 
         // Properties

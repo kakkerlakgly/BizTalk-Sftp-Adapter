@@ -12,7 +12,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 	public class MonthSchedule: Schedule
 	{
 		// Fields
-		private int day = 0;							//day of month
+		private int day;							//day of month
 		private object ordinal = 0;				//ordinal week day (first, last..)
 		private object weekday = 0;				//day of week ( Monday, Tuesday...)
 		private object months = 0;				//months of year flag

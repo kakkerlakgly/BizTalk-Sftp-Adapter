@@ -15,7 +15,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 	/// </summary>
 	public class ScheduleUITypeEditor : UITypeEditor 
 	{
-		private IWindowsFormsEditorService service = null;
+		private IWindowsFormsEditorService service;
 		private ScheduleDialog dialog;
 
         /// <summary>
