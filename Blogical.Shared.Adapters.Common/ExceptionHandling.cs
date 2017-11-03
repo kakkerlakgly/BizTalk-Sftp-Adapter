@@ -25,10 +25,10 @@ namespace Blogical.Shared.Adapters.Common
             CreateEventLogMessage(ex, methodId, null);
             return ex;
         }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="source"></param>
         /// <param name="eventID"></param>
         /// <param name="methodId"></param>
         /// <param name="ex"></param>

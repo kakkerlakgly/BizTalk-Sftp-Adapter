@@ -68,10 +68,11 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// Default number of connections per server
         /// </summary>
         public static int DefaultConnectionLimit = 60;
+
         /// <summary>
         /// Returns a SftpHost 
         /// </summary>
-        /// <param name="hostName"></param>
+        /// <param name="properties"></param>
         /// <returns></returns>
         public static SftpHost GetHostByName(SftpTransmitProperties properties)//string hostName, bool trace, int connectionLimit)
         {
@@ -130,11 +131,13 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         bool _trace = false;
         #endregion
         #region Constructors
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="hostName"></param>
         /// <param name="maxNumberOfConnections"></param>
+        /// <param name="trace"></param>
         public SftpHost(string hostName, int maxNumberOfConnections, bool trace)
         {
             ConnectionLimit = maxNumberOfConnections;
@@ -157,12 +160,11 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         public string HostName = string.Empty;
         #endregion
         #region Public Methods
+
         /// <summary>
         /// Returns a new or  free connection from the pool
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <param name="identityFile"></param>
+        /// <param name="properties"></param>
         /// <param name="shutdownRequested"></param>
         /// <returns></returns>
         public ISftp GetConnection(SftpTransmitProperties properties, bool shutdownRequested)//.SSHHoststring username, string password, string identityFile, int port, bool shutdownRequested, string passphrase)

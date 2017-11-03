@@ -30,14 +30,17 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="oldName">ssh destination path eg. /home/username/TEMP/afile.txt</param>
         /// <param name="newName">ssh destination path eg. /home/username/IN/afile.txt</param>
         void Rename(string oldName, string newName);
+
         /// <summary>
         /// Returns a FileEntry (name and size)list of files and subdirectories in a directory.
         /// </summary>
         /// <param name="fileMask"></param>
         /// <param name="uri"></param>
         /// <param name="filesInProcess"></param>
+        /// <param name="trace"></param>
         /// <returns></returns>
         List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess,bool trace);
+
         /// <summary>
         /// Returns a FileEntry (name and size)list of files and subdirectories in a directory.
         /// </summary>
@@ -45,6 +48,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="uri"></param>
         /// <param name="maxNumberOfFiles"></param>
         /// <param name="filesInProcess"></param>
+        /// <param name="trace"></param>
         /// <returns></returns>
         List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace);
         /// <summary>

@@ -6,8 +6,6 @@ namespace Blogical.Shared.Adapters.Sftp
 {
 	internal class SftpException : ApplicationException
 	{
-		public static string UnhandledTransmit_Error = "The Sftp Adapter encounted an error transmitting a batch of messages.";
-
         public SftpException () { }
 
 		public SftpException (string msg) : base(msg) { }

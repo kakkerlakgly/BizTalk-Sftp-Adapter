@@ -65,7 +65,7 @@ namespace Microsoft.SSO.Utility
             public string Password;
         }
 
-
+        /// <summary>
         /// Retrieves the credentials to use.
         /// </summary>
         /// <param name="appName">The name of the affiliate application to represent the configuration container to access</param>

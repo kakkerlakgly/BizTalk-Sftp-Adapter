@@ -6,9 +6,6 @@ using Microsoft.XLANGs.BaseTypes;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;
 
-/// <summary>
-/// Summary description for Class1
-/// </summary>
 namespace Blogical.Shared.Adapters.Common
 {
     /// <summary>

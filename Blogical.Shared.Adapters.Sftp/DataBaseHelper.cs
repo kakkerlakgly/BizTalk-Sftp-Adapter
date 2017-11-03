@@ -17,12 +17,14 @@ namespace Blogical.Shared.Adapters.Sftp
     internal class DataBaseHelper
     {
         #region Internal Methods
+
         /// <summary>
         /// Used for making sure other processes (nodes) are not processing the same file
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="node"></param>
         /// <param name="filename"></param>
+        /// <param name="trace"></param>
         /// <returns></returns>
         internal static bool CheckOutFile(string uri, string node, string filename,bool trace)
         {
@@ -113,11 +115,13 @@ select 0 as WorkInProcess";
                 }
             }
         }
+
         /// <summary>
         /// Used for making sure other processes (nodes) are not processing the same file
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="filename"></param>
+        /// <param name="trace"></param>
         internal static void CheckInFile(string uri, string filename, bool trace)
         {
             if(trace)

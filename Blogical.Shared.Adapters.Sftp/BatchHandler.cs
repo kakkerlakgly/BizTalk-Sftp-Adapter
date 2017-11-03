@@ -26,7 +26,6 @@ namespace Blogical.Shared.Adapters.Sftp
         private const string EMPTYBATCHFILENAME = "EmptyBatch.xml";
         #endregion
         #region Private Fields
-        object _perfCounterObject = null;
         ISftp _sftp = null;
         string _transportType;
         string _propertyNamespace;
@@ -119,6 +118,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     new SftpException("Could not submit files to BTS", e));
             }
         }
+
         /// <summary>
         /// (1) Gets the file from the sftp host
         /// (2) Creates a IBaseMessage
@@ -128,6 +128,8 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="fileName"></param>
         /// <param name="uri"></param>
         /// <param name="size"></param>
+        /// <param name="afterGetAction"></param>
+        /// <param name="afterGetFilename"></param>
         /// <returns></returns>
         internal IBaseMessage CreateMessage(string fileName, string uri, long size,
             SftpReceiveProperties.AfterGetActions afterGetAction, string afterGetFilename)
@@ -188,12 +190,12 @@ namespace Blogical.Shared.Adapters.Sftp
                 return null;
             }
         }
+
         /// <summary>
         /// Creates a new message with some notification description, 
         /// and adds it to the BatchMessage
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="source"></param>
         /// <returns></returns>
         internal IBaseMessage CreateEmptyBatchMessage(string uri)
         {

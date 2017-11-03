@@ -24,7 +24,6 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Private Fields
         private IList<ISftp> _connections;
         private bool _shutdownRequested;
-        private int _currentCount;// number of connections currently used by this post
         private SftpTransmitProperties _properties = null;
         private AsyncTransmitter _asyncTransmitter = null;
         private string _propertyNamespace;
@@ -96,7 +95,7 @@ namespace Blogical.Shared.Adapters.Sftp
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
             _shutdownRequested = true;
             int num = 0;
-            while ((_connections.Count < _currentCount) && (num < 100))
+            while ((_connections.Count < 0) && (num < 100))
             {
                 num++;
                 Thread.Sleep(50);

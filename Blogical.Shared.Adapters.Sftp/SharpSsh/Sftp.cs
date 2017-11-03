@@ -24,7 +24,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
         const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
         DateTime _connectedSince;
-        object createdCounterObject = null;
         SftpClient _sftp = null;
         string _identityFile;
         string _identityThumbprint;
@@ -43,6 +42,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         #endregion
         #region ISftp Members
         public bool DebugTrace { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -53,6 +53,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="identityThumbprint">Thumbprint used to locate a X.509 cert in the personal store</param>
         /// <param name="port">Port to use for connection.</param>
         /// <param name="passphrase">passphrase for identityfile.</param>
+        /// <param name="debugTrace"></param>
         /// <created>2007-04-01 - Mikael Hkansson</created>
         /// <history>2007-10-11 - Mikael Hkansson, Added code head to all public methods</history>
         /// <history>2008-11-23 - Johan Hedberg, Added passphrase</history>
@@ -213,12 +214,14 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 RaiseOnDisconnect();
             }
         }
+
         /// <summary>
         /// Returns a list of files (and sizes) from a uri
         /// </summary>
         /// <param name="fileMask"></param>
         /// <param name="uri"></param>
         /// <param name="filesInProcess"></param>
+        /// <param name="trace"></param>
         /// <returns></returns>
         public List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess, bool trace)
         {
@@ -247,6 +250,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             }
 
         }
+
         /// <summary>
         /// Returns a list of files (and sizes) from a uri
         /// </summary>
@@ -254,6 +258,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="uri"></param>
         /// <param name="maxNumberOfFiles"></param>
         /// <param name="filesInProcess"></param>
+        /// <param name="trace"></param>
         /// <returns></returns>
         public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
         {

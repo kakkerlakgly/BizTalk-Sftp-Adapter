@@ -137,7 +137,6 @@ namespace Blogical.Shared.Adapters.Sftp
         public override void Dispose()
         {
             TraceMessage("[SftpReceiverEndpoint] Dispose called");
-            _shutdownRequested = true;
 
             //  stop the schedule
             Stop();
@@ -463,9 +462,6 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         #endregion
         #region Private Members
-
-        //Properties to control the connection pool
-        private bool _shutdownRequested;
 
         // The workload of files
         private ArrayList _filesInProcess = ArrayList.Synchronized(new ArrayList());
