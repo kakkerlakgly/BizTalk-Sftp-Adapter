@@ -5,7 +5,9 @@ using System.IO.IsolatedStorage;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using System.Collections;
+
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace Blogical.Shared.Adapters.Sftp
@@ -51,10 +53,10 @@ namespace Blogical.Shared.Adapters.Sftp
         /// Eg. \Document and Settings\[BizTalk Service User]\Local Settings\Application Data\IsolatedStorage\
         /// </summary>
         /// <returns></returns>
-        public static ArrayList Load()
+        public static IProducerConsumerCollection<ApplicationStorage> Load()
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
-            ArrayList ApplicationStorage = new ArrayList();
+            var ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
             if (isoStore.GetFileNames(settingsFileName).Length == 0)
             {
                 return ApplicationStorage;
@@ -71,7 +73,7 @@ namespace Blogical.Shared.Adapters.Sftp
                         XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
                         TextReader reader = new StreamReader(stream);
                         ApplicationStorage[] arr = (ApplicationStorage[])ser.Deserialize(reader);
-                        ApplicationStorage = ArrayList.Synchronized(new ArrayList(arr));
+                        ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
                         reader.Close();
                     }
                     finally
@@ -84,10 +86,10 @@ namespace Blogical.Shared.Adapters.Sftp
             return ApplicationStorage;
         }
 
-        public static ArrayList _Load()
+        public static IProducerConsumerCollection<ApplicationStorage> _Load()
         {
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
-            ArrayList ApplicationStorage = new ArrayList();
+            var ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
             if (isoStore.GetFileNames(settingsFileName).Length == 0)
             {
                 return ApplicationStorage;
@@ -102,7 +104,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
     				TextReader reader = new StreamReader(stream);
                     ApplicationStorage[]arr= (ApplicationStorage[])ser.Deserialize(reader);
-                    ApplicationStorage = ArrayList.Synchronized(new ArrayList(arr));
+                    ApplicationStorage = new ConcurrentBag<ApplicationStorage>();
     				reader.Close();             
                 }
                 finally
@@ -118,7 +120,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// Eg. \Document and Settings\[BizTalk Service User]\Local Settings\Application Data\IsolatedStorage\
         /// </summary>
         /// <param name="applicationStorage"></param>
-        public static void Save(ArrayList applicationStorage)
+        public static void Save(IEnumerable<ApplicationStorage> applicationStorage)
         {
             // Open the stream from the IsolatedStorage.
             IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
@@ -133,7 +135,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     {
                         XmlSerializer ser = new XmlSerializer(typeof(ApplicationStorage[]));
                         TextWriter writer = new StreamWriter(stream);
-                        ser.Serialize(writer, (ApplicationStorage[])applicationStorage.ToArray(typeof(ApplicationStorage)));
+                        ser.Serialize(writer, applicationStorage.ToArray());
                         writer.Close();
                     }
                     finally
@@ -149,9 +151,9 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="applicationStorage"></param>
         /// <param name="host"></param>
         /// <returns></returns>
-        public static string GetHostKey(ArrayList applicationStorage, string host)
-        { 
-            foreach(ApplicationStorage apps in applicationStorage)
+        public static string GetHostKey(IEnumerable<ApplicationStorage> applicationStorage, string host)
+        {
+            foreach (ApplicationStorage apps in applicationStorage)
             {
                 if (apps.Host == host)
                     return apps.HostKey;

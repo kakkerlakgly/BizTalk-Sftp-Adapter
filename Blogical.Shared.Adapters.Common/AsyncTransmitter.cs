@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Collections;
+using System.Collections.Generic;
 using Microsoft.BizTalk.Message.Interop;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.TransportProxy.Interop;
@@ -58,7 +58,7 @@ namespace Blogical.Shared.Adapters.Common
         //  members to initialize the batch with
         private int maxBatchSize = MAX_BATCH_SIZE;
         private Type endpointType;
-        private Hashtable endpoints = new Hashtable();
+        private IDictionary<string, AsyncTransmitterEndpoint> endpoints = new Dictionary<string, AsyncTransmitterEndpoint>();
 
         private ControlledTermination control;
 
@@ -134,7 +134,7 @@ namespace Blogical.Shared.Adapters.Common
 
             lock (endpoints)
             {
-                AsyncTransmitterEndpoint endpoint = (AsyncTransmitterEndpoint)endpoints[endpointParameters.SessionKey];
+                AsyncTransmitterEndpoint endpoint = endpoints[endpointParameters.SessionKey];
                 if (null == endpoint)
                 {
                     //  we haven't seen this location so far this batch so make a new endpoint

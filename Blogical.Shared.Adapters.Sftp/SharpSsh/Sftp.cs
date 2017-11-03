@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Collections;
+
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.BizTalk.Streaming;
@@ -19,7 +20,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
     public class Sftp : ISftp, IDisposable
     {
         #region Private Members
-        private ArrayList _applicationStorage = ArrayList.Synchronized(new ArrayList());
+        private IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
         const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
         const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
         DateTime _connectedSince;
@@ -219,7 +220,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="uri"></param>
         /// <param name="filesInProcess"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess, bool trace)
         {
             try
             {
@@ -254,7 +255,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="maxNumberOfFiles"></param>
         /// <param name="filesInProcess"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
         {
             try
             {
@@ -466,7 +467,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
             if (hostKey == null)
             {
-                this._applicationStorage.Add(new ApplicationStorage(this._host,
+                this._applicationStorage.TryAdd(new ApplicationStorage(this._host,
                     Convert.ToBase64String(hostKeyEventArgs.HostKey, 0, hostKeyEventArgs.HostKey.Length)));
                 ApplicationStorageHelper.Save(this._applicationStorage);
             }
@@ -474,7 +475,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
                        new Exception("HostKey does not match previously retrieved HostKey."));
         }
-        private List<FileEntry> dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        private List<FileEntry> dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
         {
             try
             {
@@ -482,7 +483,6 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                     Trace.WriteLine("[SftpReceiverEndpoint] Dir(" + fileMask + ")");
 
                 List<FileEntry> fileEntries = new List<FileEntry>();
-                ArrayList checkedOutFiles = new ArrayList();
 
                 foreach(var entry in _sftp.ListDirectory(fileMask))
                 {
@@ -563,10 +563,9 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
         {
             List<FileEntry> fileEntries = new List<FileEntry>();
-            ArrayList checkedOutFiles = new ArrayList();
             string remotePath = string.Empty;
             long size;
             bool isDirectory = false;

@@ -22,7 +22,7 @@
 
 
 using System;
-using System.Collections;
+
 using System.Collections.Specialized;
 using Microsoft.BizTalk.SSOClient.Interop;
 

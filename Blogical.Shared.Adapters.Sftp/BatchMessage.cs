@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+
 using System.Runtime.InteropServices;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;

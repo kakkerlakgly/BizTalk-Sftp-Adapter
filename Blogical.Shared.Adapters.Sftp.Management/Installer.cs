@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.Windows.Forms;
-using System.Collections;
+
 
 namespace Blogical.Shared.Adapters.Sftp.Management
 {

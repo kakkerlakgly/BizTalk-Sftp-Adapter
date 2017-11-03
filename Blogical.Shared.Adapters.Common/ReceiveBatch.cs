@@ -31,7 +31,8 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;
-using System.Collections;
+
+using System.Collections.Generic;
 
 namespace Blogical.Shared.Adapters.Common
 {
@@ -250,9 +251,9 @@ namespace Blogical.Shared.Adapters.Common
         private int depth;
         private bool suspendFailed = false;
 
-        private ArrayList failedMessages = new ArrayList();
+        private IList<FailedMessage> failedMessages = new List<FailedMessage>();
 
-        public ArrayList FailedMessages
+        public IList<FailedMessage> FailedMessages
         {
             get { return failedMessages; }
             set { failedMessages = value; }

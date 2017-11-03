@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Collections;
+
 
 namespace Blogical.Shared.Adapters.Sftp
 {
@@ -37,7 +37,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="uri"></param>
         /// <param name="filesInProcess"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess,bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess,bool trace);
         /// <summary>
         /// Returns a FileEntry (name and size)list of files and subdirectories in a directory.
         /// </summary>
@@ -46,7 +46,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="maxNumberOfFiles"></param>
         /// <param name="filesInProcess"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace);
         /// <summary>
         /// Determines wether a specified directory has files.
         /// </summary>

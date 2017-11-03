@@ -25,7 +25,8 @@
 //---------------------------------------------------------------------
 
 using System;
-using System.Collections;
+
+using System.Collections.Generic;
 using System.Xml;
 using System.Runtime.InteropServices;
 using Microsoft.BizTalk.TransportProxy.Interop;
@@ -60,9 +61,9 @@ namespace Blogical.Shared.Adapters.Common
         protected IBTTransportProxy transportProxy;
 		protected AsyncTransmitter asyncTransmitter;
 
-        private ArrayList messages;
+        private IList<IBaseMessage> messages;
 
-		protected ArrayList Messages
+		protected IList<IBaseMessage> Messages
 		{
 			get { return messages; }
 		}
@@ -78,7 +79,7 @@ namespace Blogical.Shared.Adapters.Common
             this.transportProxy = transportProxy;
             this.asyncTransmitter = asyncTransmitter;
             
-            this.messages = new ArrayList();
+            this.messages = new List<IBaseMessage>();
 
             // this.worker = new WorkerDelegate(Worker);
         }

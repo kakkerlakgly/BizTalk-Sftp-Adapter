@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
-using System.Collections;
+
 using System.Threading;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Component.Interop;
@@ -19,10 +19,10 @@ namespace Blogical.Shared.Adapters.Sftp
 	/// There is one instance of HttpTransmitterEndpoint class for each every static send port.
 	/// Messages will be forwarded to this class by AsyncTransmitterBatch
 	/// </summary>
-	internal class SftpTransmitterEndpoint : AsyncTransmitterEndpoint 
+	public class SftpTransmitterEndpoint : AsyncTransmitterEndpoint 
     {
         #region Private Fields
-        private ArrayList _connections;
+        private IList<ISftp> _connections;
         private bool _shutdownRequested;
         private int _currentCount;// number of connections currently used by this post
         private SftpTransmitProperties _properties = null;
@@ -35,7 +35,7 @@ namespace Blogical.Shared.Adapters.Sftp
             : base(asyncTransmitter)
 		{
 			this._asyncTransmitter = asyncTransmitter;
-            this._connections = new ArrayList();
+            this._connections = new List<ISftp>();
 
             Trace.WriteLine("[SftpTransmitterEndpoint] Created...");    
 		}

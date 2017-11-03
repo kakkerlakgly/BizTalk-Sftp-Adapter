@@ -1,11 +1,13 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
 using System.Xml;
 using System.Text;
 using System.Security;
 using System.Threading;
-using System.Collections;
+
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -17,6 +19,7 @@ using Blogical.Shared.Adapters.Sftp;
 using Microsoft.BizTalk.Scheduler;
 using System.Reflection;
 using System.Data;
+using System.Linq;
 using Blogical.Shared.Adapters.Sftp.ConnectionPool;
 using Blogical.Shared.Adapters.Common.Schedules;
 
@@ -323,10 +326,10 @@ namespace Blogical.Shared.Adapters.Sftp
                     // will quite after the set number of files has been listed.
                     if (this._properties.MaximumNumberOfFiles > 0)
                         fileEntries = sftp.Dir(CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.FileMask),
-                            uri, this._properties.MaximumNumberOfFiles, _filesInProcess, this._properties.DebugTrace);
+                            uri, this._properties.MaximumNumberOfFiles, _filesInProcess.Cast<string>(), this._properties.DebugTrace);
                     else
                         fileEntries = sftp.Dir(CommonFunctions.CombinePath(this._properties.RemotePath, this._properties.FileMask),
-                            uri, _filesInProcess, this._properties.DebugTrace);
+                            uri, _filesInProcess.Cast<string>(), this._properties.DebugTrace);
                 }
                 // If batch has file enties create a BatchHandler and a new sftp connection.
                 if (fileEntries.Count > 0)
@@ -353,46 +356,52 @@ namespace Blogical.Shared.Adapters.Sftp
                     // Used for Connection pool: SftpConnectionPool.GetHostByName(this._properties.SSHHost, this._properties.DebugTrace).ReleaseConnection(sftp);
                     return false;
                 }
-
-                foreach (Blogical.Shared.Adapters.Sftp.FileEntry fileEntry in fileEntries)
+                lock (_filesInProcess)
                 {
-                    // If the file is empty (or a directory) or if it's being processed by another
-                    // process, we will just move on.
-                    if (fileEntry.Size == 0 ||
-                        _filesInProcess.Contains(CommonFunctions.CombinePath(this._properties.RemotePath, fileEntry.FileName)))
-                        continue;
-
-                    if (this._properties.MaximumNumberOfFiles == batchHandler.Files.Count &&
-                        this._properties.MaximumNumberOfFiles != 0)
-                        break;
-
-                    if (this._properties.MaximumBatchSize < bytesInBatch &&
-                        this._properties.MaximumBatchSize != 0)
-                        break;
-
-                    string fileNamePath = CommonFunctions.CombinePath(this._properties.RemotePath, fileEntry.FileName);
-
-                    // Prevent other processes to work with the same file by adding the filename to filesInProcess
-                    _filesInProcess.Add(fileNamePath);
-
-                    // Create and add message to batch
-                    IBaseMessage msg = batchHandler.CreateMessage(fileNamePath, this._properties.Uri, fileEntry.Size,
-                        this._properties.AfterGet, this._properties.AfterGetFilename);
-
-                    if (null == msg)
+                    foreach (Blogical.Shared.Adapters.Sftp.FileEntry fileEntry in fileEntries)
                     {
-                        // If the creation was unsuccessful, remove the file from the files to be processed
-                        // so an other process can pick up the file.
-                        this._filesInProcess.Remove(fileNamePath);
-                        continue;
+                        // If the file is empty (or a directory) or if it's being processed by another
+                        // process, we will just move on.
+                        if (fileEntry.Size == 0 ||
+                            _filesInProcess.Contains(CommonFunctions.CombinePath(this._properties.RemotePath,
+                                fileEntry.FileName)))
+                            continue;
+
+                        if (this._properties.MaximumNumberOfFiles == batchHandler.Files.Count &&
+                            this._properties.MaximumNumberOfFiles != 0)
+                            break;
+
+                        if (this._properties.MaximumBatchSize < bytesInBatch &&
+                            this._properties.MaximumBatchSize != 0)
+                            break;
+
+                        string fileNamePath =
+                            CommonFunctions.CombinePath(this._properties.RemotePath, fileEntry.FileName);
+
+                        // Prevent other processes to work with the same file by adding the filename to filesInProcess
+                        _filesInProcess.Add(fileNamePath);
+
+                        // Create and add message to batch
+                        IBaseMessage msg = batchHandler.CreateMessage(fileNamePath, this._properties.Uri,
+                            fileEntry.Size,
+                            this._properties.AfterGet, this._properties.AfterGetFilename);
+
+                        if (null == msg)
+                        {
+                            // If the creation was unsuccessful, remove the file from the files to be processed
+                            // so an other process can pick up the file.
+                            this._filesInProcess.Remove(fileNamePath);
+                            continue;
+                        }
+
+                        // Keep a running total for the current batch
+                        // Greg Sharp: Add stream length not file size because this value may be stale
+                        if (msg.BodyPart.Data.CanSeek)
+                            bytesInBatch += msg.BodyPart.Data.Length;
+                        else
+                            bytesInBatch += fileEntry.Size;
                     }
 
-                    // Keep a running total for the current batch
-                    // Greg Sharp: Add stream length not file size because this value may be stale
-                    if (msg.BodyPart.Data.CanSeek)
-                        bytesInBatch += msg.BodyPart.Data.Length;
-                    else
-                        bytesInBatch += fileEntry.Size;
                 }
 
                 // Submit all messages to BTS

@@ -4,7 +4,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Collections;
+
 using Blogical.Shared.Adapters.Common;
 using System.Configuration;
 
@@ -149,7 +149,7 @@ and [FileName] ='{1}' ";
             }
         }
 
-        internal static ArrayList GetCheckedOutFiles(string uri)
+        internal static IEnumerable<string> GetCheckedOutFiles(string uri)
         {
             #region query
             string queryFormat = @"
@@ -157,7 +157,7 @@ select [FileName]
 from [dbo].[SftpWorkingProcess] 
 where [URI] = '{0}' ";
             #endregion
-            ArrayList files = new ArrayList();
+            var files = new List<string>();
             using (SqlConnection connection = new SqlConnection(GetConnectionString()))
             {
                 connection.Open();

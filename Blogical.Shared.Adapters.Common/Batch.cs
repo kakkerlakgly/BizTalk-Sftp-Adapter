@@ -26,7 +26,8 @@
 
 using System;
 using System.IO;
-using System.Collections;
+
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;
@@ -252,7 +253,7 @@ namespace Blogical.Shared.Adapters.Common
 
             this.transportBatch.SubmitMessage(message);
             if (null == this.submitArray)
-                this.submitArray = new ArrayList();
+                this.submitArray = new List<BatchMessage>();
             this.submitArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
@@ -262,7 +263,7 @@ namespace Blogical.Shared.Adapters.Common
         { 
             this.transportBatch.DeleteMessage(message);
             if (null == this.deleteArray)
-                this.deleteArray = new ArrayList();
+                this.deleteArray = new List<BatchMessage>();
             this.deleteArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
@@ -272,7 +273,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.transportBatch.Resubmit(message, t);
             if (null == this.resubmitArray)
-                this.resubmitArray = new ArrayList();
+                this.resubmitArray = new List<BatchMessage>();
             this.resubmitArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
@@ -282,7 +283,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.transportBatch.MoveToSuspendQ(message);
             if (null == this.moveToSuspendQArray)
-                this.moveToSuspendQArray = new ArrayList();
+                this.moveToSuspendQArray = new List<BatchMessage>();
             this.moveToSuspendQArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
@@ -292,7 +293,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.transportBatch.MoveToNextTransport(message);
             if (null == this.moveToNextTransportArray)
-                this.moveToNextTransportArray = new ArrayList();
+                this.moveToNextTransportArray = new List<BatchMessage>();
             this.moveToNextTransportArray.Add(new BatchMessage(message, userData));
 
             workToBeDone = true;
@@ -302,7 +303,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.transportBatch.SubmitRequestMessage(requestMsg, correlationToken, firstResponseOnly, expirationTime, responseCallback);
             if (null == this.submitRequestArray)
-                this.submitRequestArray = new ArrayList();
+                this.submitRequestArray = new List<BatchMessage>();
             this.submitRequestArray.Add(new BatchMessage(requestMsg, userData));
 
             workToBeDone = true;
@@ -312,7 +313,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             this.transportBatch.CancelResponseMessage(correlationToken);
             if (null == this.cancelResponseMessageArray)
-                this.cancelResponseMessageArray = new ArrayList();
+                this.cancelResponseMessageArray = new List<BatchMessage>();
             this.cancelResponseMessageArray.Add(new BatchMessage(correlationToken, userData));
 
             workToBeDone = true;
@@ -325,7 +326,7 @@ namespace Blogical.Shared.Adapters.Common
 
             this.transportBatch.SubmitResponseMessage(solicitDocSent, responseDocToSubmit);
             if (null == this.submitResponseMessageArray)
-                this.submitResponseMessageArray = new ArrayList();
+                this.submitResponseMessageArray = new List<BatchMessage>();
             this.submitResponseMessageArray.Add(new BatchMessage(responseDocToSubmit, userData));
 
             workToBeDone = true;
@@ -434,14 +435,14 @@ namespace Blogical.Shared.Adapters.Common
         private IBTTransportBatch transportBatch;
         private bool makeSuccessCall;
 
-        private ArrayList submitArray;
-        private ArrayList deleteArray;
-        private ArrayList resubmitArray;
-        private ArrayList moveToSuspendQArray;
-        private ArrayList moveToNextTransportArray;
-        private ArrayList submitRequestArray;
-        private ArrayList cancelResponseMessageArray;
-        private ArrayList submitResponseMessageArray;
+        private IList<BatchMessage> submitArray;
+        private IList<BatchMessage> deleteArray;
+        private IList<BatchMessage> resubmitArray;
+        private IList<BatchMessage> moveToSuspendQArray;
+        private IList<BatchMessage> moveToNextTransportArray;
+        private IList<BatchMessage> submitRequestArray;
+        private IList<BatchMessage> cancelResponseMessageArray;
+        private IList<BatchMessage> submitResponseMessageArray;
 
         private bool workToBeDone = false;
         private bool submitIsForSubmitResponse = false;

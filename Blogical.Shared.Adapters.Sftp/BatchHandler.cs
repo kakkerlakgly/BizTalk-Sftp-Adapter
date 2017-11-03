@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.BizTalk.TransportProxy.Interop;
-using System.Collections;
+
 using Blogical.Shared.Adapters.Common;
 using Microsoft.BizTalk.Message.Interop;
 using System.Diagnostics;
@@ -31,9 +32,8 @@ namespace Blogical.Shared.Adapters.Sftp
         string _propertyNamespace;
         bool _useLoadBalancing;
         IBTTransportProxy _transportProxy;
-        ArrayList _filesInProcess = null;
+        IList _filesInProcess = null;
         bool _traceFlag = false;
-        List<BatchMessage> _files = new List<BatchMessage>();
 
         #endregion
         #region Constructor
@@ -48,10 +48,10 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         #endregion
         #region Public Members
-        public List<BatchMessage> Files { get { return _files; } }
+        public IList<BatchMessage> Files { get; private set; } = new List<BatchMessage>();
         #endregion
         #region Public Methods
-        internal void SubmitFiles(ControlledTermination control, ArrayList filesInProcess)
+        internal void SubmitFiles(ControlledTermination control, IList filesInProcess)
         {
             if (Files == null || Files.Count == 0)
                 return;
@@ -62,7 +62,6 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 using (SyncReceiveSubmitBatch batch = new SyncReceiveSubmitBatch(this._transportProxy, control, Files.Count))
                 {
-                    ArrayList transportFailures = new ArrayList();
                     foreach (BatchMessage file in Files)
                     {
                         batch.SubmitMessage(file.Message, file.UserData);
@@ -90,7 +89,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         /// <param name="control"></param>
         /// <param name="filesInProcess"></param>
-        internal void _SubmitFiles(ControlledTermination control, ArrayList filesInProcess)
+        internal void _SubmitFiles(ControlledTermination control, IList filesInProcess)
         {
             try
             {
