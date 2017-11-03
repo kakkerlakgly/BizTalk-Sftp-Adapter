@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Threading;
 using System.Configuration;
-using System.Xml.Serialization;
 using System.Xml;
-using System.IO;
 using Blogical.Shared.Adapters.Common;
 
 namespace Blogical.Shared.Adapters.Sftp.ConnectionPool

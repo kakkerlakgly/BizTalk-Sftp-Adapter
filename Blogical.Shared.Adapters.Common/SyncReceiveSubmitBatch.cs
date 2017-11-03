@@ -24,11 +24,8 @@
 // PURPOSE.
 //---------------------------------------------------------------------
 
-using System;
 using System.Threading;
-using System.Collections.Generic;
 using Microsoft.BizTalk.TransportProxy.Interop;
-using Microsoft.BizTalk.Message.Interop;
 
 namespace Blogical.Shared.Adapters.Common
 {

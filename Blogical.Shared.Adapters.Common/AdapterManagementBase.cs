@@ -24,7 +24,6 @@
 // PURPOSE.
 //---------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Xml;
 using System.Resources;

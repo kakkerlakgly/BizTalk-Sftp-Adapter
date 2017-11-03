@@ -26,8 +26,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using Microsoft.BizTalk.Component.Interop;
-using Microsoft.BizTalk.Message.Interop;
 
 namespace Blogical.Shared.Adapters.Common
 {

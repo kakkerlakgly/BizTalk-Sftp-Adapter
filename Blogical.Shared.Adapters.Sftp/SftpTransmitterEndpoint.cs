@@ -1,15 +1,9 @@
 
 using System;
 using System.IO;
-using System.Xml;
-using System.Text;
-
-using System.Threading;
-using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 using Blogical.Shared.Adapters.Common;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Blogical.Shared.Adapters.Sftp.ConnectionPool;
 

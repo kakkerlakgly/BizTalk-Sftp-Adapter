@@ -1,26 +1,14 @@
 using System;
 using System.Collections;
-using System.IO;
-using System.Net;
 using System.Xml;
-using System.Text;
-using System.Security;
-using System.Threading;
-
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Blogical.Shared.Adapters.Common;
-using Blogical.Shared.Adapters.Sftp;
 using Microsoft.BizTalk.Scheduler;
 using System.Reflection;
-using System.Data;
-using System.Linq;
-using Blogical.Shared.Adapters.Sftp.ConnectionPool;
 using Blogical.Shared.Adapters.Common.Schedules;
 
 namespace Blogical.Shared.Adapters.Sftp

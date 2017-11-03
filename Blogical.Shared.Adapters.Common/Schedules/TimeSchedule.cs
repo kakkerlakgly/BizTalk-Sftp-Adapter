@@ -1,8 +1,6 @@
 using System;
 using System.Threading;
 using System.Xml;
-using System.Xml.Serialization;
-using System.Diagnostics;
 
 namespace Blogical.Shared.Adapters.Common.Schedules
 {

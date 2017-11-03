@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.Serialization;
-using Blogical.Shared.Adapters.Common;
 
 namespace Blogical.Shared.Adapters.Sftp
 {

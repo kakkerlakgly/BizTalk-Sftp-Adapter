@@ -27,8 +27,6 @@
 using System;
 
 using System.Collections.Generic;
-using System.Xml;
-using System.Runtime.InteropServices;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Message.Interop;

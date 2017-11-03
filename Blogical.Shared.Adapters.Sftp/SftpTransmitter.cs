@@ -2,7 +2,6 @@ using System;
 using System.Xml;
 using Microsoft.BizTalk.Component.Interop;
 using Blogical.Shared.Adapters.Common;
-using Microsoft.BizTalk.TransportProxy.Interop;
 using Blogical.Shared.Adapters.Sftp.ConnectionPool;
 using System.Diagnostics;
 

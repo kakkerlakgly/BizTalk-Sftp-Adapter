@@ -25,7 +25,6 @@
 //---------------------------------------------------------------------
 
 using System;
-using System.Xml;
 using Microsoft.BizTalk.Message.Interop;
 using Microsoft.BizTalk.Component.Interop;
 

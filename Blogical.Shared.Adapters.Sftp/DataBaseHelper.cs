@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-
-using Blogical.Shared.Adapters.Common;
 using System.Configuration;
 
 namespace Blogical.Shared.Adapters.Sftp

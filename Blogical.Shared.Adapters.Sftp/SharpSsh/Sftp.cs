@@ -6,8 +6,6 @@ using System.Text;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.BizTalk.Streaming;
-using System.IO.IsolatedStorage;
 using System.Linq;
 using Blogical.Shared.Adapters.Common;
 using Renci.SshNet;

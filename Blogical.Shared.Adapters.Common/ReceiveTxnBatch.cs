@@ -29,7 +29,6 @@ using System.IO;
 using System.Transactions;
 using System.Threading;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;
 

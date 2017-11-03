@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Blogical.Shared.Adapters.Common;
 using System.Xml;
 using Microsoft.BizTalk.Message.Interop;
-using Microsoft.BizTalk.Component.Interop;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.SSO.Utility;

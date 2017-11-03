@@ -25,10 +25,8 @@
 //---------------------------------------------------------------------
 
 using System;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Microsoft.BizTalk.Message.Interop;
-using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.TransportProxy.Interop;
 
 namespace Blogical.Shared.Adapters.Common

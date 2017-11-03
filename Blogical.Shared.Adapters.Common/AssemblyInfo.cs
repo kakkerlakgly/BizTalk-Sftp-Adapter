@@ -21,7 +21,6 @@
 //---------------------------------------------------------------------
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Blogical.Shared.Adapters.Sftp")]
 [assembly: AssemblyDescription("")]

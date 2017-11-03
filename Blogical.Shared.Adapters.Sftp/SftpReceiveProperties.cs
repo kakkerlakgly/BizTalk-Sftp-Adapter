@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Blogical.Shared.Adapters.Common;
 using Microsoft.BizTalk.Component.Interop;
 using System.Xml;
 using Blogical.Shared.Adapters.Common.Schedules;
 using System.Diagnostics;
-using System.IO;
 using Microsoft.SSO.Utility;
 
 namespace Blogical.Shared.Adapters.Sftp

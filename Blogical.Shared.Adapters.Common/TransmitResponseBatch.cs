@@ -1,8 +1,5 @@
 using System;
-using System.Threading;
 using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.XLANGs.BaseTypes;
 using Microsoft.BizTalk.TransportProxy.Interop;
 using Microsoft.BizTalk.Message.Interop;
 

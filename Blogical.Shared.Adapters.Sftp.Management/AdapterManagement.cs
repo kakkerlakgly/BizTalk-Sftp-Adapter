@@ -3,9 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Text;
-using System.Windows.Forms;
 using System.Xml;
-using Microsoft.Win32;
 using Microsoft.BizTalk.Component.Interop;
 using Microsoft.BizTalk.Adapter.Framework;
 
