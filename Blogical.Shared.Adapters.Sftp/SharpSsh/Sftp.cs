@@ -365,9 +365,9 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 byte[] buffer = Encoding.Default.GetBytes(permissions);
                 int currentPos;
                 int perm = 0;
-                for (int pos = 0; pos < buffer.Length; pos++)
+                foreach (byte t in buffer)
                 {
-                    currentPos = buffer[pos];
+                    currentPos = t;
                     if (currentPos < '0' || currentPos > '7')
                     {
                         perm = -1;
@@ -452,8 +452,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                 //this.connect();
 
-                if (OnDisconnect != null)
-                    OnDisconnect(this);
+                OnDisconnect?.Invoke(this);
 
                 Trace.WriteLine("[SftpConnectionPool] Connection has timed out");
 

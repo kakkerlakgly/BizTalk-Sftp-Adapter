@@ -31,7 +31,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if (value < 0 || value > 31)
 				{
-					throw (new ArgumentOutOfRangeException("value", "Day range: 0 - 31"));
+					throw (new ArgumentOutOfRangeException(nameof(value), "Day range: 0 - 31"));
 				}
 				if (value != Interlocked.Exchange(ref day, value))
 				{

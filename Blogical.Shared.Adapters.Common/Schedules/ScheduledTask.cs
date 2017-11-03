@@ -76,10 +76,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 
 		private void FireProgress(TaskProgress progress)
 		{
-			if (Progress != null)
-			{
-				Progress(this, new TaskProgressEventArgs(progress));
-			}
+		    Progress?.Invoke(this, new TaskProgressEventArgs(progress));
 		}
         /// <summary>
         /// Pauses the location

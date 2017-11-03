@@ -58,11 +58,15 @@ namespace Blogical.Shared.Adapters.Common
 
             if (preserveRetryCount)
             {
-                UpdateProperty[] updates = new UpdateProperty[1];
-                updates[0] = new UpdateProperty();
-                updates[0].Name = retryCountProp.Name.Name;
-                updates[0].NameSpace = retryCountProp.Name.Namespace;
-                updates[0].Value = context.RetryCount++;
+                UpdateProperty[] updates =
+                {
+                    new UpdateProperty
+                    {
+                        Name = retryCountProp.Name.Name,
+                        NameSpace = retryCountProp.Name.Namespace,
+                        Value = context.RetryCount++
+                    }
+                };
 
                 context.UpdateProperties(updates);
 
@@ -119,8 +123,7 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void EndBatchComplete()
         {
-            if (null != allWorkDoneDelegate)
-                allWorkDoneDelegate();
+            allWorkDoneDelegate?.Invoke();
         }
 
         // This is for submit-response

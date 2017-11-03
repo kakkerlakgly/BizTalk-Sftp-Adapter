@@ -303,10 +303,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         protected void FireChangedEvent()
         {
-            if (Changed != null)
-            {
-                Changed(this, EventArgs.Empty);
-            }
+            Changed?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
         /// Returns the next time the schedule will be triggerd

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Text;
 using Microsoft.BizTalk.Message.Interop;
 using System.Diagnostics;
@@ -87,8 +88,7 @@ namespace Blogical.Shared.Adapters.Common
         public static void CreateEventLogMessage(string message,
             int eventID, short category, EventLogEntryType entryType)
         {
-            EventLog eventLog = new EventLog();
-            eventLog.Source = EventLogSources.SFTPAdapter;
+            EventLog eventLog = new EventLog {Source = EventLogSources.SFTPAdapter};
             eventLog.WriteEntry(message, entryType, eventID, category);
         }
 
@@ -116,10 +116,7 @@ namespace Blogical.Shared.Adapters.Common
             while (e.InnerException != null)
             {
                 message.Append("------------------------------\r\n");
-                if (e.InnerException.GetType() == typeof(System.Data.SqlClient.SqlException))
-                    message.Append(exceptionMessage((System.Data.SqlClient.SqlException)e.InnerException));
-                else
-                    message.Append(exceptionMessage(e.InnerException));
+                message.Append(exceptionMessage(e.InnerException));
                 message.Append("\r\n");
                 e = e.InnerException;
             }

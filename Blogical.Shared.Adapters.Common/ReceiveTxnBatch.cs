@@ -61,10 +61,7 @@ namespace Blogical.Shared.Adapters.Common
         protected override void StartProcessFailures ()
 		{
 			SetAbort();
-			if (txnAborted != null)
-			{
-				txnAborted();
-			}
+		    txnAborted?.Invoke();
 		}
 	}
 
@@ -84,10 +81,7 @@ namespace Blogical.Shared.Adapters.Common
             if (HRStatus != 0)
             {
                 SetAbort();
-                if (stopProcessing != null)
-                {
-                    stopProcessing();
-                }
+                stopProcessing?.Invoke();
             }
             else
             {

@@ -69,8 +69,11 @@ namespace Blogical.Shared.Adapters.Common
                 //  we don't at this point care about ordering with respect to failures
                 if (orderedEvent != null)
                 {
-                    innerBatch = new ReceiveBatch(TransportProxy, control, orderedEvent, depth - 1);
-                    innerBatch.ReceiveBatchComplete = ReceiveBatchComplete;
+                    innerBatch =
+                        new ReceiveBatch(TransportProxy, control, orderedEvent, depth - 1)
+                        {
+                            ReceiveBatchComplete = ReceiveBatchComplete
+                        };
                 }
                 else
                 {
@@ -106,11 +109,9 @@ namespace Blogical.Shared.Adapters.Common
                 // Theoretically, suspend should never fail unless DB is down/not-reachable
                 // or the stream is not seekable. In such cases, there is a chance of duplicates
                 // but that's safer than deleting messages that are not in the DB.
-                if (ReceiveBatchComplete != null)
-                    ReceiveBatchComplete(OverallSuccess && !suspendFailed);
+                ReceiveBatchComplete?.Invoke(OverallSuccess && !suspendFailed);
 
-                if (orderedEvent != null)
-                    orderedEvent.Set();
+                orderedEvent?.Set();
             }
         }
 

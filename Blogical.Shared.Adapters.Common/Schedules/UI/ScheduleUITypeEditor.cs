@@ -25,7 +25,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
         /// <returns></returns>
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) 
 		{
-			if (null != context && null != context.Instance) 
+			if (context?.Instance != null) 
 			{
 				return UITypeEditorEditStyle.Modal;
 			}
@@ -40,7 +40,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
         /// <returns></returns>
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) 
 		{
-			if (null != context && null != context.Instance && null != provider) 
+			if (context?.Instance != null && null != provider) 
 			{
 				service = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
 				if (null != service) 
@@ -56,12 +56,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			}
 			return value;
 		}
-		private void Exit(object sender, EventArgs e) 
+		private void Exit(object sender, EventArgs e)
 		{
-			if (null != service) 
-			{
-				service.CloseDropDown();
-			}
+		    service?.CloseDropDown();
 		}
 	}
     /// <summary>

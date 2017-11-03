@@ -92,8 +92,7 @@ namespace Blogical.Shared.Adapters.Common
 			//  note the pending work check at the top of this function removes the need to check a needToLeave flag
 			control.Leave();
 
-			if (orderedEvent != null)
-				orderedEvent.Set();
+		    orderedEvent?.Set();
 		}
         protected void SetAbort()
         {

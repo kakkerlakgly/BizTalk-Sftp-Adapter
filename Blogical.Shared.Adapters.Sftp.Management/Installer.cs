@@ -27,8 +27,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
                 scriptArgs += " /ApplicationName:" + appName;
             }
 
-            SelectBizTalkApplication form = new SelectBizTalkApplication();
-            form.TopMost = true;
+            SelectBizTalkApplication form = new SelectBizTalkApplication {TopMost = true};
 
             if (!String.IsNullOrEmpty(appName) || form.ShowDialog() == DialogResult.Yes)
             {

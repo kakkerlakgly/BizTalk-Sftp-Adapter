@@ -150,7 +150,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             catch (Exception ex)
             {
-                string innerEx = ex.InnerException == null ? "" : ex.InnerException.Message;
+                string innerEx = ex.InnerException?.Message ?? "";
                 innerEx += @". Changing any Send Port Transport properties might require the host to be restarted, as the connection pool might still have connections";
 
                 throw new SftpException("[SftpTransmitterEndpoint] Unable to transmit file " + filePath + ".\nInner Exception:\n" + ex.Message + "\n" + innerEx, ex);

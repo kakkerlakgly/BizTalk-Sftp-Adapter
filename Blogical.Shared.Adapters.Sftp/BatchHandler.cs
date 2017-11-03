@@ -151,9 +151,12 @@ namespace Blogical.Shared.Adapters.Sftp
                 message.AddPart(MESSAGE_BODY, part, true);
 
                 // Setting metadata
-                SystemMessageContext context = new SystemMessageContext(message.Context);
-                context.InboundTransportLocation = uri;
-                context.InboundTransportType = _transportType;
+                SystemMessageContext context =
+                    new SystemMessageContext(message.Context)
+                    {
+                        InboundTransportLocation = uri,
+                        InboundTransportType = _transportType
+                    };
 
                 // Write/Promote any adapter specific properties on the message context
                 message.Context.Write(REMOTEFILENAME, _propertyNamespace, (object)fileName);
@@ -217,9 +220,12 @@ namespace Blogical.Shared.Adapters.Sftp
                 message = messageFactory.CreateMessage();
                 message.AddPart(MESSAGE_BODY, part, true);
 
-                SystemMessageContext context = new SystemMessageContext(message.Context);
-                context.InboundTransportLocation = uri;
-                context.InboundTransportType = _transportType;
+                SystemMessageContext context =
+                    new SystemMessageContext(message.Context)
+                    {
+                        InboundTransportLocation = uri,
+                        InboundTransportType = _transportType
+                    };
 
                 //Write/Promote any adapter specific properties on the message context
                 message.Context.Write(REMOTEFILENAME, _propertyNamespace, EMPTYBATCHFILENAME);
@@ -340,8 +346,7 @@ namespace Blogical.Shared.Adapters.Sftp
                             }
                         }
                     }
-                    if (BatchComplete != null)
-                        BatchComplete(_sftp);
+                    BatchComplete?.Invoke(_sftp);
 
 
                     TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", overallStatus));

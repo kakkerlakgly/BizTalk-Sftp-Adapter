@@ -10,9 +10,11 @@ public class MyEventLogInstaller : Installer
 {
     public MyEventLogInstaller()
     {
-        EventLogInstaller installer = new EventLogInstaller();
-        installer.Log = "Application";
-        installer.Source = EventLogSources.SFTPAdapter;
+        EventLogInstaller installer = new EventLogInstaller
+        {
+            Log = "Application",
+            Source = EventLogSources.SFTPAdapter
+        };
 
         Installers.Add(installer);
     }

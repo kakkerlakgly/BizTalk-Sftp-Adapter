@@ -218,7 +218,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             {
                 builder1.Append(":" + nodePort.InnerText);
             }
-            string text1 = (nodeRemotepath != null) ? nodeRemotepath.InnerText : "/";
+            string text1 = nodeRemotepath?.InnerText ?? "/";
             if (!text1.StartsWith("/"))
             {
                 text1 = "/" + text1;
@@ -275,7 +275,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             {
                 builder1.Append(":" + nodePort.InnerText);
             }
-            string text1 = (nodeRemotepath != null) ? nodeRemotepath.InnerText : "/";
+            string text1 = nodeRemotepath?.InnerText ?? "/";
             if (!text1.StartsWith("/"))
             {
                 text1 = "/" + text1;
@@ -287,7 +287,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
         internal static XmlNode GetRequiredNode(XmlDocument doc, string field, string error)
         {
             XmlNode nodeHost = doc.SelectSingleNode("/Config/" + field);
-            if ((nodeHost == null) || String.IsNullOrEmpty(nodeHost.InnerText.Trim()))
+            if (String.IsNullOrEmpty(nodeHost?.InnerText.Trim()))
             {
                 throw new Exception(error);
             }
