@@ -14,7 +14,7 @@ namespace Blogical.Shared.Adapters.Sftp
     /// The DataBaseHelper class is used for controling files received from different 
     /// BizTalk nodes, and is only used when the UseLoadBalancing property is set to true.
     /// </summary>
-    internal class DataBaseHelper
+    internal static class DataBaseHelper
     {
         #region Internal Methods
 

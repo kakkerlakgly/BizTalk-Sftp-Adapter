@@ -20,8 +20,6 @@ namespace Blogical.Shared.Adapters.Sftp
     {
         #region Private Fields
         private static int _handlerSendBatchSize    = 20;
-        private static int _handlerbufferSize       = 4096;
-        private static int _handlerthreadsPerCPU    = 1;
 
         string _sshHost                             = String.Empty;
         string _sshPasswordProperty                 = String.Empty;
@@ -384,8 +382,6 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             // Handler properties
             _handlerSendBatchSize = ExtractInt(configDOM, "/Config/sendBatchSize");
-            _handlerbufferSize = ExtractInt(configDOM, "/Config/bufferSize");
-            _handlerthreadsPerCPU = ExtractInt(configDOM, "/Config/threadsPerCPU");
         }
         /// <summary>
         /// Determines the name of the file that should be created for a transmitted message

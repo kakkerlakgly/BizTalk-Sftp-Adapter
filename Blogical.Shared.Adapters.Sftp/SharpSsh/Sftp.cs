@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,18 +27,13 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         DateTime _connectedSince;
         SftpClient _sftp = null;
         string _identityFile;
-        string _identityThumbprint;
-        string _host = String.Empty;
+        string _host;
         string _user = String.Empty;
-        string _password = String.Empty;
-        int _port = 22;
+        string _password;
         string _passphrase = String.Empty;
 
         // Proxy Settings
         string _proxyHost = string.Empty;
-        int _proxyPort = 80;
-        string _proxyUserName = string.Empty;
-        string _proxyPassword = string.Empty;
 
         #endregion
         #region ISftp Members
@@ -100,17 +96,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             _sftp = new SftpClient(connectionInfo);
             _sftp.HostKeyReceived += CheckHostKey;
             _identityFile = identityFile;
-            _identityThumbprint = identityThumbprint;
             _host = host;
             _user = user;
             _password = password;
-            _port = port;
             _passphrase = passphrase;
             DebugTrace = debugTrace;
             _proxyHost = proxyHost;
-            _proxyPort = proxyPort;
-            _proxyUserName = proxyUserName;
-            _proxyPassword = proxyPassword;
         }
 
 
@@ -223,7 +214,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess, bool trace)
         {
             try
             {
@@ -260,7 +251,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             try
             {
@@ -479,7 +470,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
                        new Exception("HostKey does not match previously retrieved HostKey."));
         }
-        private List<FileEntry> dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
+        private List<FileEntry> dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             try
             {
@@ -567,7 +558,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace)
+        private List<FileEntry> randomDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             List<FileEntry> fileEntries = new List<FileEntry>();
             string remotePath = string.Empty;

@@ -63,12 +63,12 @@ namespace Blogical.Shared.Adapters.Common
 
         public virtual bool OverallSuccess
         {
-            get { return (hrStatus >= 0); }    
+            get { return (_hrStatus >= 0); }    
         }
 
         public Int32 HRStatus
         {
-            get { return hrStatus; }
+            get { return _hrStatus; }
         }
 
 
@@ -82,7 +82,7 @@ namespace Blogical.Shared.Adapters.Common
                 //BT.Trace.Tracer.TraceMessage(BT.TraceLevel.Error, "CoreAdapter: Batch.BatchComplete hrStatus: {0}", hrStatus);
             }
 
-            this.hrStatus = hrStatus;
+            this._hrStatus = hrStatus;
 
             StartBatchComplete(hrStatus);
 
@@ -229,7 +229,7 @@ namespace Blogical.Shared.Adapters.Common
 
         public Batch (IBTTransportProxy transportProxy, bool makeSuccessCall)
         {
-            hrStatus = -1;
+            _hrStatus = -1;
             this.transportProxy = transportProxy;
             transportBatch = this.transportProxy.GetBatch(this, null);
             this.makeSuccessCall = makeSuccessCall;
@@ -430,7 +430,7 @@ namespace Blogical.Shared.Adapters.Common
         public IBTTransportProxy TransportProxy { get { return transportProxy; } }
         public IBTTransportBatch TransportBatch { get { return transportBatch; } }
 
-        private Int32 hrStatus;
+        private Int32 _hrStatus;
         private IBTTransportProxy transportProxy;
         private IBTTransportBatch transportBatch;
         private bool makeSuccessCall;

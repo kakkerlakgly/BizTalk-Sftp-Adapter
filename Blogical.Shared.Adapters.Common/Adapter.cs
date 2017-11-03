@@ -44,7 +44,7 @@ namespace Blogical.Shared.Adapters.Common
 	{
 		//  core member data
 		private string propertyNamespace;
-		private IBTTransportProxy transportProxy;
+		private IBTTransportProxy _transportProxy;
 		private IPropertyBag handlerPropertyBag;
 		private bool initialized;
 
@@ -65,7 +65,7 @@ namespace Blogical.Shared.Adapters.Common
 		{
 			Trace.WriteLine(String.Format("Adapter.Adapter name: {0}", name));
 
-			transportProxy     = null;
+			_transportProxy     = null;
 			handlerPropertyBag = null;
 			initialized        = false;
 
@@ -79,7 +79,7 @@ namespace Blogical.Shared.Adapters.Common
 		}
 
 		protected string            PropertyNamespace  { get { return propertyNamespace; } }
-		public IBTTransportProxy    TransportProxy     { get { return transportProxy; } }
+		public IBTTransportProxy    TransportProxy     { get { return _transportProxy; } }
 		protected IPropertyBag      HandlerPropertyBag { get { return handlerPropertyBag; } }
 		protected bool              Initialized        { get { return initialized; } }
 
@@ -99,7 +99,7 @@ namespace Blogical.Shared.Adapters.Common
 			if (initialized)
 				throw new AlreadyInitialized();				
 
-			this.transportProxy = transportProxy;
+			this._transportProxy = transportProxy;
 			initialized = true;
 		}
 		public virtual void Terminate ()
@@ -109,7 +109,7 @@ namespace Blogical.Shared.Adapters.Common
 			if (!initialized)
 				throw new NotInitialized();
 			
-			transportProxy = null;
+			_transportProxy = null;
 		}
 
 		protected virtual void HandlerPropertyBagLoaded ()

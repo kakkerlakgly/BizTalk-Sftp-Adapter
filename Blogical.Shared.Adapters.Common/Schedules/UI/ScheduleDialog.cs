@@ -33,7 +33,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		private Label labelweeks;
 		private Label labelEvery;
 		private RadioButton radioDayofMonth;
-		private NumericUpDown dayofmonth;
+		private NumericUpDown _dayofmonth;
 		private RadioButton radioOrdinal;
 		private ComboBox ordinalDropDown;
 		private ComboBox weekdayDropDown;
@@ -134,7 +134,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             this.weekdayDropDown = new System.Windows.Forms.ComboBox();
             this.ordinalDropDown = new System.Windows.Forms.ComboBox();
             this.radioOrdinal = new System.Windows.Forms.RadioButton();
-            this.dayofmonth = new System.Windows.Forms.NumericUpDown();
+            this._dayofmonth = new System.Windows.Forms.NumericUpDown();
             this.radioDayofMonth = new System.Windows.Forms.RadioButton();
             this.daySaturday = new System.Windows.Forms.CheckBox();
             this.dayFriday = new System.Windows.Forms.CheckBox();
@@ -172,7 +172,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             this.timeType = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.timeInterval = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.dayofmonth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._dayofmonth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dayInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.weekInterval)).BeginInit();
             this.tabPages.SuspendLayout();
@@ -323,15 +323,15 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             // 
             // dayofmonth
             // 
-            this.dayofmonth.Location = new System.Drawing.Point(64, 16);
-            this.dayofmonth.Maximum = new decimal(new int[] {
+            this._dayofmonth.Location = new System.Drawing.Point(64, 16);
+            this._dayofmonth.Maximum = new decimal(new int[] {
             31,
             0,
             0,
             0});
-            this.dayofmonth.Name = "dayofmonth";
-            this.dayofmonth.Size = new System.Drawing.Size(40, 20);
-            this.dayofmonth.TabIndex = 1;
+            this._dayofmonth.Name = "_dayofmonth";
+            this._dayofmonth.Size = new System.Drawing.Size(40, 20);
+            this._dayofmonth.TabIndex = 1;
             // 
             // radioDayofMonth
             // 
@@ -670,7 +670,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             this.tabMonthly.Controls.Add(this.radioOrdinal);
             this.tabMonthly.Controls.Add(this.weekdayDropDown);
             this.tabMonthly.Controls.Add(this.radioDayofMonth);
-            this.tabMonthly.Controls.Add(this.dayofmonth);
+            this.tabMonthly.Controls.Add(this._dayofmonth);
             this.tabMonthly.Location = new System.Drawing.Point(4, 22);
             this.tabMonthly.Name = "tabMonthly";
             this.tabMonthly.Size = new System.Drawing.Size(312, 214);
@@ -750,7 +750,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Schedule Properties";
             this.Load += new System.EventHandler(this.ScheduleDialog_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dayofmonth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._dayofmonth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dayInterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.weekInterval)).EndInit();
             this.tabPages.ResumeLayout(false);
@@ -833,8 +833,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		private void LoadMonthlySchedule()
 		{
 			tabPages.SelectedTab = tabMonthly;
-			dayofmonth.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/dayofmonth", 0));
-			if (dayofmonth.Value == 0)
+			_dayofmonth.Value = Convert.ToDecimal(Schedule.IfExistsExtractInt(configXml, "/schedule/dayofmonth", 0));
+			if (_dayofmonth.Value == 0)
 			{
 				ScheduleOrdinal ordinal = Schedule.ExtractScheduleOrdinal(configXml, "/schedule/ordinal", false);
 				int index = ordinalDropDown.Items.IndexOf(ordinal.ToString());
@@ -978,12 +978,12 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			configXml.DocumentElement.SetAttribute("type", "", "Monthly");
 			if (radioDayofMonth.Checked)
 			{
-				if (this.dayofmonth.Value == 0)
+				if (this._dayofmonth.Value == 0)
 				{
 					throw(new ApplicationException("Must select a day of the month"));
 				}
 				XmlNode dayofmonth = configXml.CreateNode("element", "dayofmonth","");
-				dayofmonth.InnerText = this.dayofmonth.Value.ToString();
+				dayofmonth.InnerText = this._dayofmonth.Value.ToString();
 				configXml.DocumentElement.AppendChild(dayofmonth);
 			}
 			else
@@ -1088,13 +1088,13 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		{
 			if (radioDayofMonth.Checked == true)
 			{
-				dayofmonth.Enabled = true;
+				_dayofmonth.Enabled = true;
 				weekdayDropDown.Enabled = false;
 				ordinalDropDown.Enabled = false;
 			}
 			else
 			{
-				dayofmonth.Enabled = false;
+				_dayofmonth.Enabled = false;
 				weekdayDropDown.Enabled = true;
 				ordinalDropDown.Enabled = true;
 			}

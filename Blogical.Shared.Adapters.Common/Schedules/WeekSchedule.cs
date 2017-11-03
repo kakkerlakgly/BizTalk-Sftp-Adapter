@@ -27,7 +27,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             {
                 if ((value < 1) || (value > 52))
                 {
-                    throw (new ArgumentOutOfRangeException("interval", "Week interval must be between 1 and 52"));
+                    throw (new ArgumentOutOfRangeException(nameof(value), "Week interval must be between 1 and 52"));
                 }
                 if (value != Interlocked.Exchange(ref interval, value))
                 {
@@ -47,7 +47,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             {
                 if ((value == ScheduleDay.None))
                 {
-                    throw (new ArgumentOutOfRangeException("days", "Must specify the scheduled days"));
+                    throw (new ArgumentOutOfRangeException(nameof(value), "Must specify the scheduled days"));
                 }
                 if (value != (ScheduleDay)Interlocked.Exchange(ref days, value))
                 {

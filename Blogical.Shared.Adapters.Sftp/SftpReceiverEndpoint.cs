@@ -71,9 +71,6 @@ namespace Blogical.Shared.Adapters.Sftp
             //  this is our handle back to the EPM
             _transportProxy = transportProxy;
 
-            // used to create new messages / message parts etc.
-            _messageFactory = _transportProxy.GetMessageFactory();
-
             //  used in the creation of messages
             _transportType = transportType;
 
@@ -111,8 +108,6 @@ namespace Blogical.Shared.Adapters.Sftp
 
                 //  keep handles to these property bags until we are ready
                 _updatedConfig = config;
-                _updatedBizTalkConfig = bizTalkConfig;
-                _updatedHandlerPropertyBag = handlerPropertyBag;
 
                 if (_updatedConfig != null)
                 {
@@ -325,10 +320,10 @@ namespace Blogical.Shared.Adapters.Sftp
                     // will quite after the set number of files has been listed.
                     if (_properties.MaximumNumberOfFiles > 0)
                         fileEntries = sftp.Dir(CommonFunctions.CombinePath(_properties.RemotePath, _properties.FileMask),
-                            uri, _properties.MaximumNumberOfFiles, _filesInProcess.Cast<string>(), _properties.DebugTrace);
+                            uri, _properties.MaximumNumberOfFiles, _filesInProcess, _properties.DebugTrace);
                     else
                         fileEntries = sftp.Dir(CommonFunctions.CombinePath(_properties.RemotePath, _properties.FileMask),
-                            uri, _filesInProcess.Cast<string>(), _properties.DebugTrace);
+                            uri, _filesInProcess, _properties.DebugTrace);
                 }
                 // If batch has file enties create a BatchHandler and a new sftp connection.
                 if (fileEntries.Count > 0)
@@ -341,7 +336,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 // later be picked up by the pipeline components.
                 else if (fileEntries.Count == 0 && _properties.NotifyOnEmptyBatch)
                 {
-                    Trace.WriteLine(string.Format("[SftpReceiverEndpoint] Sending notification on empty batch.", fileEntries.Count - 1));
+                    Trace.WriteLine("[SftpReceiverEndpoint] Sending notification on empty batch.");
                     batchHandler = new BatchHandler(sftp, _propertyNamespace, _transportType, _transportProxy, _properties.DebugTrace, _properties.UseLoadBalancing);
                     batchHandler.CreateEmptyBatchMessage(_properties.Uri);
                     // Used for Connection pool: batchHandler.BatchComplete += new BatchHandler.BatchHandlerDelegate(batchHandler_BatchComplete);
@@ -472,9 +467,6 @@ namespace Blogical.Shared.Adapters.Sftp
         // The IBTTransportProxy interface is used by the adapter to interact with the BizTalk server at run time. 
         private IBTTransportProxy _transportProxy;
 
-        // used to create new messages / message parts etc.
-        private IBaseMessageFactory _messageFactory;
-
         //  used in the creation of messages
         private string _transportType;
 
@@ -491,8 +483,6 @@ namespace Blogical.Shared.Adapters.Sftp
 
         //  support for Update
         IPropertyBag _updatedConfig;
-        IPropertyBag _updatedBizTalkConfig;
-        IPropertyBag _updatedHandlerPropertyBag;
 
         #endregion
     }

@@ -22,7 +22,6 @@ namespace Blogical.Shared.Adapters.Sftp
 	public class SftpTransmitterEndpoint : AsyncTransmitterEndpoint 
     {
         #region Private Fields
-        private IList<ISftp> _connections;
         private bool _shutdownRequested;
         private SftpTransmitProperties _properties = null;
         private AsyncTransmitter _asyncTransmitter = null;
@@ -34,7 +33,6 @@ namespace Blogical.Shared.Adapters.Sftp
             : base(asyncTransmitter)
 		{
 			_asyncTransmitter = asyncTransmitter;
-            _connections = new List<ISftp>();
 
             Trace.WriteLine("[SftpTransmitterEndpoint] Created...");    
 		}
@@ -95,17 +93,6 @@ namespace Blogical.Shared.Adapters.Sftp
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
             _shutdownRequested = true;
             int num = 0;
-            while ((_connections.Count < 0) && (num < 100))
-            {
-                num++;
-                Thread.Sleep(50);
-            }
-            foreach (ISftp connection in _connections)
-            {
-                Trace.WriteLine("[SftpTransmitterEndpoint] Disconnecting...");
-                connection.Disconnect();
-                connection.Dispose();
-            }
             base.Dispose();
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposed...");
 

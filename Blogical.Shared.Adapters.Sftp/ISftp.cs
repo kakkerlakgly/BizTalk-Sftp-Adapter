@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -39,7 +40,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, IEnumerable<string> filesInProcess,bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess,bool trace);
 
         /// <summary>
         /// Returns a FileEntry (name and size)list of files and subdirectories in a directory.
@@ -50,7 +51,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IEnumerable<string> filesInProcess, bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace);
         /// <summary>
         /// Determines wether a specified directory has files.
         /// </summary>
@@ -76,10 +77,6 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="permissions"></param>
         /// <param name="filePath"></param>
         void ApplySecurityPermissions(string permissions, string filePath);
-        /// <summary>
-        /// The event is fired when Disconnect is called
-        /// </summary>
-        event DisconnectEventHandler OnDisconnect;
         /// <summary>
         /// Gets information about a file.
         /// </summary>

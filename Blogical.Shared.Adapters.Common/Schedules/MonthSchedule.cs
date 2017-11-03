@@ -86,7 +86,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if (value == ScheduleMonth.None)
 				{
-					throw (new ArgumentOutOfRangeException("months", "Must specify a month"));
+					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify a month"));
 				}
 				if (value != (ScheduleMonth)Interlocked.Exchange(ref months, value))
 				{

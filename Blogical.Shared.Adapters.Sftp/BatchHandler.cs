@@ -348,7 +348,6 @@ namespace Blogical.Shared.Adapters.Sftp
                             }
                         }
                     }
-                    BatchComplete?.Invoke(_sftp);
 
 
                     TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", overallStatus));
@@ -365,7 +364,6 @@ namespace Blogical.Shared.Adapters.Sftp
 
             }
         }
-        internal event BatchHandlerDelegate BatchComplete;
         #endregion
     }
 }

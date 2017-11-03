@@ -55,9 +55,7 @@ namespace Blogical.Shared.Adapters.Common
     public class AsyncTransmitterBatch : IBTTransmitterBatch
     {
         protected int maxBatchSize;
-		protected Type endpointType;
 		protected string propertyNamespace;
-		protected IPropertyBag handlerPropertyBag;
         protected IBTTransportProxy transportProxy;
 		protected AsyncTransmitter asyncTransmitter;
 
@@ -73,9 +71,7 @@ namespace Blogical.Shared.Adapters.Common
         public AsyncTransmitterBatch (int maxBatchSize, Type endpointType, string propertyNamespace, IPropertyBag handlerPropertyBag, IBTTransportProxy transportProxy, AsyncTransmitter asyncTransmitter)
         {
             this.maxBatchSize = maxBatchSize;
-            this.endpointType = endpointType;
             this.propertyNamespace = propertyNamespace;
-            this.handlerPropertyBag = handlerPropertyBag;
             this.transportProxy = transportProxy;
             this.asyncTransmitter = asyncTransmitter;
             

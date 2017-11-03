@@ -44,7 +44,7 @@ namespace Blogical.Shared.Adapters.Sftp
     /// <summary>
     /// 
     /// </summary>
-    internal class ApplicationStorageHelper
+    internal static class ApplicationStorageHelper
     {
         const string settingsFileName = "SftpHostFiles.config";
         const string objlock = "lock";

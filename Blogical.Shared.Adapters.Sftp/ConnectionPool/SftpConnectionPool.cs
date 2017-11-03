@@ -157,7 +157,7 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <summary>
         /// Server name
         /// </summary>
-        public string HostName = string.Empty;
+        public string HostName;
         #endregion
         #region Public Methods
 

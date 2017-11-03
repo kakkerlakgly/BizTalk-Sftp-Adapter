@@ -17,7 +17,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
     /// <history>2013-11-10 Greg Sharp, Add X.509 identity certificate support</history>
     public class StaticAdapterManagement : IAdapterConfig, IStaticAdapterConfig, IAdapterConfigValidation
     {
-        private static ResourceManager resourceManager = new ResourceManager("Blogical.Shared.Adapters.Sftp.Management.SftpResource", Assembly.GetExecutingAssembly());
+        private static ResourceManager _resourceManager = new ResourceManager("Blogical.Shared.Adapters.Sftp.Management.SftpResource", Assembly.GetExecutingAssembly());
 
         /// <summary>
         /// Populating properties from property schemas
@@ -55,16 +55,16 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             switch (type)
             {
                 case ConfigType.ReceiveHandler:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveHandler.xsd"), resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveHandler.xsd"), _resourceManager);
 
                 case ConfigType.ReceiveLocation:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveLocation.xsd"), resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.ReceiveLocation.xsd"), _resourceManager);
 
                 case ConfigType.TransmitHandler:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitHandler.xsd"), resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitHandler.xsd"), _resourceManager);
 
                 case ConfigType.TransmitLocation:
-                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitLocation.xsd"), resourceManager);
+                    return LocalizeSchema(GetResource("Blogical.Shared.Adapters.Sftp.Management.TransmitLocation.xsd"), _resourceManager);
 
                 default:
                     return null;
@@ -250,11 +250,8 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             XmlNode nodeApplySecurityPermissions = GetNode(doc, "applySecurityPermissions", "");
             if (!String.IsNullOrEmpty(nodeApplySecurityPermissions.InnerText))
             {
-                try
-                {
-                    int.Parse(nodeApplySecurityPermissions.InnerText);
-                }
-                catch
+                int value;
+                if (!int.TryParse(nodeApplySecurityPermissions.InnerText, out value))
                 {
                     throw new Exception("The SSH Apply Security Permissions must be empty or a numeric value.");
                 }

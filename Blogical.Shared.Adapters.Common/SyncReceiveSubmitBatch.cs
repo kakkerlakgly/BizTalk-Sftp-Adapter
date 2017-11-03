@@ -35,7 +35,7 @@ namespace Blogical.Shared.Adapters.Common
     public class SyncReceiveSubmitBatch : ReceiveBatch
     {
         private ManualResetEvent workDone;
-        private bool overallSuccess = false;
+        private bool _overallSuccess = false;
         private ControlledTermination control;
 
         public SyncReceiveSubmitBatch(IBTTransportProxy transportProxy, ControlledTermination control, int depth)
@@ -52,7 +52,7 @@ namespace Blogical.Shared.Adapters.Common
 
         private void OnBatchComplete(bool overallSuccess)
         {
-            this.overallSuccess = overallSuccess;
+            this._overallSuccess = overallSuccess;
         }
 
         public override void Done()
@@ -76,7 +76,7 @@ namespace Blogical.Shared.Adapters.Common
         {
             workDone.WaitOne();
 
-            return overallSuccess;
+            return _overallSuccess;
         }
     }
 }

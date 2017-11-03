@@ -56,7 +56,7 @@ namespace Blogical.Shared.Adapters.Common
         private const int MAX_BATCH_SIZE = 50;
 
         //  members to initialize the batch with
-        private int maxBatchSize = MAX_BATCH_SIZE;
+        private int maxBatchSize;
         private Type endpointType;
         private IDictionary<string, AsyncTransmitterEndpoint> endpoints = new Dictionary<string, AsyncTransmitterEndpoint>();
 
