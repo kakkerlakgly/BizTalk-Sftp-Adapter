@@ -264,9 +264,9 @@ namespace Blogical.Shared.Adapters.Common
 
     public class FailedMessage
     {
-        public IBaseMessage Message { get; set; }
+        public IBaseMessage Message { get; }
 
-        public int Status { get; set; }
+        public int Status { get; }
 
         public FailedMessage(IBaseMessage message, int status)
         {

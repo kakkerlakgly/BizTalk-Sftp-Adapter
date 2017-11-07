@@ -27,11 +27,11 @@ namespace Blogical.Shared.Adapters.Sftp
             
             #region query
             
-                string queryFormat = @"if(
+                string query = @"if(
 (select count(*) 
 from [dbo].[SftpWorkingProcess] 
-where [URI] = '{0}' 
-and [FileName] ='{2}'
+where [URI] = @URI
+and [FileName] =@FileName
 and datediff(minute, [Timestamp], getdate()) <10) =0
 )
 begin
@@ -40,7 +40,7 @@ INSERT INTO [dbo].[SftpWorkingProcess]
            ,[Node]
            ,[FileName])
      VALUES
-           ('{0}','{1}','{2}') 
+           (@URI,@Node,@FileName) 
 
 select 1 as WorkInProcess
 end
@@ -59,56 +59,42 @@ select 0 as WorkInProcess";
                     throw new ApplicationException("Unable to open the Blogical database used for Load balancing. Information about the load balancing feature can be found in the helpifile. If you do not wish to use load balancing you can disable it on the Receive Location transport properties in the Administration Console.",
                         ex);
                 }
-                SqlTransaction transaction;
-                SqlCommand command = connection.CreateCommand();
-
-                transaction = connection.BeginTransaction("CheckoutFile");
-
-                command.Connection = connection;
-                command.Transaction = transaction;
-                command.CommandText = String.Format(queryFormat, uri, node, filename);
-                try
+                using (var transaction = connection.BeginTransaction("CheckoutFile"))
                 {
-                   
-                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.Read())
+                    using (SqlCommand command = connection.CreateCommand())
                     {
-                        int result = (int)reader["WorkInProcess"];
-                        reader.Close();
-                        transaction.Commit();
+                        command.Transaction = transaction;
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("@URI", uri);
+                        command.Parameters.AddWithValue("@Node", node);
+                        command.Parameters.AddWithValue("@FileName", filename);
+                        try
+                        {
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    int result = (int)reader["WorkInProcess"];
+                                    transaction.Commit();
 
-                        if (result == 1)
-                        {
-                            if(trace)
-                                Trace.WriteLine("[SftpReceiverEndpoint] Checked Out [" + filename+"]");
+                                    if (result == 1)
+                                    {
+                                        if(trace)
+                                            Trace.WriteLine("[SftpReceiverEndpoint] Checked Out [" + filename+"]");
     
-                            connection.Close();
-                            return true;
+                                        return true;
+                                    }
+                                }
+                                if(trace)
+                                    Trace.WriteLine("[SftpReceiverEndpoint] Unable to check Out [" + filename + "]");
+                            }
                         }
-                        else
+                        catch
                         {
-                            if(trace)
-                                Trace.WriteLine("[SftpReceiverEndpoint] Unable to check Out [" + filename + "]");
-    
-                            connection.Close();
-                            return false;
                         }
                     }
-                    else
-                    {
-                        if(trace)
-                            Trace.WriteLine("[SftpReceiverEndpoint] Unable to check Out [" + filename + "]");
-    
-                        connection.Close();
-                        return false;
-                    }
                 }
-                catch
-                {
-                    transaction.Rollback();
-                    connection.Close();
-                    return false;
-                }
+                return false;
             }
         }
 

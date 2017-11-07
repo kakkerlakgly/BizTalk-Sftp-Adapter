@@ -62,10 +62,6 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="filePath"></param>
         void Delete(string filePath);
         /// <summary>
-        /// Open an ssh connection
-        /// </summary>
-        void Connect();
-        /// <summary>
         /// Closing the ssh connection
         /// </summary>
         void Disconnect();

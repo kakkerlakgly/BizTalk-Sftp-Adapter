@@ -20,8 +20,8 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
     {
         #region Private Members
         private readonly IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
-        private const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
-        private const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
+        private const int Totallifetime = 600; // total number of seconds for reusing of connection
+        private const int Totaltimediff = 4; // total number of seconds in difference between servers 
         private DateTime _connectedSince;
         private SftpClient _sftp;
         private readonly string _identityFile;
@@ -35,7 +35,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
         #endregion
         #region ISftp Members
-        public bool DebugTrace { get; set; }
+        public bool DebugTrace { get; }
 
         /// <summary>
         /// Constructor
@@ -219,12 +219,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 try
                 {
                     Connect();
-                    return dir(fileMask, uri, 0, filesInProcess, trace);
+                    return InternalDir(fileMask, uri, 0, filesInProcess, trace);
                 }
                 catch
                 {
                     ReConnect();
-                    return dir(fileMask, uri, 0, filesInProcess, trace);
+                    return InternalDir(fileMask, uri, 0, filesInProcess, trace);
                 }
             }
             catch (Exception ex)
@@ -256,12 +256,12 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 try
                 {
                     Connect();
-                    return dir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
+                    return InternalDir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
                 }
                 catch
                 {
                     ReConnect();
-                    return dir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
+                    return InternalDir(fileMask, uri, maxNumberOfFiles, filesInProcess, trace);
                 }
             }
             catch (Exception ex)
@@ -350,11 +350,10 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             try
             {
                 byte[] buffer = Encoding.Default.GetBytes(permissions);
-                int currentPos;
                 int perm = 0;
                 foreach (byte t in buffer)
                 {
-                    currentPos = t;
+                    int currentPos = t;
                     if (currentPos < '0' || currentPos > '7')
                     {
                         perm = -1;
@@ -414,7 +413,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         private void RaiseOnDisconnect()
         {
             TimeSpan ts = DateTime.Now.Subtract(_connectedSince);
-            if (ts.TotalSeconds > TOTALLIFETIME)
+            if (ts.TotalSeconds > Totallifetime)
             {
                 if (_sftp.IsConnected)
                     Disconnect();
@@ -441,7 +440,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
                        new Exception("HostKey does not match previously retrieved HostKey."));
         }
-        private List<FileEntry> dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        private List<FileEntry> InternalDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
         {
             try
             {
@@ -471,7 +470,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                     try
                     {
-                        if (ts.TotalSeconds > TOTALTIMEDIFF &&
+                        if (ts.TotalSeconds > Totaltimediff &&
                             !filesInProcess.Contains(CommonFunctions.CombinePath(remotePath, fileName)))
                         {
                             // "Check out" file if UseLoadBalancing == true 
@@ -565,7 +564,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
                     try
                     {
-                        if (ts.TotalSeconds > TOTALTIMEDIFF &&
+                        if (ts.TotalSeconds > Totaltimediff &&
                             !filesInProcess.Contains(CommonFunctions.CombinePath(remotePath, fileName)))
                         {
                             // "Check out" file if UseLoadBalancing == true 
@@ -632,7 +631,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 if (trace)
                     Trace.WriteLine("[SftpReceiverEndpoint] File not Found \"" + filePath + "\".");
 
-                throw new SftpException("File not Found \"" + filePath + "\"."); ;
+                throw new SftpException("File not Found \"" + filePath + "\".");
             }
             catch (Exception ex)
             {

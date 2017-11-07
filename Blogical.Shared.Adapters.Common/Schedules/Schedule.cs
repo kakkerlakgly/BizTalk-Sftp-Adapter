@@ -241,7 +241,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <summary>
         /// DateTime when schedule should start
         /// </summary>
-        public virtual DateTime StartTime
+        public DateTime StartTime
         {
             get
             {
@@ -259,7 +259,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <summary>
         /// DateTime when schedule should end
         /// </summary>
-        public virtual DateTime StartDate
+        public DateTime StartDate
         {
             get
             {

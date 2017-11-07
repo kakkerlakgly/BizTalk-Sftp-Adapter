@@ -56,7 +56,7 @@ namespace Blogical.Shared.Adapters.Common
         private readonly IBTTransportProxy _transportProxy;
         private readonly AsyncTransmitter _asyncTransmitter;
 
-        private readonly IList<IBaseMessage> _messages;
+        private readonly IList<IBaseMessage> _messages = new List<IBaseMessage>();
 
 		protected IList<IBaseMessage> Messages
 		{
@@ -71,8 +71,6 @@ namespace Blogical.Shared.Adapters.Common
             PropertyNamespace = propertyNamespace;
             _transportProxy = transportProxy;
             _asyncTransmitter = asyncTransmitter;
-            
-            _messages = new List<IBaseMessage>();
 
             // this.worker = new WorkerDelegate(Worker);
         }
@@ -112,7 +110,7 @@ namespace Blogical.Shared.Adapters.Common
             for (int i = 0; i < messageCount; i++)
             {
                 if (!_asyncTransmitter.Enter())
-                    throw new InvalidOperationException("Send adapter Enter call was false within Done. This is illegal and should never happen."); ;
+                    throw new InvalidOperationException("Send adapter Enter call was false within Done. This is illegal and should never happen.");
             }
 
             try

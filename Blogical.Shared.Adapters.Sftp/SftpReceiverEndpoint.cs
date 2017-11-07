@@ -197,7 +197,9 @@ namespace Blogical.Shared.Adapters.Sftp
             {
                 // PickupFilesAndSubmit will be called as long as there
                 // are files left in the directory.
-                while (PickupFilesAndSubmit()) ;
+                while (PickupFilesAndSubmit())
+                {
+                }
 
                 //Success, reset the error count
                 _errorCount = 0;

@@ -35,51 +35,51 @@ namespace Blogical.Shared.Adapters.Common
             /// <summary>
             /// Send port name.
             /// </summary>
-            public const string SEND_PORT_NAME = "SPName";
+            public const string SendPortName = "SPName";
             /// <summary>
             /// ReceivePortID.
             /// </summary>
-            public const string RECEIVE_PORT_ID = "ReceivePortID";
+            public const string ReceivePortId = "ReceivePortID";
 
             /// <summary>
             /// Inbound transport location
             /// </summary>
-            public const string INBOUNDTRANSPORTLOCATION = "InboundTransportLocation";
+            public const string Inboundtransportlocation = "InboundTransportLocation";
 
             /// <summary>
             /// Interchange ID
             /// </summary>
-            public const string INTERCHANGE_ID = "InterchangeID";
+            public const string InterchangeId = "InterchangeID";
 
             /// <summary>
             /// Actual retry count
             /// </summary>
-            public const string ACTUAL_RETRY_COUNT = "ActualRetryCount";
+            public const string ActualRetryCount = "ActualRetryCount";
 
             /// <summary>
             /// ACK / NACK
             /// </summary>
-            public const string ACK_TYPE = "AckType";
+            public const string AckType = "AckType";
 
             /// <summary>
             /// Failure description
             /// </summary>
-            public const string ACK_DESCRIPTION = "AckDescription";
+            public const string AckDescription = "AckDescription";
 
             /// <summary>
             /// Originating send port 
             /// </summary>
-            public const string ACK_SEND_PORT_NAME = "AckSendPortName";
+            public const string AckSendPortName = "AckSendPortName";
 
             /// <summary>
             /// Receive port name
             /// </summary>
-            public const string ACK_RECEIVE_PORT_NAME = "AckReceivePortName";
+            public const string AckReceivePortName = "AckReceivePortName";
 
             /// <summary>
             /// SendPortID.
             /// </summary>
-            public const string SEND_PORT_ID = "SPID";
+            public const string SendPortId = "SPID";
         }
 
         #endregion
@@ -94,7 +94,7 @@ namespace Blogical.Shared.Adapters.Common
         /// <summary>
         /// Key to connection-string for tracking database
         /// </summary>
-        public const string BLOGICALDB = "BlogicalDB";
+        public const string Blogicaldb = "BlogicalDB";
 
         #endregion
     }

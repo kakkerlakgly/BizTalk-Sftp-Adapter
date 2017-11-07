@@ -21,9 +21,9 @@ namespace Blogical.Shared.Adapters.Sftp
         public delegate void BatchHandlerDelegate(ISftp sftp);
         #endregion
         #region Constants
-        private const string MESSAGE_BODY = "body";
-        private const string REMOTEFILENAME = "FileName";
-        private const string EMPTYBATCHFILENAME = "EmptyBatch.xml";
+        private const string MessageBody = "body";
+        private const string Remotefilename = "FileName";
+        private const string Emptybatchfilename = "EmptyBatch.xml";
         #endregion
         #region Private Fields
 
@@ -48,7 +48,7 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         #endregion
         #region Public Members
-        public IList<BatchMessage> Files { get; private set; } = new List<BatchMessage>();
+        public IList<BatchMessage> Files { get; } = new List<BatchMessage>();
         #endregion
         #region Public Methods
         internal void SubmitFiles(ControlledTermination control, IList filesInProcess)
@@ -149,7 +149,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = stream;
                 var message = messageFactory.CreateMessage();
-                message.AddPart(MESSAGE_BODY, part, true);
+                message.AddPart(MessageBody, part, true);
 
                 // Setting metadata
                 SystemMessageContext context =
@@ -160,7 +160,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     };
 
                 // Write/Promote any adapter specific properties on the message context
-                message.Context.Write(REMOTEFILENAME, _propertyNamespace, fileName);
+                message.Context.Write(Remotefilename, _propertyNamespace, fileName);
 
                 SetReceivedFileName(message, fileName);
 
@@ -218,7 +218,7 @@ namespace Blogical.Shared.Adapters.Sftp
                 IBaseMessagePart part = messageFactory.CreateMessagePart();
                 part.Data = ross;
                 var message = messageFactory.CreateMessage();
-                message.AddPart(MESSAGE_BODY, part, true);
+                message.AddPart(MessageBody, part, true);
 
                 SystemMessageContext context =
                     new SystemMessageContext(message.Context)
@@ -228,10 +228,10 @@ namespace Blogical.Shared.Adapters.Sftp
                     };
 
                 //Write/Promote any adapter specific properties on the message context
-                message.Context.Write(REMOTEFILENAME, _propertyNamespace, EMPTYBATCHFILENAME);
+                message.Context.Write(Remotefilename, _propertyNamespace, Emptybatchfilename);
 
                 // Add the file to the batch
-                Files.Add(new BatchMessage(message, EMPTYBATCHFILENAME, BatchOperationType.Submit));
+                Files.Add(new BatchMessage(message, Emptybatchfilename, BatchOperationType.Submit));
 
                 // Add the size of the file to the stream
                 message.BodyPart.Data.SetLength(ms.Length);
@@ -293,7 +293,7 @@ namespace Blogical.Shared.Adapters.Sftp
                                 fileName = batchMessage.UserData.ToString();
 
                                 // Delete orginal file  
-                                if (fileName != EMPTYBATCHFILENAME)
+                                if (fileName != Emptybatchfilename)
                                 {
                                     if (batchMessage.AfterGetAction == SftpReceiveProperties.AfterGetActions.Delete)
                                         _sftp.Delete(fileName);
@@ -336,7 +336,7 @@ namespace Blogical.Shared.Adapters.Sftp
 
                                 if (_useLoadBalancing)
                                 {
-                                    string uri = batchMessage.Message.Context.Read(Constants.BizTalkSystemPropertyNames.INBOUNDTRANSPORTLOCATION, Constants.BiztalkSystemPropertiesNamespace).ToString();
+                                    string uri = batchMessage.Message.Context.Read(Constants.BizTalkSystemPropertyNames.Inboundtransportlocation, Constants.BiztalkSystemPropertiesNamespace).ToString();
                                     DataBaseHelper.CheckInFile(uri, Path.GetFileName(fileName), _traceFlag);
                                 }
                             }

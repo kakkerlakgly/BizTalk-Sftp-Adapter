@@ -75,8 +75,7 @@ namespace Blogical.Shared.Adapters.Sftp
             try
             {
                 ISSOLookup1 ssoLookup = (ISSOLookup1)new SSOLookup();
-                string[] passwords;
-                passwords = ssoLookup.GetCredentials(appName, 0, out credentials.Username);
+                var passwords = ssoLookup.GetCredentials(appName, 0, out credentials.Username);
                 credentials.Password = passwords[0];
             }
             catch (Exception e)
