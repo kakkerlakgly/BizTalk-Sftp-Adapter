@@ -323,11 +323,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             else
             {
-                try
-                {
-                    _afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
-                }
-                catch (ArgumentException)
+                if(!Enum.TryParse< AfterGetActions>(afterget, true, out _afterGet))
                 {
                     throw new Exception("You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
                 }
@@ -422,11 +418,7 @@ namespace Blogical.Shared.Adapters.Sftp
             }
             else
             {
-                try
-                {
-                    _afterGet = (AfterGetActions)Enum.Parse(typeof(AfterGetActions), afterget, true);
-                }
-                catch (ArgumentException)
+                if(!Enum.TryParse< AfterGetActions>(afterget, true, out _afterGet))
                 {
                     throw new Exception("You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
                 }

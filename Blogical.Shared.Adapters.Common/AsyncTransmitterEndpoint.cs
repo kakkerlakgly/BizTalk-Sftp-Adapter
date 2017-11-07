@@ -53,7 +53,7 @@ namespace Blogical.Shared.Adapters.Common
         }
     }
 
-    public interface AsyncTransmitterEndpoint : IDisposable
+    public interface IAsyncTransmitterEndpoint : IDisposable
     {
         bool ReuseEndpoint();
         void Open (EndpointParameters endpointParameters, IPropertyBag handlerPropertyBag, string propertyNamespace);

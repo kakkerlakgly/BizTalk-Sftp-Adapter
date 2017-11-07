@@ -70,27 +70,24 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
         /// <returns></returns>
         public static SftpHost GetHostByName(SftpTransmitProperties properties)//string hostName, bool trace, int connectionLimit)
         {
-            lock (Hosts)
+            foreach (SftpHost host in Hosts)
             {
-                foreach (SftpHost host in Hosts)
+                if (host.HostName == properties.SSHHost)
                 {
-                    if (host.HostName == properties.SSHHost)
+                    if (host.ConnectionLimit != properties.ConnectionLimit)
                     {
-                        if (host.ConnectionLimit != properties.ConnectionLimit)
-                        {
-                            host.ConnectionLimit = properties.ConnectionLimit;
+                        host.ConnectionLimit = properties.ConnectionLimit;
                             
-                            Trace.WriteLineIf(properties.DebugTrace, "[SftpConnectionPool] Overriding connection pool settings");
-                        }
-                        return host;
+                        Trace.WriteLineIf(properties.DebugTrace, "[SftpConnectionPool] Overriding connection pool settings");
                     }
+                    return host;
                 }
-
-                SftpHost newHost = new SftpHost(properties.SSHHost, properties.ConnectionLimit, properties.DebugTrace);
-                Hosts.Add(newHost);
-
-                return newHost;
             }
+
+            SftpHost newHost = new SftpHost(properties.SSHHost, properties.ConnectionLimit, properties.DebugTrace);
+            Hosts.Add(newHost);
+
+            return newHost;
         }
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources

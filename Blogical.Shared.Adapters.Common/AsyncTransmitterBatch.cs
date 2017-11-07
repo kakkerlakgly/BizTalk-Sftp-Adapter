@@ -148,7 +148,7 @@ namespace Blogical.Shared.Adapters.Common
 
                     foreach (IBaseMessage message in _messages)
                     {
-                        AsyncTransmitterEndpoint endpoint = null;
+                        IAsyncTransmitterEndpoint endpoint = null;
 
                         try
                         {

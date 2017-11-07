@@ -268,11 +268,11 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         #endregion
         #region Events
+
         /// <summary>
         /// Called when the BizTalk Batch has been submitted.  If all the messages were submitted (good or suspended)
         /// we delete the files from the folder
         /// </summary>
-        /// <param name="overallStatus"></param>
         internal void OnBatchComplete(object sender, StatusEventArgs e)
         {
             string fileName = "Could not get fileName";

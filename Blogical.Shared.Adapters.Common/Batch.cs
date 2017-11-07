@@ -356,12 +356,7 @@ namespace Blogical.Shared.Adapters.Common
             finally
             {
                 //  undo cyclical reference through COM
-                if (Marshal.IsComObject(_transportBatch))
-                {
-                    Marshal.FinalReleaseComObject(_transportBatch);
-                    GC.SuppressFinalize(_transportBatch);
-                    _transportBatch = null;
-                }
+                Dispose();
 
                 //BT.Trace.Tracer.TraceMessage(BT.TraceLevel.SegmentLifeTime, "CoreAdapter: Leaving Batch.Done");
             }
@@ -398,11 +393,11 @@ namespace Blogical.Shared.Adapters.Common
         private bool _submitIsForSubmitResponse;
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -417,7 +412,7 @@ namespace Blogical.Shared.Adapters.Common
                     }
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

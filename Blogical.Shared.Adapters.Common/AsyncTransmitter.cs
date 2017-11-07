@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.BizTalk.Message.Interop;
 using Microsoft.BizTalk.TransportProxy.Interop;
 
@@ -51,10 +52,10 @@ namespace Blogical.Shared.Adapters.Common
         IBTBatchTransmitter
     {
         //  default magic number
-        private const int MAX_BATCH_SIZE = 50;
+        private const int DefaultBatchSize = 50;
 
         //  members to initialize the batch with
-        private readonly IDictionary<string, AsyncTransmitterEndpoint> _endpoints = new Dictionary<string, AsyncTransmitterEndpoint>();
+        private readonly IDictionary<string, IAsyncTransmitterEndpoint> _endpoints = new Dictionary<string, IAsyncTransmitterEndpoint>();
 
         protected AsyncTransmitter (
             string name,
@@ -115,25 +116,27 @@ namespace Blogical.Shared.Adapters.Common
             return new DefaultEndpointParameters(context.OutboundTransportLocation);
         }
 
-        public virtual AsyncTransmitterEndpoint GetEndpoint(IBaseMessage message)
+        public virtual IAsyncTransmitterEndpoint GetEndpoint(IBaseMessage message)
         {
             // Provide a virtual "CreateEndpointParameters" method to map message to endpoint
             EndpointParameters endpointParameters = CreateEndpointParameters(message);
 
             lock (_endpoints)
             {
-                AsyncTransmitterEndpoint endpoint = _endpoints[endpointParameters.SessionKey];
-                if (null == endpoint)
+                IAsyncTransmitterEndpoint endpoint;
+                
+                if (_endpoints.TryGetValue(endpointParameters.SessionKey, out endpoint))
                 {
-                    //  we haven't seen this location so far this batch so make a new endpoint
-                    endpoint = (AsyncTransmitterEndpoint)Activator.CreateInstance(EndpointType, this);
+                    return endpoint;
+                }
+                //  we haven't seen this location so far this batch so make a new endpoint
+                endpoint = (IAsyncTransmitterEndpoint)Activator.CreateInstance(EndpointType, this);
 
-                    endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
+                endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
 
-                    if (endpoint.ReuseEndpoint())
-                    {
-                        _endpoints[endpointParameters.SessionKey] = endpoint;
-                    }
+                if (endpoint.ReuseEndpoint())
+                {
+                    _endpoints[endpointParameters.SessionKey] = endpoint;
                 }
                 return endpoint;
             }
@@ -143,21 +146,24 @@ namespace Blogical.Shared.Adapters.Common
         {
             try
             {
-                System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Terminate");
+                Trace.WriteLine("[AsyncTransmitter] Terminate");
                 //  Block until we are done...
                 // Let all endpoints finish the work they are doing before disposing them
                 _controlledTermination.Terminate();
 
-                foreach (AsyncTransmitterEndpoint endpoint in _endpoints.Values)
+                lock (_endpoints)
                 {
-                    //  clean up and potentially close any endpoints
-                    try
+                    foreach (IAsyncTransmitterEndpoint endpoint in _endpoints.Values)
                     {
-                        endpoint.Dispose();
-                    }
-                    catch (Exception e)
-                    {
-                        TransportProxy.SetErrorInfo(e);
+                        //  clean up and potentially close any endpoints
+                        try
+                        {
+                            endpoint.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            TransportProxy.SetErrorInfo(e);
+                        }
                     }
                 }
 
@@ -171,29 +177,29 @@ namespace Blogical.Shared.Adapters.Common
 
         public bool Enter ()
         {
-            System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Enter");
+            Trace.WriteLine("[AsyncTransmitter] Enter");
             return _controlledTermination.Enter();
         }
 
         public void Leave ()
         {
-            System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Leave");
+            Trace.WriteLine("[AsyncTransmitter] Leave");
             _controlledTermination.Leave();
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                     _controlledTermination.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

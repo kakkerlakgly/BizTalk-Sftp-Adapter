@@ -13,7 +13,7 @@ namespace Blogical.Shared.Adapters.Sftp
 	/// There is one instance of HttpTransmitterEndpoint class for each every static send port.
 	/// Messages will be forwarded to this class by AsyncTransmitterBatch
 	/// </summary>
-	public class SftpTransmitterEndpoint : AsyncTransmitterEndpoint 
+	public class SftpTransmitterEndpoint : IAsyncTransmitterEndpoint 
     {
         #region Private Fields
         private bool _shutdownRequested;
@@ -178,11 +178,11 @@ namespace Blogical.Shared.Adapters.Sftp
         #endregion
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -191,7 +191,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     Trace.WriteLine("[SftpTransmitterEndpoint] Disposed...");
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

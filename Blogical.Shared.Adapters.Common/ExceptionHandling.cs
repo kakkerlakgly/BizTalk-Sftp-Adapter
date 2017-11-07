@@ -49,7 +49,6 @@ namespace Blogical.Shared.Adapters.Common
         /// <returns>The exception that occured.</returns>
         public static Exception HandleComponentException(System.Reflection.MethodBase methodBase, Exception ex)
         {
-            string s = methodBase.DeclaringType.FullName + "." + methodBase.Name;
             return HandleComponentException(methodBase.DeclaringType.FullName + "." + methodBase.Name, ex);
         }
 
@@ -62,7 +61,6 @@ namespace Blogical.Shared.Adapters.Common
         /// <returns></returns>
         public static Exception HandleComponentException(int eventId, System.Reflection.MethodBase methodBase, Exception ex)
         {
-            string s = methodBase.DeclaringType.FullName + "." + methodBase.Name;
             return HandleComponentException(eventId, methodBase.DeclaringType.FullName + "." + methodBase.Name, ex);
         }
 

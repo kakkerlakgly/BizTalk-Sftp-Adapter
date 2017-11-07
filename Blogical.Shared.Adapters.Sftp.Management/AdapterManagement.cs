@@ -200,13 +200,11 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             // Empty string is allowed, see SftpReceiveProperties for details.
             if ((!String.IsNullOrEmpty(textAfterGetAction)))
             {
-                try
+                SftpReceiveProperties.AfterGetActions afterGetAction;
+                if (!Enum.TryParse<SftpReceiveProperties.AfterGetActions>(textAfterGetAction, true, out afterGetAction))
                 {
-                    SftpReceiveProperties.AfterGetActions afterGetAction = (SftpReceiveProperties.AfterGetActions)Enum.Parse(typeof(SftpReceiveProperties.AfterGetActions), textAfterGetAction, true);
-                }
-                catch (ArgumentException)
-                {
-                    throw new Exception("You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
+                    throw new Exception(
+                        "You must specify an After Get Action: Delete, Rename or DoNothing. Empty field equals DoNothing.");
                 }
             }
 
