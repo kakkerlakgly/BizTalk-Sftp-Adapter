@@ -112,8 +112,8 @@ select 0 as WorkInProcess";
             #region query
 
             string queryFormat = @"delete from [dbo].[SftpWorkingProcess] 
-where [URI] = '{0}' 
-and [FileName] ='{1}' ";
+where [URI] = @URI
+and [FileName] =@FileName ";
             #endregion
 
             using (SqlConnection connection = new SqlConnection(GetConnectionString()))
@@ -121,9 +121,12 @@ and [FileName] ='{1}' ";
                 connection.Open();
                 try
                 {
-                    SqlCommand command = new SqlCommand(String.Format(queryFormat, uri, filename), connection);
-                    command.ExecuteNonQuery();
-                    connection.Close();
+                    using (SqlCommand command = new SqlCommand(queryFormat, connection))
+                    {
+                        command.Parameters.AddWithValue("@URI", uri);
+                        command.Parameters.AddWithValue("@FileName", filename);
+                        command.ExecuteNonQuery();
+                    }
                 }
                 catch
                 {
@@ -139,7 +142,7 @@ and [FileName] ='{1}' ";
             string queryFormat = @"
 select [FileName] 
 from [dbo].[SftpWorkingProcess] 
-where [URI] = '{0}' ";
+where [URI] = @URI ";
             #endregion
             var files = new List<string>();
             using (SqlConnection connection = new SqlConnection(GetConnectionString()))
@@ -148,11 +151,16 @@ where [URI] = '{0}' ";
                 
                 try
                 {
-                    SqlCommand command = new SqlCommand(String.Format(queryFormat, uri), connection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
+                    using (SqlCommand command = new SqlCommand(queryFormat, connection))
                     {
-                        files.Add(reader[0].ToString().ToLower());
+                        command.Parameters.AddWithValue("@URI", uri);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                files.Add(reader[0].ToString().ToLower());
+                            }
+                        }
                     }
                 }
                 catch

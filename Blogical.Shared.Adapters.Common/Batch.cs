@@ -372,19 +372,6 @@ namespace Blogical.Shared.Adapters.Common
             Done(null);
         }
 
-        public virtual void Dispose()
-        {
-            if (_transportBatch != null)
-            {
-                if (Marshal.IsComObject(_transportBatch))
-                {
-                    Marshal.FinalReleaseComObject(_transportBatch);
-                    GC.SuppressFinalize(_transportBatch);
-                    _transportBatch = null;
-                }
-            }
-        }
-
         public bool IsEmpty
         {
             get { return !_workToBeDone; }
@@ -409,5 +396,43 @@ namespace Blogical.Shared.Adapters.Common
 
         private bool _workToBeDone;
         private bool _submitIsForSubmitResponse;
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                }
+
+                if (_transportBatch != null)
+                {
+                    if (Marshal.IsComObject(_transportBatch))
+                    {
+                        Marshal.FinalReleaseComObject(_transportBatch);
+                        _transportBatch = null;
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~Batch() {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

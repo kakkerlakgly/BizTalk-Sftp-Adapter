@@ -33,7 +33,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <summary>
         /// This method is called when a Receive Location is enabled.
         /// </summary>
-        public override void Open(
+        public void Open(
             string uri,
             IPropertyBag config,
             IPropertyBag bizTalkConfig,
@@ -81,7 +81,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// This method is called when the configuration for this receive location is modified.
         /// The Location will be stopped while configurations are made.
         /// </summary>
-        public override void Update(IPropertyBag config, IPropertyBag bizTalkConfig, IPropertyBag handlerPropertyBag)
+        public void Update(IPropertyBag config, IPropertyBag bizTalkConfig, IPropertyBag handlerPropertyBag)
         {
             TraceMessage("[SftpReceiverEndpoint] Configuration Updates ");
 
@@ -114,7 +114,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <summary>
         /// 
         /// </summary>
-        public override void Dispose()
+        public void Dispose()
         {
             TraceMessage("[SftpReceiverEndpoint] Dispose called");
 

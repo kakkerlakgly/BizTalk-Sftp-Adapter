@@ -75,18 +75,18 @@ namespace Blogical.Shared.Adapters.Common
         {
             EndpointType = endpointType;
             MaxBatchSize = maxBatchSize;
-            ControlledTermination = new ControlledTermination();
+            _controlledTermination = new ControlledTermination();
         }
 
         protected virtual int MaxBatchSize { get; }
 
         protected Type EndpointType { get; }
 
-        protected ControlledTermination ControlledTermination { get; }
+        private readonly ControlledTermination _controlledTermination;
 
-        public void Dispose()
+        protected ControlledTermination ControlledTermination
         {
-            ControlledTermination.Dispose();
+            get { return _controlledTermination; }
         }
 
         // IBTBatchTransmitter
@@ -130,7 +130,7 @@ namespace Blogical.Shared.Adapters.Common
 
                     endpoint.Open(endpointParameters, HandlerPropertyBag, PropertyNamespace);
 
-                    if (endpoint.ReuseEndpoint)
+                    if (endpoint.ReuseEndpoint())
                     {
                         _endpoints[endpointParameters.SessionKey] = endpoint;
                     }
@@ -146,7 +146,7 @@ namespace Blogical.Shared.Adapters.Common
                 System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Terminate");
                 //  Block until we are done...
                 // Let all endpoints finish the work they are doing before disposing them
-                ControlledTermination.Terminate();
+                _controlledTermination.Terminate();
 
                 foreach (AsyncTransmitterEndpoint endpoint in _endpoints.Values)
                 {
@@ -172,13 +172,37 @@ namespace Blogical.Shared.Adapters.Common
         public bool Enter ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Enter");
-            return ControlledTermination.Enter();
+            return _controlledTermination.Enter();
         }
 
         public void Leave ()
         {
             System.Diagnostics.Trace.WriteLine("[AsyncTransmitter] Leave");
-            ControlledTermination.Leave();
+            _controlledTermination.Leave();
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _controlledTermination.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+        #endregion
     }
 }

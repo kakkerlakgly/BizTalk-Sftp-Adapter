@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Xml;
@@ -9,11 +10,12 @@ using System.Xml;
 
 namespace Blogical.Shared.Adapters.Common.Schedules.UI
 {
-	/// <summary>
-	/// Implements a user interface for setting schedule parameters
-	/// within a visual designer.
-	/// </summary>
-	public class ScheduleUITypeEditor : UITypeEditor 
+    /// <summary>
+    /// Implements a user interface for setting schedule parameters
+    /// within a visual designer.
+    /// </summary>
+    [ComVisible(false)]
+    public class ScheduleUITypeEditor : UITypeEditor, IDisposable 
 	{
 		private IWindowsFormsEditorService _service;
 		private ScheduleDialog _dialog;
@@ -60,10 +62,35 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 		{
 		    _service?.CloseDropDown();
 		}
-	}
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _dialog.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+        #endregion
+    }
     /// <summary>
     /// ...
     /// </summary>
+    [ComVisible(false)]
 	public class ScheduleConverter : StringConverter 
 	{
         /// <summary>

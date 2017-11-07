@@ -72,7 +72,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     if (batch.Wait())
                     {
                         TraceMessage("[SftpReceiverEndpoint] SubmitFiles (firstAttempt) overall success");
-                        OnBatchComplete(true);
+                        OnBatchComplete(this, new StatusEventArgs {OverallStatus = true});
                     }
                 }
                 TraceMessage("[SftpReceiverEndpoint] Leaving SubmitFiles");
@@ -273,12 +273,12 @@ namespace Blogical.Shared.Adapters.Sftp
         /// we delete the files from the folder
         /// </summary>
         /// <param name="overallStatus"></param>
-        internal void OnBatchComplete(bool overallStatus)
+        internal void OnBatchComplete(object sender, StatusEventArgs e)
         {
             string fileName = "Could not get fileName";
             try
             {
-                if (overallStatus) //Batch completed
+                if (e.OverallStatus) //Batch completed
                 {
                     lock (_filesInProcess)
                     {
@@ -351,11 +351,11 @@ namespace Blogical.Shared.Adapters.Sftp
                     TraceMessage(string.Format("[SftpReceiverEndpoint] OnBatchComplete called. overallStatus == {0}.", true));
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 Trace.WriteLine("[SftpReceiverEndpoint] OnBatchComplete EXCEPTION!");
                 _filesInProcess.Remove(fileName);
-                throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(), e);
+                throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(), ex);
             }
         }
         #endregion

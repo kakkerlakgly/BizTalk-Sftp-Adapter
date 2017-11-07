@@ -73,11 +73,6 @@ namespace Blogical.Shared.Adapters.Common
             _control = new ControlledTermination();
 		}
 
-        public void Dispose()
-        {
-            _control.Dispose();
-        }
-
         //  IBTTransportConfig
         public void AddReceiveEndpoint (string url, IPropertyBag pConfig, IPropertyBag pBizTalkConfig)
         {
@@ -151,5 +146,29 @@ namespace Blogical.Shared.Adapters.Common
                 Dispose();
             }
 		}
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _control.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+        #endregion
     }
 }

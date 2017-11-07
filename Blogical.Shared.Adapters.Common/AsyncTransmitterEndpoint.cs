@@ -53,11 +53,10 @@ namespace Blogical.Shared.Adapters.Common
         }
     }
 
-    public abstract class AsyncTransmitterEndpoint : IDisposable
+    public interface AsyncTransmitterEndpoint : IDisposable
     {
-        public virtual bool ReuseEndpoint { get { return true; } }
-        public abstract void Open (EndpointParameters endpointParameters, IPropertyBag handlerPropertyBag, string propertyNamespace);
-        public abstract IBaseMessage ProcessMessage (IBaseMessage message);
-        public abstract void Dispose();
+        bool ReuseEndpoint();
+        void Open (EndpointParameters endpointParameters, IPropertyBag handlerPropertyBag, string propertyNamespace);
+        IBaseMessage ProcessMessage (IBaseMessage message);
     }
 }

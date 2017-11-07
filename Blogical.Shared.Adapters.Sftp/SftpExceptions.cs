@@ -2,7 +2,8 @@ using System;
 
 namespace Blogical.Shared.Adapters.Sftp
 {
-	internal class SftpException : ApplicationException
+    [Serializable]
+    internal class SftpException : ApplicationException
 	{
 	    public SftpException (string msg) : base(msg) { }
 

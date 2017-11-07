@@ -32,10 +32,16 @@ namespace Blogical.Shared.Adapters.Sftp
 
         #endregion
         #region Public Methods
+
+        public bool ReuseEndpoint()
+        {
+            return true;
+        }
+
         /// <summary>
         /// This method is called when a Send Location is enabled.
         /// </summary>
-        public override void Open(
+        public void Open(
             EndpointParameters endpointParameters, 
             IPropertyBag handlerPropertyBag, 
             string propertyNamespace)
@@ -48,7 +54,7 @@ namespace Blogical.Shared.Adapters.Sftp
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
-        public override IBaseMessage ProcessMessage(IBaseMessage message)
+        public IBaseMessage ProcessMessage(IBaseMessage message)
         {
             
             _properties = new SftpTransmitProperties(message, _propertyNamespace);
@@ -74,16 +80,7 @@ namespace Blogical.Shared.Adapters.Sftp
             return null;
         }
 
-        /// <summary>
-        /// Executed on termination (Stop Host instance)
-        /// </summary>
-        public override void Dispose()
-        {
-            Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
-            _shutdownRequested = true;
-            Trace.WriteLine("[SftpTransmitterEndpoint] Disposed...");
 
-        }
         #endregion
         #region Private Methods
         private IBaseMessage ProcessMessageInternal(IBaseMessage message, ISftp sftp)
@@ -176,6 +173,33 @@ namespace Blogical.Shared.Adapters.Sftp
                 return false;
             }
             return true;
+        }
+
+        #endregion
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
+                    _shutdownRequested = true;
+                    Trace.WriteLine("[SftpTransmitterEndpoint] Disposed...");
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
         }
         #endregion
     }

@@ -176,7 +176,7 @@ namespace Blogical.Shared.Adapters.Common
                         }
                         finally
                         {
-                            if (endpoint != null && endpoint.ReuseEndpoint == false)
+                            if (endpoint != null && !endpoint.ReuseEndpoint())
                             {
                                 endpoint.Dispose();
                             }

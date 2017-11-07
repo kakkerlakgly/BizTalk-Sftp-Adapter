@@ -35,7 +35,12 @@ using System.Collections.Generic;
 
 namespace Blogical.Shared.Adapters.Common
 {
-    public delegate void ReceiveBatchCompleteHandler(bool overallStatus);
+    public class StatusEventArgs : EventArgs
+    {
+        public bool OverallStatus;
+    }
+
+    public delegate void ReceiveBatchCompleteHandler(object sender, StatusEventArgs e);
 
     public class ReceiveBatch : Batch
     {
@@ -108,7 +113,7 @@ namespace Blogical.Shared.Adapters.Common
                 // Theoretically, suspend should never fail unless DB is down/not-reachable
                 // or the stream is not seekable. In such cases, there is a chance of duplicates
                 // but that's safer than deleting messages that are not in the DB.
-                ReceiveBatchComplete?.Invoke(OverallSuccess && !_suspendFailed);
+                ReceiveBatchComplete?.Invoke(this, new StatusEventArgs {OverallStatus = OverallSuccess && !_suspendFailed});
 
                 _orderedEvent?.Set();
             }

@@ -39,13 +39,20 @@ namespace Blogical.Shared.Adapters.Common
 		protected string GetSchemaFromResource (string name)
 		{
 			Assembly assem = GetType().Assembly;
-            using (Stream stream = assem.GetManifestResourceStream(name))
+		    Stream stream = null;
+            try
             {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    string schema = reader.ReadToEnd();
-                    return schema;
-                }
+                stream = assem.GetManifestResourceStream(name);
+		        using (StreamReader reader = new StreamReader(stream))
+		        {
+		            stream = null;
+		            string schema = reader.ReadToEnd();
+		            return schema;
+		        }
+		    }
+		    finally
+            {
+                stream?.Dispose();
             }
 		}
 

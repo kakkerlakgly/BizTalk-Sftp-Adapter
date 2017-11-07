@@ -47,9 +47,9 @@ namespace Blogical.Shared.Adapters.Common
             ReceiveBatchComplete += OnBatchComplete;
         }
 
-        private void OnBatchComplete(bool overallSuccess)
+        private void OnBatchComplete(object sender, StatusEventArgs e)
         {
-            _overallSuccess = overallSuccess;
+            _overallSuccess = e.OverallStatus;
         }
 
         public override void Done()
