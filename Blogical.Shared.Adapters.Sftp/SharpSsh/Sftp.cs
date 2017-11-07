@@ -212,7 +212,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, IList<string> filesInProcess, bool trace)
         {
             try
             {
@@ -249,7 +249,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        public List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IList<string> filesInProcess, bool trace)
         {
             try
             {
@@ -440,7 +440,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(),
                        new Exception("HostKey does not match previously retrieved HostKey."));
         }
-        private List<FileEntry> InternalDir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace)
+        private List<FileEntry> InternalDir(string fileMask, string uri, int maxNumberOfFiles, IList<string> filesInProcess, bool trace)
         {
             try
             {

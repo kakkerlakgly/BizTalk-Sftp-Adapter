@@ -445,7 +445,7 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Private Members
 
         // The workload of files
-        private readonly ArrayList _filesInProcess = ArrayList.Synchronized(new ArrayList());
+        private readonly IList<string> _filesInProcess = new List<string>();
 
         //  Receive adapter properties
         private SftpReceiveProperties _properties;

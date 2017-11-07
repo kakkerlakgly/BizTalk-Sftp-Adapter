@@ -38,7 +38,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, ArrayList filesInProcess,bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, IList<string> filesInProcess,bool trace);
 
         /// <summary>
         /// Returns a FileEntry (name and size)list of files and subdirectories in a directory.
@@ -49,7 +49,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <param name="filesInProcess"></param>
         /// <param name="trace"></param>
         /// <returns></returns>
-        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, ArrayList filesInProcess, bool trace);
+        List<FileEntry> Dir(string fileMask, string uri, int maxNumberOfFiles, IList<string> filesInProcess, bool trace);
         /// <summary>
         /// Determines wether a specified directory has files.
         /// </summary>

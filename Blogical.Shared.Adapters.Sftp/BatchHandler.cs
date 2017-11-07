@@ -32,7 +32,7 @@ namespace Blogical.Shared.Adapters.Sftp
         private readonly string _propertyNamespace;
         private readonly bool _useLoadBalancing;
         private readonly IBTTransportProxy _transportProxy;
-        private IList _filesInProcess;
+        private IList<string> _filesInProcess;
         private readonly bool _traceFlag;
 
         #endregion
@@ -51,7 +51,7 @@ namespace Blogical.Shared.Adapters.Sftp
         public IList<BatchMessage> Files { get; } = new List<BatchMessage>();
         #endregion
         #region Public Methods
-        internal void SubmitFiles(ControlledTermination control, IList filesInProcess)
+        internal void SubmitFiles(ControlledTermination control, IList<string> filesInProcess)
         {
             if (Files == null || Files.Count == 0)
                 return;
@@ -89,7 +89,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// </summary>
         /// <param name="control"></param>
         /// <param name="filesInProcess"></param>
-        internal void _SubmitFiles(ControlledTermination control, IList filesInProcess)
+        internal void _SubmitFiles(ControlledTermination control, IList<string> filesInProcess)
         {
             try
             {
@@ -354,7 +354,10 @@ namespace Blogical.Shared.Adapters.Sftp
             catch (Exception ex)
             {
                 Trace.WriteLine("[SftpReceiverEndpoint] OnBatchComplete EXCEPTION!");
-                _filesInProcess.Remove(fileName);
+                lock (_filesInProcess)
+                {
+                    _filesInProcess.Remove(fileName);
+                }
                 throw ExceptionHandling.HandleComponentException(System.Reflection.MethodBase.GetCurrentMethod(), ex);
             }
         }
