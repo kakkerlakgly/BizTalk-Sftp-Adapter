@@ -50,7 +50,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 				}
 			}
 		}
-        long TotalNumdebrOfSeconds
+
+        private long TotalNumdebrOfSeconds
         {
             get 
             {

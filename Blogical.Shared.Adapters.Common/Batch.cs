@@ -42,7 +42,7 @@ namespace Blogical.Shared.Adapters.Common
     /// </summary>
     public class Batch : IBTBatchCallBack, IDisposable
     {
-        class BatchMessage
+        private class BatchMessage
         {
             public readonly IBaseMessage Message;
             public readonly object UserData;

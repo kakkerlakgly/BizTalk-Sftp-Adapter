@@ -35,7 +35,7 @@ namespace Blogical.Shared.Adapters.Common
         public abstract string SessionKey { get; }
         public string OutboundLocation { get; }
 
-        public EndpointParameters (string outboundLocation)
+        protected EndpointParameters (string outboundLocation)
         {
             OutboundLocation = outboundLocation;
         }
@@ -55,11 +55,9 @@ namespace Blogical.Shared.Adapters.Common
 
     public abstract class AsyncTransmitterEndpoint : IDisposable
     {
-        public AsyncTransmitterEndpoint(AsyncTransmitter transmitter) { }
-
         public virtual bool ReuseEndpoint { get { return true; } }
         public abstract void Open (EndpointParameters endpointParameters, IPropertyBag handlerPropertyBag, string propertyNamespace);
         public abstract IBaseMessage ProcessMessage (IBaseMessage message);
-        public virtual void Dispose () { }
+        public abstract void Dispose();
     }
 }

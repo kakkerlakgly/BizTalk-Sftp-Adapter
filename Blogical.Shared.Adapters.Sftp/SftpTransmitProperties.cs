@@ -17,28 +17,29 @@ namespace Blogical.Shared.Adapters.Sftp
         #region Private Fields
         private static int _handlerSendBatchSize    = 20;
 
-        string _sshHost                             = String.Empty;
-        string _sshPasswordProperty                 = String.Empty;
-        int _sshPort                                = 22;
-        string _sshUser                             = String.Empty;
-        string _sshIdentityFile                     = String.Empty;
-        string _sshIdentityThumbprint               = String.Empty;
-        string _ssoApplication                      = String.Empty;
-        bool _sshtrace;
+        private string _sshHost                             = String.Empty;
+        private string _sshPasswordProperty                 = String.Empty;
+        private int _sshPort                                = 22;
+        private string _sshUser                             = String.Empty;
+        private string _sshIdentityFile                     = String.Empty;
+        private string _sshIdentityThumbprint               = String.Empty;
+        private string _ssoApplication                      = String.Empty;
+        private bool _sshtrace;
 
-        string _sshRemotePath                       = String.Empty;
-        string _sshRemoteTempDir                    = String.Empty;
-        string _sshRemoteFile                       = String.Empty;
-        int _sshErrorThreshold                      = 10;
-        int _connectionLimit                        = 10;
-        string _applySecurityPermissions            = String.Empty;
-        bool _verifyFileSize;
+        private string _sshRemotePath                       = String.Empty;
+        private string _sshRemoteTempDir                    = String.Empty;
+        private string _sshRemoteFile                       = String.Empty;
+        private int _sshErrorThreshold                      = 10;
+        private int _connectionLimit                        = 10;
+        private string _applySecurityPermissions            = String.Empty;
+        private bool _verifyFileSize;
 
         // Proxy settings
-        string _proxyHost                           = String.Empty;
-        int _proxyPort                              = 80;
-        string _proxyUsername                       = String.Empty;
-        string _proxyPassword                       = String.Empty;
+        private string _proxyHost                           = String.Empty;
+
+        private int _proxyPort                              = 80;
+        private string _proxyUsername                       = String.Empty;
+        private string _proxyPassword                       = String.Empty;
 
         #endregion
         #region Public Properties

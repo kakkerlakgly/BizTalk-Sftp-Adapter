@@ -279,7 +279,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <summary>
         /// Constructor
         /// </summary>
-        public Schedule()
+        protected Schedule()
         {
             Type = ScheduleType.None;
             Starttime = new DateTime(1900, 1, 1, 0, 0, 0);

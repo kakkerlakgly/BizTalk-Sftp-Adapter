@@ -20,18 +20,18 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
     {
         #region Private Members
         private readonly IProducerConsumerCollection<ApplicationStorage> _applicationStorage;
-        const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
-        const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
-        DateTime _connectedSince;
-        SftpClient _sftp;
-        readonly string _identityFile;
-        readonly string _host;
-        readonly string _user = String.Empty;
-        readonly string _password;
-        readonly string _passphrase = String.Empty;
+        private const int TOTALLIFETIME = 600; // total number of seconds for reusing of connection
+        private const int TOTALTIMEDIFF = 4; // total number of seconds in difference between servers 
+        private DateTime _connectedSince;
+        private SftpClient _sftp;
+        private readonly string _identityFile;
+        private readonly string _host;
+        private readonly string _user = String.Empty;
+        private readonly string _password;
+        private readonly string _passphrase = String.Empty;
 
         // Proxy Settings
-        readonly string _proxyHost = string.Empty;
+        private readonly string _proxyHost = string.Empty;
 
         #endregion
         #region ISftp Members
@@ -410,7 +410,8 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
             Trace.WriteLine("[SftpConnectionPool] Reconnecting to " + _host);
             Connect();
         }
-        void RaiseOnDisconnect()
+
+        private void RaiseOnDisconnect()
         {
             TimeSpan ts = DateTime.Now.Subtract(_connectedSince);
             if (ts.TotalSeconds > TOTALLIFETIME)
@@ -426,7 +427,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
 
         }
 
-        void CheckHostKey(object sender, HostKeyEventArgs hostKeyEventArgs)
+        private void CheckHostKey(object sender, HostKeyEventArgs hostKeyEventArgs)
         {
             object hostKey = ApplicationStorageHelper.GetHostKey(_applicationStorage, _host);
 

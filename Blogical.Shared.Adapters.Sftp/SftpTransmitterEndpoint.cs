@@ -20,11 +20,10 @@ namespace Blogical.Shared.Adapters.Sftp
         private SftpTransmitProperties _properties;
         private readonly AsyncTransmitter _asyncTransmitter;
         private string _propertyNamespace;
-        int _errorCount; //  error count for comparison with the error threshold
+        private int _errorCount; //  error count for comparison with the error threshold
         #endregion
         #region Construktor
         public SftpTransmitterEndpoint(AsyncTransmitter asyncTransmitter)
-            : base(asyncTransmitter)
 		{
 			_asyncTransmitter = asyncTransmitter;
 
@@ -75,10 +74,6 @@ namespace Blogical.Shared.Adapters.Sftp
             return null;
         }
 
-        void sftp_OnDisconnect(ISftp sftp)
-        {
-            SftpConnectionPool.GetHostByName(_properties).ReleaseConnection(sftp);
-        }
         /// <summary>
         /// Executed on termination (Stop Host instance)
         /// </summary>
@@ -86,7 +81,6 @@ namespace Blogical.Shared.Adapters.Sftp
         {
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposing...");
             _shutdownRequested = true;
-            base.Dispose();
             Trace.WriteLine("[SftpTransmitterEndpoint] Disposed...");
 
         }
@@ -156,10 +150,7 @@ namespace Blogical.Shared.Adapters.Sftp
                     "Will retry if BizTalk configured retry attempts are not exhausted.");
             }
         }
-        private void connection2_OnDisconnect(ISftp sftp)
-        {
-            
-        }
+
         private void TraceMessage(string message)
         {
             if (_properties.DebugTrace)

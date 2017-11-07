@@ -56,7 +56,8 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
             }
 
         }
-        static readonly ConcurrentBag<SftpHost> Hosts = new ConcurrentBag<SftpHost>();
+
+        private static readonly ConcurrentBag<SftpHost> Hosts = new ConcurrentBag<SftpHost>();
         /// <summary>
         /// Default number of connections per server
         /// </summary>
@@ -120,8 +121,9 @@ namespace Blogical.Shared.Adapters.Sftp.ConnectionPool
     public class SftpHost
     {
         #region Private Members
-        int _currentCount;
-        readonly bool _trace;
+
+        private int _currentCount;
+        private readonly bool _trace;
         #endregion
         #region Constructors
 

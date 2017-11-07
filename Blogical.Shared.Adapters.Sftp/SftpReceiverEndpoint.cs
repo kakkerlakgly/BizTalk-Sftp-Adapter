@@ -424,7 +424,8 @@ namespace Blogical.Shared.Adapters.Sftp
         }
         #endregion
         #region Events
-        void batchHandler_BatchComplete(ISftp sftp)
+
+        private void batchHandler_BatchComplete(ISftp sftp)
         {
             try
             {
@@ -460,12 +461,12 @@ namespace Blogical.Shared.Adapters.Sftp
         private ControlledTermination _controlledTermination;
 
         //  error count for comparison with the error threshold
-        int _errorCount;
+        private int _errorCount;
 
         private TaskController _taskController;
 
         //  support for Update
-        IPropertyBag _updatedConfig;
+        private IPropertyBag _updatedConfig;
 
         #endregion
     }

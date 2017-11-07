@@ -43,8 +43,8 @@ namespace Blogical.Shared.Adapters.Sftp
     /// </summary>
     internal static class ApplicationStorageHelper
     {
-        const string SettingsFileName = "SftpHostFiles.config";
-        const string Objlock = "lock";
+        private const string SettingsFileName = "SftpHostFiles.config";
+        private const string Objlock = "lock";
         /// <summary>
         /// Load all hostkeys from IsolatedStorage.
         /// Eg. \Document and Settings\[BizTalk Service User]\Local Settings\Application Data\IsolatedStorage\

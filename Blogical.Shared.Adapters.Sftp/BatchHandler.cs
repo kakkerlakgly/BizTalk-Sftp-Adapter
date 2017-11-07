@@ -27,13 +27,13 @@ namespace Blogical.Shared.Adapters.Sftp
         #endregion
         #region Private Fields
 
-        readonly ISftp _sftp;
-        readonly string _transportType;
-        readonly string _propertyNamespace;
-        readonly bool _useLoadBalancing;
-        readonly IBTTransportProxy _transportProxy;
-        IList _filesInProcess;
-        readonly bool _traceFlag;
+        private readonly ISftp _sftp;
+        private readonly string _transportType;
+        private readonly string _propertyNamespace;
+        private readonly bool _useLoadBalancing;
+        private readonly IBTTransportProxy _transportProxy;
+        private IList _filesInProcess;
+        private readonly bool _traceFlag;
 
         #endregion
         #region Constructor
