@@ -21,3 +21,4 @@
 *.nupkg
 /packages/SSH.NET.2016.1.0/lib
 /Blogical.Shared.Adapters.Sftp/bin/Debug
+/Blogical.Shared.Adapters.Common/bin/Debug
