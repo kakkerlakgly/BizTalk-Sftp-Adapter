@@ -42,7 +42,7 @@ namespace Blogical.Shared.Adapters.Common
                                         ManualResetEvent submitComplete, int depth)
             : base(transportProxy, control, submitComplete, depth)
         {
-            this._control = control;
+            _control = control;
             _workDone = submitComplete;
             ReceiveBatchComplete += OnBatchComplete;
         }

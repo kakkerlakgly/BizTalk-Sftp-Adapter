@@ -51,13 +51,13 @@ namespace Blogical.Shared.Adapters.Common
 
             public BatchMessage (IBaseMessage message, object userData)
             {
-                this.Message = message;
-                this.UserData = userData;
+                Message = message;
+                UserData = userData;
             }
             public BatchMessage (string correlationToken, object userData)
             {
-                this.CorrelationToken = correlationToken;
-                this.UserData = userData;
+                CorrelationToken = correlationToken;
+                UserData = userData;
             }
         }
 
@@ -222,9 +222,9 @@ namespace Blogical.Shared.Adapters.Common
         public Batch (IBTTransportProxy transportProxy, bool makeSuccessCall)
         {
             _hrStatus = -1;
-            this._transportProxy = transportProxy;
-            _transportBatch = this._transportProxy.GetBatch(this, null);
-            this._makeSuccessCall = makeSuccessCall;
+            _transportProxy = transportProxy;
+            _transportBatch = _transportProxy.GetBatch(this, null);
+            _makeSuccessCall = makeSuccessCall;
         }
 
         public void SubmitMessage (IBaseMessage message, object userData = null)

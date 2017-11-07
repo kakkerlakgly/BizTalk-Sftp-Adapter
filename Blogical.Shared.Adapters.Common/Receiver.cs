@@ -69,7 +69,7 @@ namespace Blogical.Shared.Adapters.Common
             clsid,
             propertyNamespace)
         {
-			this._endpointType = endpointType;
+			_endpointType = endpointType;
             _control = new ControlledTermination();
 		}
 

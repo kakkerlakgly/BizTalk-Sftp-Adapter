@@ -60,13 +60,13 @@ namespace Blogical.Shared.Adapters.Common
 			HandlerPropertyBag = null;
 			Initialized        = false;
 
-			this.Name               = name;
-			this.Version            = version;
-			this.Description        = description;
-			this.TransportType      = transportType;
-			this.ClassID              = clsid;
+			Name               = name;
+			Version            = version;
+			Description        = description;
+			TransportType      = transportType;
+			ClassID              = clsid;
 
-			this.PropertyNamespace  = propertyNamespace;
+			PropertyNamespace  = propertyNamespace;
 		}
 
 		protected string            PropertyNamespace { get; }

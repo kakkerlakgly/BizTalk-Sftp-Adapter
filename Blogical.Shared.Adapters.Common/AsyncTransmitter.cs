@@ -73,8 +73,8 @@ namespace Blogical.Shared.Adapters.Common
             clsid,
             propertyNamespace)
         {
-            this.EndpointType = endpointType;
-            this.MaxBatchSize = maxBatchSize;
+            EndpointType = endpointType;
+            MaxBatchSize = maxBatchSize;
             ControlledTermination = new ControlledTermination();
         }
 

@@ -22,7 +22,7 @@ namespace Blogical.Shared.Adapters.Common
         public TransmitResponseBatch(IBTTransportProxy transportProxy, AllWorkDoneDelegate allWorkDoneDelegate)
             : base(transportProxy, true)
         {
-            this._allWorkDoneDelegate = allWorkDoneDelegate;
+            _allWorkDoneDelegate = allWorkDoneDelegate;
         }
 
         public override void SubmitResponseMessage(IBaseMessage solicitDocSent, IBaseMessage responseDocToSubmit)

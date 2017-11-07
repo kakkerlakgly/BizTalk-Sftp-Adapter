@@ -64,8 +64,8 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// <param name="taskDelegate"></param>
 		public ScheduledTask(string name, TaskDelegate taskDelegate)
 		{
-			this.Name = name;
-			this._taskDelegate = taskDelegate;
+			Name = name;
+			_taskDelegate = taskDelegate;
 		}
 
 		private void FireProgress(TaskProgress progress)

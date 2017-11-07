@@ -34,21 +34,21 @@ namespace Blogical.Shared.Adapters.Common
 	{
         public TxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, bool makeSuccessCall) : base(transportProxy, makeSuccessCall)
         {
-			this.Control = control;
+			Control = control;
 
             ComTxn = TransactionInterop.GetDtcTransaction(transaction);
 
             //  the System.Transactions transaction - must be the original transaction - only that can be used to commit
-            this.Transaction = transaction;
+            Transaction = transaction;
 
-			this.OrderedEvent = orderedEvent;
+			OrderedEvent = orderedEvent;
 		}
         public TxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, IDtcTransaction comTxn, CommittableTransaction transaction, ManualResetEvent orderedEvent, bool makeSuccessCall) : base(transportProxy, makeSuccessCall)
         {
-            this.Control = control;
-            this.ComTxn = comTxn;
-            this.Transaction = transaction;
-            this.OrderedEvent = orderedEvent;
+            Control = control;
+            ComTxn = comTxn;
+            Transaction = transaction;
+            OrderedEvent = orderedEvent;
         }
         public override void Done ()
 		{

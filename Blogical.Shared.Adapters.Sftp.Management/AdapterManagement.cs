@@ -163,7 +163,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
         {
             XmlDocument document1 = new XmlDocument();
             document1.LoadXml(xmlInstance);
-            XmlNode nodeHost = GetNode(document1, "uri", true);
+            XmlNode nodeHost = GetNode(document1, "uri");
             nodeHost.InnerText = ValidateReceiveLocation(document1);
             return document1.OuterXml;
         }

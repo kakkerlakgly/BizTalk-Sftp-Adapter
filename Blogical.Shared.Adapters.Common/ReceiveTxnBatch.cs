@@ -43,12 +43,12 @@ namespace Blogical.Shared.Adapters.Common
 
         public AbortOnFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, TxnAborted txnAborted) : base(transportProxy, control, transaction, orderedEvent, false)
         { 
-			this._txnAborted = txnAborted;
+			_txnAborted = txnAborted;
 		}
         public AbortOnFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, IDtcTransaction comTxn, CommittableTransaction transaction, ManualResetEvent orderedEvent, TxnAborted txnAborted)
             : base(transportProxy, control, comTxn, transaction, orderedEvent, false)
         {
-            this._txnAborted = txnAborted;
+            _txnAborted = txnAborted;
         }
         protected override void StartBatchComplete (int hrBatchComplete)
         {
@@ -73,7 +73,7 @@ namespace Blogical.Shared.Adapters.Common
 
         public AbortOnAllFailureReceiveTxnBatch(IBTTransportProxy transportProxy, ControlledTermination control, CommittableTransaction transaction, ManualResetEvent orderedEvent, StopProcessing stopProcessing) : base(transportProxy, control, transaction, orderedEvent, false)
         {
-			this._stopProcessing = stopProcessing;
+			_stopProcessing = stopProcessing;
 		}
 		protected override void StartBatchComplete (int hrBatchComplete)
 		{

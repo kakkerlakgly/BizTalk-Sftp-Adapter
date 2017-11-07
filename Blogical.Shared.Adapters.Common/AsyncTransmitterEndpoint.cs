@@ -37,7 +37,7 @@ namespace Blogical.Shared.Adapters.Common
 
         public EndpointParameters (string outboundLocation)
         {
-            this.OutboundLocation = outboundLocation;
+            OutboundLocation = outboundLocation;
         }
     }
 

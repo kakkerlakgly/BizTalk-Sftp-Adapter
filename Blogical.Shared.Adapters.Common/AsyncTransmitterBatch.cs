@@ -67,10 +67,10 @@ namespace Blogical.Shared.Adapters.Common
 
         public AsyncTransmitterBatch (int maxBatchSize, Type endpointType, string propertyNamespace, IPropertyBag handlerPropertyBag, IBTTransportProxy transportProxy, AsyncTransmitter asyncTransmitter)
         {
-            this._maxBatchSize = maxBatchSize;
-            this.PropertyNamespace = propertyNamespace;
-            this._transportProxy = transportProxy;
-            this._asyncTransmitter = asyncTransmitter;
+            _maxBatchSize = maxBatchSize;
+            PropertyNamespace = propertyNamespace;
+            _transportProxy = transportProxy;
+            _asyncTransmitter = asyncTransmitter;
             
             _messages = new List<IBaseMessage>();
 

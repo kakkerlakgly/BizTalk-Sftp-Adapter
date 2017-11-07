@@ -41,15 +41,15 @@ namespace Blogical.Shared.Adapters.Common
     {
         public ReceiveBatch (IBTTransportProxy transportProxy, ControlledTermination control, ManualResetEvent orderedEvent, int depth) : base(transportProxy, true)
         {
-            this._control = control;
-            this._orderedEvent = orderedEvent;
+            _control = control;
+            _orderedEvent = orderedEvent;
             _innerBatch = null;
-            this._depth = depth;
+            _depth = depth;
         }
 
         public ReceiveBatch(IBTTransportProxy transportProxy, ControlledTermination control, ReceiveBatchCompleteHandler callback, int depth) : base(transportProxy, true)
         {
-            this._control = control;
+            _control = control;
 
             if( callback != null )
             {
@@ -57,7 +57,7 @@ namespace Blogical.Shared.Adapters.Common
             }
 
             _innerBatch = null;
-            this._depth = depth;
+            _depth = depth;
         }
 
         protected override void StartProcessFailures ()
@@ -270,8 +270,8 @@ namespace Blogical.Shared.Adapters.Common
 
         public FailedMessage(IBaseMessage message, int status)
         {
-            this.Message = message;
-            this.Status = status;
+            Message = message;
+            Status = status;
         }
     }
 }
