@@ -73,7 +73,7 @@ namespace Blogical.Shared.Adapters.Common
             lock (this)
             {
                 _terminate = true;
-                result = (_activityCount == 0);
+                result = _activityCount == 0;
             }
 
             // If activity count was not zero, wait for pending activities

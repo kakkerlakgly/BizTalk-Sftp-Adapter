@@ -160,7 +160,7 @@ namespace Blogical.Shared.Adapters.Sftp
         private bool CheckErrorThreshold()
         {
             _errorCount++;
-            if ((0 != _properties.ErrorThreshold) && (_errorCount > _properties.ErrorThreshold))
+            if (0 != _properties.ErrorThreshold && _errorCount > _properties.ErrorThreshold)
             {
                 _asyncTransmitter.Terminate();
 

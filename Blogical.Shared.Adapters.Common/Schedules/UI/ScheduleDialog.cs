@@ -188,7 +188,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			{
 				if (dayInterval.Value == 0)
 				{
-					throw(new ApplicationException("Must select a daily interval"));
+					throw new ApplicationException("Must select a daily interval");
 				}
 				XmlNode interval = ConfigXml.CreateNode("element", "interval","");
 				interval.InnerText = dayInterval.Value.ToString();
@@ -206,7 +206,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 				if (daySaturday.Checked) {result = result | ScheduleDay.Saturday;}
 				if (result == ScheduleDay.None)
 				{
-					throw(new ApplicationException("Must select one or more days of the week"));
+					throw new ApplicationException("Must select one or more days of the week");
 				}
 				else
 				{
@@ -233,7 +233,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			if (weekSaturday.Checked) {result = result | ScheduleDay.Saturday;}
 			if (result == ScheduleDay.None)
 			{
-				throw(new ApplicationException("Must select one or more days of the week"));
+				throw new ApplicationException("Must select one or more days of the week");
 			}
 			else
 			{
@@ -249,7 +249,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			{
 				if (_dayofmonth.Value == 0)
 				{
-					throw(new ApplicationException("Must select a day of the month"));
+					throw new ApplicationException("Must select a day of the month");
 				}
 				XmlNode dayofmonth = ConfigXml.CreateNode("element", "dayofmonth","");
 				dayofmonth.InnerText = _dayofmonth.Value.ToString();
@@ -259,7 +259,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			{
 				if (ordinalDropDown.SelectedItem == null)
 				{
-					throw(new ApplicationException("Must select an ordinal day"));
+					throw new ApplicationException("Must select an ordinal day");
 				}
 				XmlNode ordinal = ConfigXml.CreateNode("element", "ordinal","");
 				ordinal.InnerText = ordinalDropDown.SelectedItem.ToString();
@@ -267,7 +267,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 				
 				if (weekdayDropDown.SelectedItem == null)
 				{
-					throw(new ApplicationException("Must select an ordinal week day"));
+					throw new ApplicationException("Must select an ordinal week day");
 				}
 				XmlNode weekday = ConfigXml.CreateNode("element", "weekday","");
 				weekday.InnerText = weekdayDropDown.SelectedItem.ToString();
@@ -290,7 +290,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules.UI
 			if (monthDecember.Checked) {result = result | ScheduleMonth.December;}
 			if (result == ScheduleMonth.None)
 			{
-				throw(new ApplicationException("Must select one or more months"));
+				throw new ApplicationException("Must select one or more months");
 			}
 			else
 			{

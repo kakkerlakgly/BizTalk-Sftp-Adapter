@@ -30,7 +30,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if (value < 0 || value > 31)
 				{
-					throw (new ArgumentOutOfRangeException(nameof(value), "Day range: 0 - 31"));
+					throw new ArgumentOutOfRangeException(nameof(value), "Day range: 0 - 31");
 				}
 				if (value != Interlocked.Exchange(ref _day, value))
 				{
@@ -85,7 +85,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if (value == ScheduleMonth.None)
 				{
-					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify a month"));
+					throw new ArgumentOutOfRangeException(nameof(value), "Must specify a month");
 				}
 				if (value != (ScheduleMonth)Interlocked.Exchange(ref _months, value))
 				{
@@ -110,7 +110,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			Type = ExtractScheduleType(configXml);
 			if (Type != ScheduleType.Monthly)
 			{
-				throw (new ApplicationException("Invalid Configuration Type"));
+				throw new ApplicationException("Invalid Configuration Type");
 			}
 			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
 			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
@@ -129,9 +129,9 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
         /// <returns></returns>
 		public override DateTime GetNextActivationTime()
 		{
-			if ((Day == 0) && ((Ordinal == ScheduleOrdinal.None) ||(WeekDay == ScheduleDay.None)))
+			if (Day == 0 && (Ordinal == ScheduleOrdinal.None ||WeekDay == ScheduleDay.None))
 			{
-				throw(new ApplicationException("Uninitialized monthly schedule")); 
+				throw new ApplicationException("Uninitialized monthly schedule"); 
 			}
 			DateTime now = DateTime.Now;
 			if (StartDate > now)
@@ -140,10 +140,10 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			{
 				if ((ScheduledMonths & GetScheduleMonthFlag(now)) > 0)
 				{ // could be our lucky month
-					if ((_day <=  DateTime.DaysInMonth(now.Year, now.Month)))
+					if (_day <=  DateTime.DaysInMonth(now.Year, now.Month))
 					{
-						if (((Day == now.Day) && (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour)))
-										||(Day > now.Day))
+						if (Day == now.Day && (StartTime.Hour == now.Hour && StartTime.Minute > now.Minute || StartTime.Hour > now.Hour)
+										||Day > now.Day)
 						{
 							return new DateTime(now.Year, now.Month, Day, StartTime.Hour, StartTime.Minute, 0);
 						}
@@ -152,8 +152,8 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				for (int i = 1; i < 49; i++) //need to check for four years in case someone selects 29 February
 				{
 					now = now.AddMonths(1);
-					if (((ScheduledMonths & GetScheduleMonthFlag(now)) > 0) && 
-												(_day <=  DateTime.DaysInMonth(now.Year, now.Month)))
+					if ((ScheduledMonths & GetScheduleMonthFlag(now)) > 0 && 
+												_day <=  DateTime.DaysInMonth(now.Year, now.Month))
 						break;
 				}
 				return new DateTime(now.Year, now.Month, Day, StartTime.Hour, StartTime.Minute, 0);
@@ -162,8 +162,8 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			if ((ScheduledMonths & GetScheduleMonthFlag(now)) > 0)
 			{
 				int ordinalDay = GetOrdinalWeekDay(Ordinal, WeekDay, now.Month, now.Year);
-				if (((ordinalDay == now.Day) && (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))) 
-									|| (ordinalDay > now.Day))
+				if (ordinalDay == now.Day && (StartTime.Hour == now.Hour && StartTime.Minute > now.Minute || StartTime.Hour > now.Hour) 
+									|| ordinalDay > now.Day)
 				{
 					return new DateTime(now.Year, now.Month, ordinalDay, StartTime.Hour, StartTime.Minute, 0);
 				}

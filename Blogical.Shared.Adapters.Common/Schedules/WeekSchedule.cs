@@ -24,9 +24,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 
             set
             {
-                if ((value < 1) || (value > 52))
+                if (value < 1 || value > 52)
                 {
-                    throw (new ArgumentOutOfRangeException(nameof(value), "Week interval must be between 1 and 52"));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Week interval must be between 1 and 52");
                 }
                 if (value != Interlocked.Exchange(ref _interval, value))
                 {
@@ -44,9 +44,9 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 
             set
             {
-                if ((value == ScheduleDay.None))
+                if (value == ScheduleDay.None)
                 {
-                    throw (new ArgumentOutOfRangeException(nameof(value), "Must specify the scheduled days"));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Must specify the scheduled days");
                 }
                 if (value != (ScheduleDay)Interlocked.Exchange(ref _days, value))
                 {
@@ -74,7 +74,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             Type = ExtractScheduleType(configXml);
             if (Type != ScheduleType.Weekly)
             {
-                throw (new ApplicationException("Invalid Configuration Type"));
+                throw new ApplicationException("Invalid Configuration Type");
             }
             StartDate = ExtractDate(configXml, "/schedule/startdate", true);
             StartTime = ExtractTime(configXml, "/schedule/starttime", true);
@@ -91,7 +91,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         {
             if (ScheduledDays == ScheduleDay.None)
             {
-                throw (new ApplicationException("Uninitialized weekly schedule"));
+                throw new ApplicationException("Uninitialized weekly schedule");
             }
             DateTime now = DateTime.Now;
             if (StartDate > now)
@@ -107,7 +107,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             {//possibly this week
                 if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
                 {//possibly today
-                    if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))
+                    if (StartTime.Hour == now.Hour && StartTime.Minute > now.Minute || StartTime.Hour > now.Hour)
                     {
                         return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);
                     }
@@ -120,7 +120,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
                 }
             }
             //future week
-            DateTime nextWeek = lastSunday.AddDays((_interval * 7) - daysAhead);
+            DateTime nextWeek = lastSunday.AddDays(_interval * 7 - daysAhead);
             while (nextWeek.DayOfWeek != DayOfWeek.Saturday)
             {
                 if ((GetScheduleDayFlag(nextWeek) & ScheduledDays) > 0)

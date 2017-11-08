@@ -85,7 +85,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
 
 			if (Type != ScheduleType.Timely)
 			{
-				throw (new ApplicationException("Invalid Configuration Type"));
+				throw new ApplicationException("Invalid Configuration Type");
 			}
 			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
 			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
@@ -107,7 +107,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             TraceMessage("[TimeSchedule]Executing GetNextActivationTime");
             if (Interval == 0)
 			{
-				throw(new ApplicationException("Uninitialized timely schedule")); 
+				throw new ApplicationException("Uninitialized timely schedule"); 
 			}
 
             return DateTime.Now.AddSeconds(TotalNumdebrOfSeconds);

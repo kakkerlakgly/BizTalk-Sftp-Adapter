@@ -63,7 +63,7 @@ namespace Blogical.Shared.Adapters.Common
 
         public virtual bool OverallSuccess
         {
-            get { return (_hrStatus >= 0); }    
+            get { return _hrStatus >= 0; }    
         }
 
         public Int32 HrStatus

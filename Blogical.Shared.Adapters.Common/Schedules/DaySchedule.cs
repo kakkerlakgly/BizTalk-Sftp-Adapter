@@ -27,9 +27,9 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			}
 			set
 			{
-				if ((ScheduledDays == ScheduleDay.None) && (value <= 1))
+				if (ScheduledDays == ScheduleDay.None && value <= 1)
 				{
-					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval"));
+					throw new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval");
 				}
 				if (value != Interlocked.Exchange(ref _interval, value))
 				{
@@ -48,9 +48,9 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			}
 			set
 			{
-				if ((value == ScheduleDay.None) && (Interval <= 1))
+				if (value == ScheduleDay.None && Interval <= 1)
 				{
-					throw (new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval"));
+					throw new ArgumentOutOfRangeException(nameof(value), "Must specify scheduled days or interval");
 				}
 				if (value != (ScheduleDay)Interlocked.Exchange(ref _days, value))
 				{
@@ -75,7 +75,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			Type = ExtractScheduleType(configXml);
 			if (Type != ScheduleType.Daily)
 			{
-				throw (new ApplicationException("Invalid Configuration Type"));
+				throw new ApplicationException("Invalid Configuration Type");
 			}
 			StartDate = ExtractDate(configXml, "/schedule/startdate", true);
 			StartTime = ExtractTime(configXml, "/schedule/starttime", true);
@@ -93,9 +93,9 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 		public override DateTime GetNextActivationTime()
 		{
             TraceMessage("[DaySchedule]Executing GetNextActivationTime");
-			if ((Interval == 0) && (ScheduledDays == ScheduleDay.None))
+			if (Interval == 0 && ScheduledDays == ScheduleDay.None)
 			{
-				throw(new ApplicationException("Uninitialized daily schedule")); 
+				throw new ApplicationException("Uninitialized daily schedule"); 
 			}
 			DateTime now = DateTime.Now;
 			if (StartDate > now)
@@ -115,7 +115,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 				int daysToGo;
 				if (daysAhead == 0)
 				{
-					if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))
+					if (StartTime.Hour == now.Hour && StartTime.Minute > now.Minute || StartTime.Hour > now.Hour)
 					{
 						return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);
 					}
@@ -131,7 +131,7 @@ namespace  Blogical.Shared.Adapters.Common.Schedules
 			//Day of Week
 			if ((GetScheduleDayFlag(now) & ScheduledDays) > 0)
 			{ //today could be our lucky day
-				if (((StartTime.Hour == now.Hour) && (StartTime.Minute > now.Minute)) || (StartTime.Hour > now.Hour))
+				if (StartTime.Hour == now.Hour && StartTime.Minute > now.Minute || StartTime.Hour > now.Hour)
 				{
 					return new DateTime(now.Year, now.Month, now.Day, StartTime.Hour, StartTime.Minute, 0);
 				}

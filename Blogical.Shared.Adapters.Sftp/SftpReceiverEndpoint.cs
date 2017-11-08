@@ -231,7 +231,7 @@ namespace Blogical.Shared.Adapters.Sftp
         /// <returns></returns>
         private bool CheckErrorThreshold()
         {
-            if ((0 != _properties.ErrorThreshold) && (_errorCount > _properties.ErrorThreshold))
+            if (0 != _properties.ErrorThreshold && _errorCount > _properties.ErrorThreshold)
             {
                 _transportProxy.ReceiverShuttingdown(_properties.Uri, new ErrorThresholdExceeded());
 

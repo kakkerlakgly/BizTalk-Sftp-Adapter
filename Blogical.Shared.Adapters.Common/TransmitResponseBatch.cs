@@ -85,7 +85,7 @@ namespace Blogical.Shared.Adapters.Common
 
         protected override void StartBatchComplete(int hrBatchComplete)
         {
-            _batchFailed = (HrStatus < 0);
+            _batchFailed = HrStatus < 0;
         }
 
         protected override void StartProcessFailures()

@@ -183,22 +183,22 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             XmlNode nodeIdentityThumbprint = GetNode(doc, "identitythumbprint", false);
             XmlNode nodeSsoApplication = GetNode(doc, "ssoapplication", false);
 
-            if (((nodePassword == null) || (nodePassword.InnerText.Length == 0)) &&
-                ((nodeIdentityFile == null) || (nodeIdentityFile.InnerText.Length == 0)) &&
-                ((nodeIdentityThumbprint == null) || (nodeIdentityThumbprint.InnerText.Length == 0)) &&
-                ((nodeSsoApplication == null) || (nodeSsoApplication.InnerText.Length == 0)))
+            if ((nodePassword == null || nodePassword.InnerText.Length == 0) &&
+                (nodeIdentityFile == null || nodeIdentityFile.InnerText.Length == 0) &&
+                (nodeIdentityThumbprint == null || nodeIdentityThumbprint.InnerText.Length == 0) &&
+                (nodeSsoApplication == null || nodeSsoApplication.InnerText.Length == 0))
                 throw new Exception("You must specify either Password, IdentityFile, IdentityThumbprint, or SSO Application");
 
             // Default values for After Get Actions:
             string textAfterGetAction = "";
             XmlNode nodeAfterGetAction = GetNode(doc, "aftergetaction", false);
-            if ((nodeAfterGetAction != null) && (nodeAfterGetAction.InnerText.Length > 0))
+            if (nodeAfterGetAction != null && nodeAfterGetAction.InnerText.Length > 0)
             {
                 textAfterGetAction = nodeAfterGetAction.InnerText;
             }
             // Check for invalid actions: (the Enum.IsDefined doesn't have an overload for ignore case, as Enum.Parse has)
             // Empty string is allowed, see SftpReceiveProperties for details.
-            if ((!String.IsNullOrEmpty(textAfterGetAction)))
+            if (!String.IsNullOrEmpty(textAfterGetAction))
             {
                 SftpReceiveProperties.AfterGetActions afterGetAction;
                 if (!Enum.TryParse<SftpReceiveProperties.AfterGetActions>(textAfterGetAction, true, out afterGetAction))
@@ -209,7 +209,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             }
 
             StringBuilder builder1 = new StringBuilder("SFTP://" + nodeHost.InnerText);
-            if ((nodePort != null) && (nodePort.InnerText.Length > 0))
+            if (nodePort != null && nodePort.InnerText.Length > 0)
             {
                 builder1.Append(":" + nodePort.InnerText);
             }
@@ -256,10 +256,10 @@ namespace Blogical.Shared.Adapters.Sftp.Management
             XmlNode nodeIdentityThumbprint = GetNode(doc, "identitythumbprint", false);
             XmlNode nodeSsoApplication = GetNode(doc, "ssoapplication", false);
 
-            if (((nodePassword == null) || (nodePassword.InnerText.Length == 0)) &&
-                ((nodeIdentityFile == null) || (nodeIdentityFile.InnerText.Length == 0)) &&
-                ((nodeIdentityThumbprint == null) || (nodeIdentityThumbprint.InnerText.Length == 0)) &&
-                ((nodeSsoApplication == null) || (nodeSsoApplication.InnerText.Length == 0)))
+            if ((nodePassword == null || nodePassword.InnerText.Length == 0) &&
+                (nodeIdentityFile == null || nodeIdentityFile.InnerText.Length == 0) &&
+                (nodeIdentityThumbprint == null || nodeIdentityThumbprint.InnerText.Length == 0) &&
+                (nodeSsoApplication == null || nodeSsoApplication.InnerText.Length == 0))
                 throw new Exception("You must specify either Password, IdentityFile or IdentityThumbprint or SSO Application");
 
             StringBuilder builder1 = new StringBuilder("SFTP://" + nodeHost.InnerText);
@@ -302,7 +302,7 @@ namespace Blogical.Shared.Adapters.Sftp.Management
         {
             //bool create = true;
             XmlNode nodeHost = doc.SelectSingleNode("/Config/" + field);
-            if ((nodeHost == null) && create)
+            if (nodeHost == null && create)
             {
                 nodeHost = doc.CreateElement(field);
                 doc.DocumentElement.AppendChild(nodeHost);

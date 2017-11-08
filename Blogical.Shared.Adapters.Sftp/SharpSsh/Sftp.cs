@@ -361,7 +361,7 @@ namespace Blogical.Shared.Adapters.Sftp.SharpSsh
                     }
 
                     perm <<= 3;
-                    perm |= (currentPos - '0');
+                    perm |= currentPos - '0';
                 }
 
                 _sftp.ChangePermissions(filePath, (short)perm);

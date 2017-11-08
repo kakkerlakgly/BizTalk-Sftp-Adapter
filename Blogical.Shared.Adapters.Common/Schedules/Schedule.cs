@@ -431,14 +431,14 @@ namespace Blogical.Shared.Adapters.Common.Schedules
         /// </summary>
         protected ScheduleDay GetScheduleDayFlag(DateTime date)
         {
-            return (ScheduleDay)(int)(Math.Pow(2, (int)date.DayOfWeek));
+            return (ScheduleDay)(int)Math.Pow(2, (int)date.DayOfWeek);
         }
         /// <summary>
         /// Converts the DateTime.Month into a ScheduleMonth flag
         /// </summary>
         protected ScheduleMonth GetScheduleMonthFlag(DateTime date)
         {
-            return (ScheduleMonth)(Math.Pow(2, date.Month - 1));
+            return (ScheduleMonth)Math.Pow(2, date.Month - 1);
         }
         /// <summary>
         /// Determines the previous Sunday, from the date parameter
@@ -467,7 +467,7 @@ namespace Blogical.Shared.Adapters.Common.Schedules
             int index = 0;
             int[] days = new int[32];
 
-            if ((ordinal == ScheduleOrdinal.None) || (weekday == ScheduleDay.None))
+            if (ordinal == ScheduleOrdinal.None || weekday == ScheduleDay.None)
                 return result;
 
             DateTime date = new DateTime(year, month, 1);

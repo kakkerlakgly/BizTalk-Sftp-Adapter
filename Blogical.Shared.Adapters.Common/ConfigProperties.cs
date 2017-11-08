@@ -146,9 +146,9 @@ namespace Blogical.Shared.Adapters.Common
                     break;
                 case "Minutes": pollingInterval *= 60;
                     break;
-                case "Hours":   pollingInterval *= (60 * 60);
+                case "Hours":   pollingInterval *= 60 * 60;
                     break;
-                case "Days":    pollingInterval *= (60 * 60 * 24);
+                case "Days":    pollingInterval *= 60 * 60 * 24;
                     break;
             }
             return pollingInterval;
